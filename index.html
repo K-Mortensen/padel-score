@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Padel Team Generator</title>
+<title>Padel Score</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,7 +13,6 @@
     --court: #d4895a;
     --green: #4a8c5c;
     --green-light: #5fa872;
-    --net: #f0e6d3;
     --dark: #1a1208;
     --text: #f5ede2;
     --accent: #f2c94c;
@@ -59,7 +58,7 @@
     text-align: center;
   }
 
-  /* GOOGLE DRIVE BANNER */
+  /* GOOGLE DRIVE BAR */
   .gdrive-bar {
     width: 100%;
     max-width: 480px;
@@ -75,49 +74,27 @@
     flex-wrap: wrap;
   }
 
-  .gdrive-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-  }
+  .gdrive-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 
   .gdrive-avatar {
-    width: 34px;
-    height: 34px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     background: rgba(255,255,255,0.1);
     border: 1.5px solid rgba(200,119,61,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0; overflow: hidden;
   }
-
   .gdrive-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
   .gdrive-text { display: flex; flex-direction: column; min-width: 0; }
 
   .gdrive-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.95rem;
-    letter-spacing: 0.1em;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.95rem; letter-spacing: 0.1em; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  .gdrive-status {
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(245,237,226,0.35);
-  }
-
+  .gdrive-status { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,237,226,0.35); }
   .gdrive-status.synced { color: var(--green-light); }
   .gdrive-status.syncing { color: var(--accent); }
   .gdrive-status.error { color: #e07070; }
@@ -125,153 +102,153 @@
   .gdrive-btn {
     padding: 8px 16px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.15em;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    border: none;
+    font-size: 0.85rem; letter-spacing: 0.15em;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; flex-shrink: 0; border: none;
   }
 
   .gdrive-btn-signin {
-    background: #fff;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
+    background: #fff; color: #333;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; font-family: 'DM Sans', sans-serif; font-weight: 600;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; border: none; transition: all 0.2s;
   }
-
   .gdrive-btn-signin:hover { background: #f0f0f0; transform: translateY(-1px); }
 
   .gdrive-btn-signout {
-    background: transparent;
-    color: rgba(245,237,226,0.35);
+    background: transparent; color: rgba(245,237,226,0.35);
     border: 1px solid rgba(245,237,226,0.15) !important;
-    font-size: 0.75rem;
-    padding: 6px 12px;
+    font-size: 0.75rem; padding: 6px 12px;
   }
   .gdrive-btn-signout:hover { color: #e07070; border-color: #e07070 !important; }
 
-  .gdrive-btn-sync {
-    background: var(--green);
-    color: #fff;
-  }
+  .gdrive-btn-sync { background: var(--green); color: #fff; }
   .gdrive-btn-sync:hover { background: var(--green-light); }
   .gdrive-btn-sync:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .gdrive-actions { display: flex; gap: 8px; align-items: center; }
 
-  /* TAB NAV */
+  /* TABS */
   .tabs {
-    display: flex;
-    gap: 4px;
+    display: flex; gap: 4px;
     background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    padding: 4px;
+    border-radius: 12px; padding: 4px;
     margin-bottom: 36px;
-    width: 100%;
-    max-width: 480px;
+    width: 100%; max-width: 480px;
   }
 
   .tab-btn {
-    flex: 1;
-    padding: 10px;
+    flex: 1; padding: 10px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.15em;
-    background: transparent;
-    border: none;
+    font-size: 1rem; letter-spacing: 0.15em;
+    background: transparent; border: none;
     color: rgba(245,237,226,0.4);
-    border-radius: 9px;
-    cursor: pointer;
-    transition: all 0.2s;
+    border-radius: 9px; cursor: pointer; transition: all 0.2s;
   }
-
-  .tab-btn.active {
-    background: var(--clay);
-    color: var(--dark);
-  }
+  .tab-btn.active { background: var(--clay); color: var(--dark); }
 
   .tab-content { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; }
   .tab-content.active { display: flex; }
 
-  /* INPUT */
+  /* PLAYER INPUTS */
   .input-section {
-    width: 100%;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 32px;
+    width: 100%; max-width: 480px;
+    display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;
   }
 
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .input-row { display: flex; align-items: center; gap: 12px; }
 
   .player-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    color: var(--clay);
-    width: 24px;
-    flex-shrink: 0;
-    text-align: center;
+    font-size: 1.4rem; color: var(--clay); width: 24px; flex-shrink: 0; text-align: center;
   }
 
   input[type="text"] {
     flex: 1;
     background: rgba(255,255,255,0.06);
     border: 1.5px solid rgba(200,119,61,0.35);
-    border-radius: 10px;
-    padding: 14px 18px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    border-radius: 10px; padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text);
+    outline: none; transition: border-color 0.2s, background 0.2s;
   }
-
   input[type="text"]::placeholder { color: rgba(245,237,226,0.3); }
   input[type="text"]:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-  .btn {
-    width: 100%;
-    max-width: 480px;
-    padding: 16px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.15em;
-    background: var(--accent);
-    color: var(--dark);
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 20px rgba(242,201,76,0.3);
+  /* TEAM MODE TOGGLE */
+  .team-mode-row {
+    width: 100%; max-width: 480px;
+    display: flex; gap: 10px; margin-bottom: 16px;
   }
 
+  .mode-btn {
+    flex: 1; padding: 11px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem; letter-spacing: 0.15em;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    border: 1.5px solid rgba(200,119,61,0.4);
+    background: transparent; color: rgba(245,237,226,0.5);
+  }
+  .mode-btn.active { background: var(--clay); color: var(--dark); border-color: var(--clay); }
+
+  /* MANUAL TEAM PICKERS */
+  .manual-teams {
+    width: 100%; max-width: 480px;
+    display: none; gap: 14px; margin-bottom: 20px; flex-direction: column;
+  }
+  .manual-teams.visible { display: flex; }
+
+  .manual-team-box {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,119,61,0.25);
+    border-radius: 12px; padding: 16px;
+  }
+
+  .manual-team-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem; letter-spacing: 0.2em; color: var(--clay); margin-bottom: 10px;
+  }
+
+  .manual-team-picks { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .pick-btn {
+    padding: 7px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+    border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    border: 1.5px solid rgba(200,119,61,0.35);
+    background: rgba(255,255,255,0.05); color: rgba(245,237,226,0.6);
+  }
+  .pick-btn.selected-a { background: rgba(242,201,76,0.2); border-color: var(--accent); color: var(--accent); }
+  .pick-btn.selected-b { background: rgba(91,155,213,0.2); border-color: #5b9bd5; color: #7ab3e0; }
+  .pick-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .manual-team-slots { display: flex; gap: 8px; margin-top: 10px; min-height: 34px; flex-wrap: wrap; }
+
+  .slot-chip {
+    padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .slot-chip-a { background: rgba(242,201,76,0.2); color: var(--accent); border: 1px solid rgba(242,201,76,0.3); }
+  .slot-chip-b { background: rgba(91,155,213,0.2); color: #7ab3e0; border: 1px solid rgba(91,155,213,0.3); }
+  .slot-chip button { background: none; border: none; cursor: pointer; color: inherit; font-size: 0.9rem; line-height: 1; padding: 0; opacity: 0.7; }
+  .slot-chip button:hover { opacity: 1; }
+
+  /* GENERATE BUTTON */
+  .btn {
+    width: 100%; max-width: 480px; padding: 16px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.15em;
+    background: var(--accent); color: var(--dark); border: none; border-radius: 12px;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(242,201,76,0.3);
+  }
   .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(242,201,76,0.4); }
   .btn:active { transform: translateY(0); }
 
+  .error { color: #e07070; font-size: 0.85rem; text-align: center; margin-top: -4px; display: none; }
+
   /* COURT */
   .court-wrapper {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 48px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
+    width: 100%; max-width: 600px; margin-top: 40px;
+    display: none; flex-direction: column; align-items: center;
     animation: fadeUp 0.5s ease forwards;
   }
 
@@ -282,497 +259,199 @@
 
   .match-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.25em;
-    color: var(--clay);
-    margin-bottom: 20px;
-    text-transform: uppercase;
+    font-size: 1.1rem; letter-spacing: 0.25em; color: var(--clay); margin-bottom: 20px;
   }
 
   .court {
-    width: 100%;
-    aspect-ratio: 1.6;
-    background: var(--court);
-    border-radius: 16px;
+    width: 100%; aspect-ratio: 1.6;
+    background: var(--court); border-radius: 16px;
     border: 3px solid rgba(255,255,255,0.15);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(0,0,0,0.15);
   }
 
   .court::before {
-    content: '';
-    position: absolute;
-    inset: 8%;
-    border: 2px solid rgba(255,255,255,0.5);
-    border-radius: 4px;
+    content: ''; position: absolute; inset: 8%;
+    border: 2px solid rgba(255,255,255,0.5); border-radius: 4px;
   }
 
   .court-lines { position: absolute; inset: 0; pointer-events: none; }
-
-  .line-v {
-    position: absolute;
-    left: 50%; top: 8%; bottom: 8%;
-    width: 2px;
-    background: rgba(255,255,255,0.5);
-    transform: translateX(-50%);
-  }
-
-  .line-h-left {
-    position: absolute;
-    left: 8%; right: 50%; top: 50%;
-    height: 2px;
-    background: rgba(255,255,255,0.5);
-    transform: translateY(-50%);
-  }
-
-  .line-h-right {
-    position: absolute;
-    left: 50%; right: 8%; top: 50%;
-    height: 2px;
-    background: rgba(255,255,255,0.5);
-    transform: translateY(-50%);
-  }
+  .line-v { position: absolute; left: 50%; top: 8%; bottom: 8%; width: 2px; background: rgba(255,255,255,0.5); transform: translateX(-50%); }
+  .line-h-left { position: absolute; left: 8%; right: 50%; top: 50%; height: 2px; background: rgba(255,255,255,0.5); transform: translateY(-50%); }
+  .line-h-right { position: absolute; left: 50%; right: 8%; top: 50%; height: 2px; background: rgba(255,255,255,0.5); transform: translateY(-50%); }
 
   .net {
-    position: absolute;
-    left: 50%; top: 0; bottom: 0;
-    width: 16px;
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 16px;
     transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
+    display: flex; flex-direction: column; align-items: center; z-index: 10;
   }
-
-  .net-post-top, .net-post-bottom {
-    width: 10px; height: 10px;
-    background: #aaa;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
+  .net-post-top, .net-post-bottom { width: 10px; height: 10px; background: #aaa; border-radius: 50%; flex-shrink: 0; }
   .net-mesh {
-    flex: 1;
-    width: 10px;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 2px,
-      transparent 2px, transparent 10px
-    ),
-    repeating-linear-gradient(
-      to right,
-      rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 1px,
-      transparent 1px, transparent 5px
-    );
-    border-left: 2px solid rgba(200,190,170,0.8);
-    border-right: 2px solid rgba(200,190,170,0.8);
+    flex: 1; width: 10px;
+    background: repeating-linear-gradient(to bottom, rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 2px, transparent 2px, transparent 10px),
+    repeating-linear-gradient(to right, rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 1px, transparent 1px, transparent 5px);
+    border-left: 2px solid rgba(200,190,170,0.8); border-right: 2px solid rgba(200,190,170,0.8);
   }
 
   .side {
-    position: absolute;
-    top: 0; bottom: 0;
-    width: calc(50% - 8px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
+    position: absolute; top: 0; bottom: 0; width: calc(50% - 8px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
   }
-
   .side-left { left: 0; }
   .side-right { right: 0; }
 
   .player-card {
-    background: rgba(0,0,0,0.35);
-    border: 1.5px solid rgba(255,255,255,0.2);
-    border-radius: 10px;
-    padding: 10px 18px;
-    text-align: center;
-    width: 75%;
-    backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 10px; padding: 10px 18px; text-align: center; width: 75%; backdrop-filter: blur(4px);
   }
+  .player-card .player-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  .player-card .player-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
-  .player-card .player-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem;
-    letter-spacing: 0.1em;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  }
-
-  .player-card .player-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    margin-top: 2px;
-  }
-
-  .team-label {
-    position: absolute;
-    bottom: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.25em;
-    color: rgba(255,255,255,0.4);
-  }
-
+  .team-label { position: absolute; bottom: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.4); }
   .side-left .team-label { left: 12px; }
   .side-right .team-label { right: 12px; }
 
-  .vs-badge {
-    margin-top: 20px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.4em;
-    color: rgba(245,237,226,0.3);
-  }
+  .vs-badge { margin-top: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.4em; color: rgba(245,237,226,0.3); }
+
+  .court-actions { display: flex; gap: 10px; margin-top: 16px; }
 
   .regenerate {
-    margin-top: 20px;
-    background: transparent;
-    border: 1.5px solid var(--clay);
-    color: var(--clay);
-    border-radius: 10px;
-    padding: 10px 28px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.2em;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: transparent; border: 1.5px solid var(--clay); color: var(--clay);
+    border-radius: 10px; padding: 10px 22px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.2s;
   }
-
   .regenerate:hover { background: var(--clay); color: var(--dark); }
-
-  .error {
-    color: #e07070;
-    font-size: 0.85rem;
-    text-align: center;
-    margin-top: -8px;
-    display: none;
-  }
 
   /* SCORE SECTION */
   .score-section {
-    margin-top: 32px;
-    width: 100%;
-    max-width: 480px;
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(200,119,61,0.25);
-    border-radius: 16px;
-    padding: 24px;
+    margin-top: 28px; width: 100%; max-width: 480px;
+    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.25);
+    border-radius: 16px; padding: 24px;
     animation: fadeUp 0.5s ease 0.2s both;
   }
 
-  .score-section h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.25em;
-    color: var(--clay);
-    margin-bottom: 20px;
-    text-align: center;
-  }
+  .score-section h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.25em; color: var(--clay); margin-bottom: 20px; text-align: center; }
 
-  .score-inputs {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+  .score-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 20px; }
 
-  .score-team {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
+  .score-team { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 
-  .score-team-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    color: rgba(245,237,226,0.5);
-    text-align: center;
-  }
+  .score-team-name { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.12em; color: rgba(245,237,226,0.5); text-align: center; }
 
   .score-input {
-    width: 80px;
-    height: 80px;
+    width: 80px; height: 80px;
     background: rgba(255,255,255,0.06);
     border: 1.5px solid rgba(200,119,61,0.35);
-    border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
-    color: var(--accent);
-    text-align: center;
-    outline: none;
-    transition: border-color 0.2s;
+    border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+    color: var(--accent); text-align: center; outline: none; transition: border-color 0.2s;
   }
-
   .score-input:focus { border-color: var(--accent); }
 
-  .score-vs {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    color: rgba(245,237,226,0.2);
-    letter-spacing: 0.1em;
-  }
+  .score-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: rgba(245,237,226,0.2); letter-spacing: 0.1em; }
 
   .save-btn {
-    width: 100%;
-    padding: 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 0.15em;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
+    width: 100%; padding: 14px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em;
+    background: var(--green); color: #fff; border: none; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s;
   }
-
   .save-btn:hover { background: var(--green-light); transform: translateY(-1px); }
 
-  .save-success {
-    text-align: center;
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    margin-top: 10px;
-    height: 20px;
-    transition: opacity 0.5s;
-  }
+  .save-success { text-align: center; font-size: 0.85rem; letter-spacing: 0.1em; margin-top: 10px; height: 20px; transition: opacity 0.5s; }
 
   /* HISTORY TAB */
-  .history-controls {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
+  .history-controls { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 24px; flex-wrap: wrap; }
 
   .history-controls button {
-    flex: 1;
-    padding: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.15em;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1.5px solid;
+    flex: 1; padding: 10px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.15em;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1.5px solid;
   }
 
-  .btn-export {
-    background: transparent;
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .btn-export { background: transparent; border-color: var(--accent); color: var(--accent); }
   .btn-export:hover { background: var(--accent); color: var(--dark); }
 
   .btn-import-label {
-    flex: 1;
-    padding: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.15em;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1.5px solid var(--clay);
-    color: var(--clay);
-    background: transparent;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1; padding: 10px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.15em;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    border: 1.5px solid var(--clay); color: var(--clay); background: transparent;
+    text-align: center; display: flex; align-items: center; justify-content: center;
   }
   .btn-import-label:hover { background: var(--clay); color: var(--dark); }
 
   #importFile { display: none; }
 
-  .btn-clear {
-    background: transparent;
-    border-color: #e07070;
-    color: #e07070;
-    flex: 0 0 auto;
-    padding: 10px 14px;
-  }
+  .btn-clear { background: transparent; border-color: #e07070; color: #e07070; flex: 0 0 auto; padding: 10px 14px; }
   .btn-clear:hover { background: #e07070; color: #fff; }
 
   /* DRIVE SYNC ROW in history tab */
-  .drive-sync-row {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 20px;
-  }
+  .drive-sync-row { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 20px; }
 
   .drive-sync-row button {
-    flex: 1;
-    padding: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.12em;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1.5px solid;
+    flex: 1; padding: 10px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.12em;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1.5px solid;
   }
 
-  .btn-drive-upload {
-    background: transparent;
-    border-color: var(--green) !important;
-    color: var(--green-light);
-  }
+  .btn-drive-upload { background: transparent; border-color: var(--green) !important; color: var(--green-light); }
   .btn-drive-upload:hover { background: var(--green); color: #fff; }
   .btn-drive-upload:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .btn-drive-download {
-    background: transparent;
-    border-color: #5b9bd5 !important;
-    color: #7ab3e0;
-  }
+  .btn-drive-download { background: transparent; border-color: #5b9bd5 !important; color: #7ab3e0; }
   .btn-drive-download:hover { background: #5b9bd5; color: #fff; }
   .btn-drive-download:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* STATS SECTION */
+  /* STATS */
   .stats-grid {
-    width: 100%;
-    max-width: 480px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 32px;
+    width: 100%; max-width: 480px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px;
   }
 
-  .stat-card {
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(200,119,61,0.2);
-    border-radius: 12px;
-    padding: 16px;
-    animation: fadeUp 0.4s ease forwards;
-  }
+  .stat-card { background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.2); border-radius: 12px; padding: 16px; animation: fadeUp 0.4s ease forwards; }
 
-  .stat-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(200,119,61,0.2);
-    padding-bottom: 8px;
-  }
+  .stat-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid rgba(200,119,61,0.2); padding-bottom: 8px; }
 
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    color: rgba(245,237,226,0.6);
-    margin-bottom: 4px;
-  }
+  .stat-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: rgba(245,237,226,0.6); margin-bottom: 4px; }
+  .stat-row span:last-child { color: var(--text); font-weight: 600; }
 
-  .stat-row span:last-child {
-    color: var(--text);
-    font-weight: 600;
-  }
+  .stat-winrate { margin-top: 8px; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--clay); }
 
-  .stat-winrate {
-    margin-top: 8px;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--clay);
-  }
+  .winrate-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 2px; transition: width 0.6s ease; }
 
-  .winrate-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    margin-top: 4px;
-    overflow: hidden;
-  }
+  /* MATCH HISTORY */
+  .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--clay); width: 100%; max-width: 480px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(200,119,61,0.2); }
 
-  .winrate-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--accent));
-    border-radius: 2px;
-    transition: width 0.6s ease;
-  }
-
-  /* MATCH HISTORY LIST */
-  .section-label {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.25em;
-    color: var(--clay);
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(200,119,61,0.2);
-  }
-
-  .match-list {
-    width: 100%;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .match-list { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
 
   .match-item {
     background: rgba(255,255,255,0.04);
     border: 1.5px solid rgba(200,119,61,0.15);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 8px;
-    align-items: center;
+    border-radius: 12px; padding: 12px 14px;
+    display: grid; grid-template-columns: 1fr auto 1fr auto;
+    gap: 8px; align-items: center;
     animation: fadeUp 0.3s ease forwards;
   }
 
   .match-team { display: flex; flex-direction: column; gap: 2px; }
-
-  .match-team-names {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 0.07em;
-    color: var(--text);
-  }
-
+  .match-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.07em; color: var(--text); }
   .match-team-names.winner { color: var(--accent); }
-
-  .match-date {
-    font-size: 0.68rem;
-    color: rgba(245,237,226,0.3);
-    letter-spacing: 0.1em;
-  }
-
-  .match-score-display {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    color: var(--clay);
-    letter-spacing: 0.05em;
-    text-align: center;
-  }
-
+  .match-date { font-size: 0.68rem; color: rgba(245,237,226,0.3); letter-spacing: 0.1em; }
+  .match-score-display { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--clay); letter-spacing: 0.05em; text-align: center; }
   .match-item-right { text-align: right; }
   .match-item-right .match-team-names { text-align: right; }
 
-  .no-history {
-    text-align: center;
-    color: rgba(245,237,226,0.25);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    padding: 40px 0;
+  .btn-delete-match {
+    background: transparent; border: 1px solid rgba(224,112,112,0.3);
+    color: rgba(224,112,112,0.5); border-radius: 6px;
+    width: 28px; height: 28px; font-size: 0.8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
   }
+  .btn-delete-match:hover { background: #e07070; color: #fff; border-color: #e07070; }
+
+  .no-history { text-align: center; color: rgba(245,237,226,0.25); font-size: 0.9rem; letter-spacing: 0.1em; padding: 40px 0; }
 
   /* Spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -781,12 +460,11 @@
 </head>
 <body>
 
-<h1>PADEL</h1>
-<p class="subtitle">Team Generator</p>
+<h1>PADEL SCORE</h1>
+<p class="subtitle">Track · Play · Win</p>
 
 <!-- GOOGLE DRIVE BAR -->
 <div class="gdrive-bar" id="gdriveBar">
-  <!-- signed out state -->
   <div class="gdrive-info" id="gdriveSignedOut">
     <div class="gdrive-avatar">☁️</div>
     <div class="gdrive-text">
@@ -801,7 +479,6 @@
     </button>
   </div>
 
-  <!-- signed in state (hidden initially) -->
   <div class="gdrive-info" id="gdriveSignedIn" style="display:none;">
     <div class="gdrive-avatar" id="gdriveAvatarEl">👤</div>
     <div class="gdrive-text">
@@ -810,7 +487,7 @@
     </div>
   </div>
   <div class="gdrive-actions" id="gdriveSignedInActions" style="display:none;">
-    <button class="gdrive-btn gdrive-btn-sync" id="btnAutoSync" onclick="syncToDrive()" title="Save to Drive">☁️ Save</button>
+    <button class="gdrive-btn gdrive-btn-sync" id="btnAutoSync" onclick="syncToDrive()">☁️ Save</button>
     <button class="gdrive-btn gdrive-btn-signout" onclick="signOut()">Sign out</button>
   </div>
 </div>
@@ -823,28 +500,51 @@
 
 <!-- PLAY TAB -->
 <div class="tab-content active" id="tab-play">
+
+  <!-- Player names -->
   <div class="input-section">
     <div class="input-row">
       <span class="player-num">1</span>
-      <input type="text" id="p1" placeholder="Player one" />
+      <input type="text" id="p1" placeholder="Player one" oninput="onPlayerInput()" />
     </div>
     <div class="input-row">
       <span class="player-num">2</span>
-      <input type="text" id="p2" placeholder="Player two" />
+      <input type="text" id="p2" placeholder="Player two" oninput="onPlayerInput()" />
     </div>
     <div class="input-row">
       <span class="player-num">3</span>
-      <input type="text" id="p3" placeholder="Player three" />
+      <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
     </div>
     <div class="input-row">
       <span class="player-num">4</span>
-      <input type="text" id="p4" placeholder="Player four" />
+      <input type="text" id="p4" placeholder="Player four" oninput="onPlayerInput()" />
     </div>
     <p class="error" id="error">Please enter all 4 player names.</p>
   </div>
 
-  <button class="btn" onclick="generateTeams()">Generate Teams</button>
+  <!-- Team mode buttons -->
+  <div class="team-mode-row">
+    <button class="mode-btn active" id="modeRandom" onclick="setMode('random')">🔀 Random Teams</button>
+    <button class="mode-btn" id="modeManual" onclick="setMode('manual')">✏️ Pick Teams</button>
+  </div>
 
+  <!-- Manual picker (visible only in manual mode) -->
+  <div class="manual-teams" id="manualTeams">
+    <div class="manual-team-box">
+      <div class="manual-team-label">⚡ Team A — Pick 2 Players</div>
+      <div class="manual-team-picks" id="picksA"></div>
+      <div class="manual-team-slots" id="slotsA"><span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span></div>
+    </div>
+    <div class="manual-team-box">
+      <div class="manual-team-label" style="color:#7ab3e0;">🌊 Team B — Pick 2 Players</div>
+      <div class="manual-team-picks" id="picksB"></div>
+      <div class="manual-team-slots" id="slotsB"><span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span></div>
+    </div>
+  </div>
+
+  <button class="btn" id="generateBtn" onclick="generateTeams()">Generate Teams</button>
+
+  <!-- COURT -->
   <div class="court-wrapper" id="courtWrapper">
     <p class="match-title">⚡ Today's Match</p>
     <div class="court">
@@ -853,42 +553,28 @@
         <div class="line-h-left"></div>
         <div class="line-h-right"></div>
       </div>
-
-      <div class="side side-left" id="teamA">
-        <div class="player-card">
-          <div class="player-name" id="a1">—</div>
-          <div class="player-label">Player</div>
-        </div>
-        <div class="player-card">
-          <div class="player-name" id="a2">—</div>
-          <div class="player-label">Player</div>
-        </div>
+      <div class="side side-left">
+        <div class="player-card"><div class="player-name" id="a1">—</div><div class="player-label">Player</div></div>
+        <div class="player-card"><div class="player-name" id="a2">—</div><div class="player-label">Player</div></div>
         <span class="team-label">TEAM A</span>
       </div>
-
       <div class="net">
         <div class="net-post-top"></div>
         <div class="net-mesh"></div>
         <div class="net-post-bottom"></div>
       </div>
-
-      <div class="side side-right" id="teamB">
-        <div class="player-card">
-          <div class="player-name" id="b1">—</div>
-          <div class="player-label">Player</div>
-        </div>
-        <div class="player-card">
-          <div class="player-name" id="b2">—</div>
-          <div class="player-label">Player</div>
-        </div>
+      <div class="side side-right">
+        <div class="player-card"><div class="player-name" id="b1">—</div><div class="player-label">Player</div></div>
+        <div class="player-card"><div class="player-name" id="b2">—</div><div class="player-label">Player</div></div>
         <span class="team-label">TEAM B</span>
       </div>
     </div>
-
     <p class="vs-badge">TEAM A &nbsp;VS&nbsp; TEAM B</p>
-    <button class="regenerate" onclick="shuffle()">🔀 Shuffle Teams</button>
+    <div class="court-actions">
+      <button class="regenerate" id="shuffleBtn" onclick="shuffle()">🔀 Shuffle Teams</button>
+    </div>
 
-    <!-- SCORE SECTION -->
+    <!-- SCORE -->
     <div class="score-section">
       <h3>🏆 Save Match Result</h3>
       <div class="score-inputs">
@@ -910,7 +596,6 @@
 
 <!-- HISTORY TAB -->
 <div class="tab-content" id="tab-history">
-  <!-- Drive sync row -->
   <div class="drive-sync-row" id="driveSyncRow" style="display:none;">
     <button class="btn-drive-upload" id="btnDriveUpload" onclick="syncToDrive()">☁️ Save to Drive</button>
     <button class="btn-drive-download" id="btnDriveDownload" onclick="loadFromDrive()">⬇ Load from Drive</button>
@@ -935,22 +620,20 @@
   </div>
 </div>
 
-<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async></script>
 
 <script>
-  // ─── CONFIG ──────────────────────────────────────────────────────────────
-  const CLIENT_ID = '980841897285-tmtqatif0qkr1jd9k2i154mfie8gujd4.apps.googleusercontent.com';
-  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-  const DRIVE_FILENAME = 'padel-data.json';
-  const STORAGE_KEY = 'padel_data';
+  // ─── CONFIG ───────────────────────────────────────────────────────────────
+  const CLIENT_ID   = '980841897285-tmtqatif0qkr1jd9k2i154mfie8gujd4.apps.googleusercontent.com';
+  const SCOPES      = 'https://www.googleapis.com/auth/drive.file';
+  const DRIVE_FILE_ID = '13UfpLM2nGSY8H0gRrkptL0goQnMbx1Ff'; // shared public file
+  const STORAGE_KEY = 'padel_score_data';
 
   // ─── LOCAL DATA ───────────────────────────────────────────────────────────
   function loadData() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { matches: [] }; }
     catch { return { matches: [] }; }
   }
-
   function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
@@ -960,7 +643,9 @@
   let currentTeamA = [];
   let currentTeamB = [];
   let accessToken = null;
-  let driveFileId = null; // cached file ID
+  let teamMode = 'random'; // 'random' | 'manual'
+  let manualA = [];
+  let manualB = [];
 
   // ─── TABS ─────────────────────────────────────────────────────────────────
   function switchTab(tab) {
@@ -970,6 +655,164 @@
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     if (tab === 'history') renderHistory();
+  }
+
+  // ─── TEAM MODE ────────────────────────────────────────────────────────────
+  function setMode(mode) {
+    teamMode = mode;
+    document.getElementById('modeRandom').classList.toggle('active', mode === 'random');
+    document.getElementById('modeManual').classList.toggle('active', mode === 'manual');
+    document.getElementById('manualTeams').classList.toggle('visible', mode === 'manual');
+    document.getElementById('generateBtn').textContent = mode === 'random' ? 'Generate Teams' : 'Set These Teams';
+    document.getElementById('shuffleBtn').style.display = mode === 'random' ? '' : 'none';
+    if (mode === 'manual') buildPickers();
+  }
+
+  function onPlayerInput() {
+    if (teamMode === 'manual') buildPickers();
+  }
+
+  function buildPickers() {
+    const names = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+    manualA = manualA.filter(n => names.includes(n));
+    manualB = manualB.filter(n => names.includes(n));
+    renderPickers(names);
+  }
+
+  function renderPickers(names) {
+    ['A','B'].forEach(team => {
+      const picks = document.getElementById('picks' + team);
+      const slots = document.getElementById('slots' + team);
+      const myArr = team === 'A' ? manualA : manualB;
+      const otherArr = team === 'A' ? manualB : manualA;
+
+      picks.innerHTML = names.map(name => {
+        const inMe = myArr.includes(name);
+        const inOther = otherArr.includes(name);
+        const cls = inMe ? (team === 'A' ? 'selected-a' : 'selected-b') : '';
+        return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${name}')" ${inOther && !inMe ? 'disabled' : ''}>${name}</button>`;
+      }).join('');
+
+      if (myArr.length === 0) {
+        slots.innerHTML = `<span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span>`;
+      } else {
+        slots.innerHTML = myArr.map(name =>
+          `<span class="slot-chip slot-chip-${team.toLowerCase()}">${name} <button onclick="removePick('${team}','${name}')">✕</button></span>`
+        ).join('');
+      }
+    });
+  }
+
+  function togglePick(team, name) {
+    const arr = team === 'A' ? manualA : manualB;
+    const other = team === 'A' ? manualB : manualA;
+    if (arr.includes(name)) { removePick(team, name); return; }
+    if (other.includes(name)) return;
+    if (arr.length >= 2) { arr.shift(); }
+    arr.push(name);
+    const names = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+    renderPickers(names);
+  }
+
+  function removePick(team, name) {
+    if (team === 'A') manualA = manualA.filter(n => n !== name);
+    else manualB = manualB.filter(n => n !== name);
+    const names = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+    renderPickers(names);
+  }
+
+  // ─── GENERATE ─────────────────────────────────────────────────────────────
+  function generateTeams() {
+    const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim());
+    const err = document.getElementById('error');
+
+    if (inputs.some(v => !v)) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    players = inputs;
+
+    if (teamMode === 'manual') {
+      if (manualA.length !== 2 || manualB.length !== 2) {
+        err.textContent = 'Please assign 2 players to each team.';
+        err.style.display = 'block'; return;
+      }
+      err.style.display = 'none';
+      currentTeamA = [...manualA];
+      currentTeamB = [...manualB];
+      renderCourt(currentTeamA, currentTeamB);
+    } else {
+      shuffle();
+    }
+
+    document.getElementById('courtWrapper').style.display = 'flex';
+  }
+
+  function shuffle() {
+    if (!players.length) return;
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    currentTeamA = [shuffled[0], shuffled[1]];
+    currentTeamB = [shuffled[2], shuffled[3]];
+    renderCourt(currentTeamA, currentTeamB);
+  }
+
+  function renderCourt(teamA, teamB) {
+    document.getElementById('a1').textContent = teamA[0];
+    document.getElementById('a2').textContent = teamA[1];
+    document.getElementById('b1').textContent = teamB[0];
+    document.getElementById('b2').textContent = teamB[1];
+    document.getElementById('scoreTeamA').textContent = teamA[0].split(' ')[0] + ' & ' + teamA[1].split(' ')[0];
+    document.getElementById('scoreTeamB').textContent = teamB[0].split(' ')[0] + ' & ' + teamB[1].split(' ')[0];
+    document.getElementById('scoreA').value = '';
+    document.getElementById('scoreB').value = '';
+    document.getElementById('saveSuccess').textContent = '';
+
+    const wrapper = document.getElementById('courtWrapper');
+    wrapper.style.animation = 'none';
+    wrapper.offsetHeight;
+    wrapper.style.animation = 'fadeUp 0.5s ease forwards';
+  }
+
+  // ─── SAVE MATCH ───────────────────────────────────────────────────────────
+  async function saveMatch() {
+    const sA = parseInt(document.getElementById('scoreA').value);
+    const sB = parseInt(document.getElementById('scoreB').value);
+
+    if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', '#e07070'); return; }
+    if (!currentTeamA.length) { showSaveMsg('Generate teams first!', '#e07070'); return; }
+
+    const data = loadData();
+    const match = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      teamA: [...currentTeamA],
+      teamB: [...currentTeamB],
+      scoreA: sA, scoreB: sB,
+    };
+    data.matches.unshift(match);
+    saveData(data);
+    showSaveMsg('✔ Match saved!', '#5fa872');
+
+    if (accessToken) {
+      showSaveMsg('✔ Saved — syncing to Drive…', '#5fa872');
+      await syncToDrive();
+      showSaveMsg('✔ Saved & synced to Drive!', '#5fa872');
+    }
+  }
+
+  function showSaveMsg(msg, color) {
+    const el = document.getElementById('saveSuccess');
+    el.textContent = msg; el.style.color = color; el.style.opacity = '1';
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+  }
+
+  // ─── DELETE MATCH ─────────────────────────────────────────────────────────
+  async function deleteMatch(id) {
+    if (!confirm('Delete this match? This cannot be undone.')) return;
+    const data = loadData();
+    data.matches = data.matches.filter(m => m.id !== id);
+    saveData(data);
+    renderHistory();
+    if (accessToken) await syncToDrive();
   }
 
   // ─── GOOGLE SIGN IN ───────────────────────────────────────────────────────
@@ -983,11 +826,7 @@
   }
 
   function handleTokenResponse(tokenResponse) {
-    if (tokenResponse.error) {
-      console.error('Auth error:', tokenResponse);
-      setDriveStatus('Sign-in failed', 'error');
-      return;
-    }
+    if (tokenResponse.error) { setDriveStatus('Sign-in failed', 'error'); return; }
     accessToken = tokenResponse.access_token;
     fetchUserInfo();
   }
@@ -999,9 +838,8 @@
       });
       const info = await res.json();
       showSignedIn(info);
-      // Try to load data from Drive on sign in
       await loadFromDrive(true);
-    } catch (e) {
+    } catch {
       showSignedIn({ name: 'Google User', picture: null });
     }
   }
@@ -1012,25 +850,15 @@
     document.getElementById('gdriveSignedIn').style.display = 'flex';
     document.getElementById('gdriveSignedInActions').style.display = 'flex';
     document.getElementById('driveSyncRow').style.display = 'flex';
-
     document.getElementById('gdriveName').textContent = info.name || 'Google User';
-
     const avatar = document.getElementById('gdriveAvatarEl');
-    if (info.picture) {
-      avatar.innerHTML = `<img src="${info.picture}" alt="avatar" />`;
-    } else {
-      avatar.textContent = '👤';
-    }
+    avatar.innerHTML = info.picture ? `<img src="${info.picture}" alt="avatar" />` : '👤';
     setDriveStatus('Connected', 'synced');
   }
 
   function signOut() {
-    if (accessToken) {
-      google.accounts.oauth2.revoke(accessToken, () => {});
-    }
+    if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
     accessToken = null;
-    driveFileId = null;
-
     document.getElementById('gdriveSignedOut').style.display = 'flex';
     document.getElementById('gdriveSignedOutActions').style.display = 'flex';
     document.getElementById('gdriveSignedIn').style.display = 'none';
@@ -1040,28 +868,10 @@
 
   function setDriveStatus(msg, type = '') {
     const el = document.getElementById('gdriveStatusText');
-    if (el) {
-      el.textContent = msg;
-      el.className = 'gdrive-status' + (type ? ' ' + type : '');
-    }
+    if (el) { el.textContent = msg; el.className = 'gdrive-status' + (type ? ' ' + type : ''); }
   }
 
-  // ─── DRIVE: FIND FILE ─────────────────────────────────────────────────────
-  async function findDriveFile() {
-    if (driveFileId) return driveFileId;
-    const query = encodeURIComponent(`name='${DRIVE_FILENAME}' and trashed=false`);
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)`, {
-      headers: { Authorization: 'Bearer ' + accessToken }
-    });
-    const data = await res.json();
-    if (data.files && data.files.length > 0) {
-      driveFileId = data.files[0].id;
-      return driveFileId;
-    }
-    return null;
-  }
-
-  // ─── DRIVE: UPLOAD / SAVE ─────────────────────────────────────────────────
+  // ─── DRIVE: SAVE (update the shared fixed file ID) ────────────────────────
   async function syncToDrive() {
     if (!accessToken) { alert('Please sign in with Google first.'); return; }
 
@@ -1072,37 +882,9 @@
     try {
       const data = loadData();
       const content = JSON.stringify(data, null, 2);
-      const blob = new Blob([content], { type: 'application/json' });
 
-      const fileId = await findDriveFile();
-      let url, method;
-
-      if (fileId) {
-        // Update existing file
-        url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`;
-        method = 'PATCH';
-      } else {
-        // Create new file with metadata
-        const metadata = { name: DRIVE_FILENAME, mimeType: 'application/json' };
-        const form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', blob);
-
-        const createRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-          method: 'POST',
-          headers: { Authorization: 'Bearer ' + accessToken },
-          body: form
-        });
-        const created = await createRes.json();
-        driveFileId = created.id;
-        setDriveStatus('Saved ✓', 'synced');
-        setBtnLoading('btnAutoSync', false);
-        setBtnLoading('btnDriveUpload', false);
-        return;
-      }
-
-      await fetch(url, {
-        method,
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${DRIVE_FILE_ID}?uploadType=media`, {
+        method: 'PATCH',
         headers: {
           Authorization: 'Bearer ' + accessToken,
           'Content-Type': 'application/json'
@@ -1121,37 +903,25 @@
     setBtnLoading('btnDriveUpload', false);
   }
 
-  // ─── DRIVE: DOWNLOAD / LOAD ───────────────────────────────────────────────
+  // ─── DRIVE: LOAD (read the shared fixed file ID) ──────────────────────────
   async function loadFromDrive(silent = false) {
-    if (!accessToken) {
-      if (!silent) alert('Please sign in with Google first.');
-      return;
-    }
+    if (!accessToken) { if (!silent) alert('Please sign in with Google first.'); return; }
 
     setDriveStatus('Loading...', 'syncing');
     setBtnLoading('btnDriveDownload', true);
 
     try {
-      const fileId = await findDriveFile();
-      if (!fileId) {
-        setDriveStatus('No data on Drive yet', '');
-        setBtnLoading('btnDriveDownload', false);
-        if (!silent) alert('No padel-data.json found in your Drive. Save a match first!');
-        return;
-      }
-
-      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${DRIVE_FILE_ID}?alt=media`, {
         headers: { Authorization: 'Bearer ' + accessToken }
       });
+
+      if (!res.ok) throw new Error('File not readable');
       const data = await res.json();
       if (!Array.isArray(data.matches)) throw new Error('Invalid format');
 
-      // Merge: keep newer matches from both sources
+      // Merge: keep unique matches from both local and drive
       const local = loadData();
-      const localIds = new Set(local.matches.map(m => m.id));
       const driveIds = new Set(data.matches.map(m => m.id));
-
-      // Combine unique matches from both
       const merged = [...data.matches];
       local.matches.forEach(m => { if (!driveIds.has(m.id)) merged.push(m); });
       merged.sort((a, b) => b.id - a.id);
@@ -1162,14 +932,15 @@
 
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setDriveStatus(`Synced ${now}`, 'synced');
+
       if (!silent) {
         const added = merged.length - local.matches.length;
-        alert(`✓ Loaded from Drive! ${merged.length} matches total${added > 0 ? ` (${added} new)` : ''}.`);
+        alert(`✓ Loaded! ${merged.length} matches total${added > 0 ? ` (${added} new)` : ''}.`);
       }
     } catch (e) {
       console.error(e);
       setDriveStatus('Load failed', 'error');
-      if (!silent) alert('Failed to load from Drive. Please try again.');
+      if (!silent) alert('Could not load from Drive. Make sure the file is still shared.');
     }
 
     setBtnLoading('btnDriveDownload', false);
@@ -1179,88 +950,8 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.disabled = loading;
-    if (loading) {
-      el._originalText = el.innerHTML;
-      el.innerHTML = '<span class="spinner"></span>';
-    } else {
-      if (el._originalText) el.innerHTML = el._originalText;
-    }
-  }
-
-  // ─── GENERATE TEAMS ───────────────────────────────────────────────────────
-  function generateTeams() {
-    const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim());
-    const err = document.getElementById('error');
-    if (inputs.some(v => !v)) { err.style.display = 'block'; return; }
-    err.style.display = 'none';
-    players = inputs;
-    shuffle();
-    document.getElementById('courtWrapper').style.display = 'flex';
-  }
-
-  function shuffle() {
-    const shuffled = [...players].sort(() => Math.random() - 0.5);
-    currentTeamA = [shuffled[0], shuffled[1]];
-    currentTeamB = [shuffled[2], shuffled[3]];
-
-    document.getElementById('a1').textContent = shuffled[0];
-    document.getElementById('a2').textContent = shuffled[1];
-    document.getElementById('b1').textContent = shuffled[2];
-    document.getElementById('b2').textContent = shuffled[3];
-
-    document.getElementById('scoreTeamA').textContent = shuffled[0].split(' ')[0] + ' & ' + shuffled[1].split(' ')[0];
-    document.getElementById('scoreTeamB').textContent = shuffled[2].split(' ')[0] + ' & ' + shuffled[3].split(' ')[0];
-
-    document.getElementById('scoreA').value = '';
-    document.getElementById('scoreB').value = '';
-    document.getElementById('saveSuccess').textContent = '';
-
-    const wrapper = document.getElementById('courtWrapper');
-    wrapper.style.animation = 'none';
-    wrapper.offsetHeight;
-    wrapper.style.animation = 'fadeUp 0.5s ease forwards';
-  }
-
-  // ─── SAVE MATCH ───────────────────────────────────────────────────────────
-  async function saveMatch() {
-    const sA = parseInt(document.getElementById('scoreA').value);
-    const sB = parseInt(document.getElementById('scoreB').value);
-
-    if (isNaN(sA) || isNaN(sB)) {
-      showSaveMsg('Please enter scores for both teams.', '#e07070'); return;
-    }
-    if (!currentTeamA.length) {
-      showSaveMsg('Generate teams first!', '#e07070'); return;
-    }
-
-    const data = loadData();
-    const match = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      teamA: [...currentTeamA],
-      teamB: [...currentTeamB],
-      scoreA: sA,
-      scoreB: sB,
-    };
-    data.matches.unshift(match);
-    saveData(data);
-    showSaveMsg('✔ Match saved!', '#5fa872');
-
-    // Auto-sync to Drive if signed in
-    if (accessToken) {
-      showSaveMsg('✔ Saved — syncing to Drive…', '#5fa872');
-      await syncToDrive();
-      showSaveMsg('✔ Saved & synced to Drive!', '#5fa872');
-    }
-  }
-
-  function showSaveMsg(msg, color) {
-    const el = document.getElementById('saveSuccess');
-    el.textContent = msg;
-    el.style.color = color;
-    el.style.opacity = '1';
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+    if (loading) { el._orig = el.innerHTML; el.innerHTML = '<span class="spinner"></span>'; }
+    else { if (el._orig) el.innerHTML = el._orig; }
   }
 
   // ─── RENDER HISTORY ───────────────────────────────────────────────────────
@@ -1276,81 +967,55 @@
       grid.innerHTML = '<div class="no-history" style="grid-column:1/-1">No matches yet. Play and save a game!</div>';
       return;
     }
-
-    const playerStats = {};
+    const ps = {};
     matches.forEach(m => {
-      const wonA = m.scoreA > m.scoreB;
-      const wonB = m.scoreB > m.scoreA;
-      [...m.teamA, ...m.teamB].forEach(p => {
-        if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 };
-      });
-      m.teamA.forEach(p => {
-        playerStats[p].wins += wonA ? 1 : 0;
-        playerStats[p].losses += wonB ? 1 : 0;
-        playerStats[p].goalsFor += m.scoreA;
-        playerStats[p].goalsAgainst += m.scoreB;
-      });
-      m.teamB.forEach(p => {
-        playerStats[p].wins += wonB ? 1 : 0;
-        playerStats[p].losses += wonA ? 1 : 0;
-        playerStats[p].goalsFor += m.scoreB;
-        playerStats[p].goalsAgainst += m.scoreA;
-      });
+      const wonA = m.scoreA > m.scoreB, wonB = m.scoreB > m.scoreA;
+      [...m.teamA, ...m.teamB].forEach(p => { if (!ps[p]) ps[p] = { wins:0, losses:0, gf:0, ga:0 }; });
+      m.teamA.forEach(p => { ps[p].wins += wonA?1:0; ps[p].losses += wonB?1:0; ps[p].gf += m.scoreA; ps[p].ga += m.scoreB; });
+      m.teamB.forEach(p => { ps[p].wins += wonB?1:0; ps[p].losses += wonA?1:0; ps[p].gf += m.scoreB; ps[p].ga += m.scoreA; });
     });
-
-    grid.innerHTML = Object.entries(playerStats).map(([name, s]) => {
+    grid.innerHTML = Object.entries(ps).map(([name, s]) => {
       const played = s.wins + s.losses;
-      const wr = played ? Math.round((s.wins / played) * 100) : 0;
-      return `
-        <div class="stat-card">
-          <div class="stat-name">${name}</div>
-          <div class="stat-row"><span>Played</span><span>${played}</span></div>
-          <div class="stat-row"><span>Wins</span><span>${s.wins}</span></div>
-          <div class="stat-row"><span>Losses</span><span>${s.losses}</span></div>
-          <div class="stat-row"><span>GF / GA</span><span>${s.goalsFor} / ${s.goalsAgainst}</span></div>
-          <div class="stat-winrate">Win rate ${wr}%</div>
-          <div class="winrate-bar"><div class="winrate-fill" style="width:${wr}%"></div></div>
-        </div>
-      `;
+      const wr = played ? Math.round((s.wins/played)*100) : 0;
+      return `<div class="stat-card">
+        <div class="stat-name">${name}</div>
+        <div class="stat-row"><span>Played</span><span>${played}</span></div>
+        <div class="stat-row"><span>Wins</span><span>${s.wins}</span></div>
+        <div class="stat-row"><span>Losses</span><span>${s.losses}</span></div>
+        <div class="stat-row"><span>GF / GA</span><span>${s.gf} / ${s.ga}</span></div>
+        <div class="stat-winrate">Win rate ${wr}%</div>
+        <div class="winrate-bar"><div class="winrate-fill" style="width:${wr}%"></div></div>
+      </div>`;
     }).join('');
   }
 
   function renderMatches(matches) {
     const list = document.getElementById('matchList');
-    if (!matches.length) {
-      list.innerHTML = '<div class="no-history">No matches recorded yet.</div>';
-      return;
-    }
-
+    if (!matches.length) { list.innerHTML = '<div class="no-history">No matches recorded yet.</div>'; return; }
     list.innerHTML = matches.map(m => {
-      const wonA = m.scoreA > m.scoreB;
-      const wonB = m.scoreB > m.scoreA;
-      const date = new Date(m.date).toLocaleDateString('en-GB', {
-        day: 'numeric', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-      return `
-        <div class="match-item">
-          <div class="match-team">
-            <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.join(' & ')}</div>
-            <div class="match-date">${date}</div>
-          </div>
-          <div class="match-score-display">${m.scoreA} – ${m.scoreB}</div>
-          <div class="match-team match-item-right">
-            <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.join(' & ')}</div>
-          </div>
+      const wonA = m.scoreA > m.scoreB, wonB = m.scoreB > m.scoreA;
+      const date = new Date(m.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      return `<div class="match-item">
+        <div class="match-team">
+          <div class="match-team-names${wonA?' winner':''}">${m.teamA.join(' & ')}</div>
+          <div class="match-date">${date}</div>
         </div>
-      `;
+        <div class="match-score-display">${m.scoreA} – ${m.scoreB}</div>
+        <div class="match-team match-item-right">
+          <div class="match-team-names${wonB?' winner':''}">${m.teamB.join(' & ')}</div>
+        </div>
+        <button class="btn-delete-match" onclick="deleteMatch(${m.id})" title="Delete match">🗑</button>
+      </div>`;
     }).join('');
   }
 
   // ─── EXPORT / IMPORT / CLEAR ──────────────────────────────────────────────
   function exportData() {
     const data = loadData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data,null,2)], { type:'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'padel-data.json'; a.click();
+    a.href = url; a.download = 'padel-score-data.json'; a.click();
     URL.revokeObjectURL(url);
   }
 
@@ -1361,13 +1026,10 @@
     reader.onload = e => {
       try {
         const data = JSON.parse(e.target.result);
-        if (!Array.isArray(data.matches)) throw new Error('Invalid format');
-        saveData(data);
-        renderHistory();
-        alert('✔ Data imported! ' + data.matches.length + ' matches loaded.');
-      } catch {
-        alert('❌ Invalid file. Please use a padel-data.json exported from this app.');
-      }
+        if (!Array.isArray(data.matches)) throw new Error();
+        saveData(data); renderHistory();
+        alert('✔ Imported! ' + data.matches.length + ' matches loaded.');
+      } catch { alert('❌ Invalid file format.'); }
     };
     reader.readAsText(file);
     event.target.value = '';
@@ -1375,8 +1037,7 @@
 
   function clearData() {
     if (confirm('Clear all match history and stats? This cannot be undone.')) {
-      saveData({ matches: [] });
-      renderHistory();
+      saveData({ matches: [] }); renderHistory();
     }
   }
 
