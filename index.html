@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Padel Team Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --clay: #c8773d;
+    --court: #d4895a;
+    --green: #4a8c5c;
+    --green-light: #5fa872;
+    --net: #f0e6d3;
+    --dark: #1a1208;
+    --text: #f5ede2;
+    --accent: #f2c94c;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-align: center;
+    line-height: 1;
+    text-shadow: 0 4px 30px rgba(242,201,76,0.3);
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-top: 6px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  /* GOOGLE DRIVE BANNER */
+  .gdrive-bar {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,119,61,0.25);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .gdrive-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .gdrive-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(200,119,61,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .gdrive-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .gdrive-text { display: flex; flex-direction: column; min-width: 0; }
+
+  .gdrive-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gdrive-status {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,237,226,0.35);
+  }
+
+  .gdrive-status.synced { color: var(--green-light); }
+  .gdrive-status.syncing { color: var(--accent); }
+  .gdrive-status.error { color: #e07070; }
+
+  .gdrive-btn {
+    padding: 8px 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    border: none;
+  }
+
+  .gdrive-btn-signin {
+    background: #fff;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .gdrive-btn-signin:hover { background: #f0f0f0; transform: translateY(-1px); }
+
+  .gdrive-btn-signout {
+    background: transparent;
+    color: rgba(245,237,226,0.35);
+    border: 1px solid rgba(245,237,226,0.15) !important;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+  .gdrive-btn-signout:hover { color: #e07070; border-color: #e07070 !important; }
+
+  .gdrive-btn-sync {
+    background: var(--green);
+    color: #fff;
+  }
+  .gdrive-btn-sync:hover { background: var(--green-light); }
+  .gdrive-btn-sync:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .gdrive-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* TAB NAV */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 36px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    background: transparent;
+    border: none;
+    color: rgba(245,237,226,0.4);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--clay);
+    color: var(--dark);
+  }
+
+  .tab-content { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; }
+  .tab-content.active { display: flex; }
+
+  /* INPUT */
+  .input-section {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .player-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--clay);
+    width: 24px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  input[type="text"]::placeholder { color: rgba(245,237,226,0.3); }
+  input[type="text"]:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+
+  .btn {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    background: var(--accent);
+    color: var(--dark);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(242,201,76,0.3);
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(242,201,76,0.4); }
+  .btn:active { transform: translateY(0); }
+
+  /* COURT */
+  .court-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 48px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .match-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.25em;
+    color: var(--clay);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .court {
+    width: 100%;
+    aspect-ratio: 1.6;
+    background: var(--court);
+    border-radius: 16px;
+    border: 3px solid rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(0,0,0,0.15);
+  }
+
+  .court::before {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 4px;
+  }
+
+  .court-lines { position: absolute; inset: 0; pointer-events: none; }
+
+  .line-v {
+    position: absolute;
+    left: 50%; top: 8%; bottom: 8%;
+    width: 2px;
+    background: rgba(255,255,255,0.5);
+    transform: translateX(-50%);
+  }
+
+  .line-h-left {
+    position: absolute;
+    left: 8%; right: 50%; top: 50%;
+    height: 2px;
+    background: rgba(255,255,255,0.5);
+    transform: translateY(-50%);
+  }
+
+  .line-h-right {
+    position: absolute;
+    left: 50%; right: 8%; top: 50%;
+    height: 2px;
+    background: rgba(255,255,255,0.5);
+    transform: translateY(-50%);
+  }
+
+  .net {
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .net-post-top, .net-post-bottom {
+    width: 10px; height: 10px;
+    background: #aaa;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .net-mesh {
+    flex: 1;
+    width: 10px;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 2px,
+      transparent 2px, transparent 10px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(240,230,211,0.9) 0px, rgba(240,230,211,0.9) 1px,
+      transparent 1px, transparent 5px
+    );
+    border-left: 2px solid rgba(200,190,170,0.8);
+    border-right: 2px solid rgba(200,190,170,0.8);
+  }
+
+  .side {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: calc(50% - 8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .side-left { left: 0; }
+  .side-right { right: 0; }
+
+  .player-card {
+    background: rgba(0,0,0,0.35);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    text-align: center;
+    width: 75%;
+    backdrop-filter: blur(4px);
+  }
+
+  .player-card .player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .player-card .player-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+
+  .team-label {
+    position: absolute;
+    bottom: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .side-left .team-label { left: 12px; }
+  .side-right .team-label { right: 12px; }
+
+  .vs-badge {
+    margin-top: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.4em;
+    color: rgba(245,237,226,0.3);
+  }
+
+  .regenerate {
+    margin-top: 20px;
+    background: transparent;
+    border: 1.5px solid var(--clay);
+    color: var(--clay);
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .regenerate:hover { background: var(--clay); color: var(--dark); }
+
+  .error {
+    color: #e07070;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: -8px;
+    display: none;
+  }
+
+  /* SCORE SECTION */
+  .score-section {
+    margin-top: 32px;
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,119,61,0.25);
+    border-radius: 16px;
+    padding: 24px;
+    animation: fadeUp 0.5s ease 0.2s both;
+  }
+
+  .score-section h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.25em;
+    color: var(--clay);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .score-inputs {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .score-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .score-team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: rgba(245,237,226,0.5);
+    text-align: center;
+  }
+
+  .score-input {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--accent);
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .score-input:focus { border-color: var(--accent); }
+
+  .score-vs {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: rgba(245,237,226,0.2);
+    letter-spacing: 0.1em;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.15em;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .save-btn:hover { background: var(--green-light); transform: translateY(-1px); }
+
+  .save-success {
+    text-align: center;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    margin-top: 10px;
+    height: 20px;
+    transition: opacity 0.5s;
+  }
+
+  /* HISTORY TAB */
+  .history-controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .history-controls button {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid;
+  }
+
+  .btn-export {
+    background: transparent;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-export:hover { background: var(--accent); color: var(--dark); }
+
+  .btn-import-label {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid var(--clay);
+    color: var(--clay);
+    background: transparent;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-import-label:hover { background: var(--clay); color: var(--dark); }
+
+  #importFile { display: none; }
+
+  .btn-clear {
+    background: transparent;
+    border-color: #e07070;
+    color: #e07070;
+    flex: 0 0 auto;
+    padding: 10px 14px;
+  }
+  .btn-clear:hover { background: #e07070; color: #fff; }
+
+  /* DRIVE SYNC ROW in history tab */
+  .drive-sync-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 20px;
+  }
+
+  .drive-sync-row button {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid;
+  }
+
+  .btn-drive-upload {
+    background: transparent;
+    border-color: var(--green) !important;
+    color: var(--green-light);
+  }
+  .btn-drive-upload:hover { background: var(--green); color: #fff; }
+  .btn-drive-upload:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-drive-download {
+    background: transparent;
+    border-color: #5b9bd5 !important;
+    color: #7ab3e0;
+  }
+  .btn-drive-download:hover { background: #5b9bd5; color: #fff; }
+  .btn-drive-download:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* STATS SECTION */
+  .stats-grid {
+    width: 100%;
+    max-width: 480px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,119,61,0.2);
+    border-radius: 12px;
+    padding: 16px;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .stat-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(200,119,61,0.2);
+    padding-bottom: 8px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: rgba(245,237,226,0.6);
+    margin-bottom: 4px;
+  }
+
+  .stat-row span:last-child {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .stat-winrate {
+    margin-top: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--clay);
+  }
+
+  .winrate-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+
+  .winrate-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  /* MATCH HISTORY LIST */
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.25em;
+    color: var(--clay);
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(200,119,61,0.2);
+  }
+
+  .match-list {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .match-item {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(200,119,61,0.15);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    animation: fadeUp 0.3s ease forwards;
+  }
+
+  .match-team { display: flex; flex-direction: column; gap: 2px; }
+
+  .match-team-names {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.07em;
+    color: var(--text);
+  }
+
+  .match-team-names.winner { color: var(--accent); }
+
+  .match-date {
+    font-size: 0.68rem;
+    color: rgba(245,237,226,0.3);
+    letter-spacing: 0.1em;
+  }
+
+  .match-score-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--clay);
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  .match-item-right { text-align: right; }
+  .match-item-right .match-team-names { text-align: right; }
+
+  .no-history {
+    text-align: center;
+    color: rgba(245,237,226,0.25);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    padding: 40px 0;
+  }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<h1>PADEL</h1>
+<p class="subtitle">Team Generator</p>
+
+<!-- GOOGLE DRIVE BAR -->
+<div class="gdrive-bar" id="gdriveBar">
+  <!-- signed out state -->
+  <div class="gdrive-info" id="gdriveSignedOut">
+    <div class="gdrive-avatar">☁️</div>
+    <div class="gdrive-text">
+      <div class="gdrive-name">Google Drive Sync</div>
+      <div class="gdrive-status">Sign in to sync across devices</div>
+    </div>
+  </div>
+  <div id="gdriveSignedOutActions">
+    <button class="gdrive-btn-signin" id="btnSignIn" onclick="signIn()">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+
+  <!-- signed in state (hidden initially) -->
+  <div class="gdrive-info" id="gdriveSignedIn" style="display:none;">
+    <div class="gdrive-avatar" id="gdriveAvatarEl">👤</div>
+    <div class="gdrive-text">
+      <div class="gdrive-name" id="gdriveName">—</div>
+      <div class="gdrive-status" id="gdriveStatusText">Connected</div>
+    </div>
+  </div>
+  <div class="gdrive-actions" id="gdriveSignedInActions" style="display:none;">
+    <button class="gdrive-btn gdrive-btn-sync" id="btnAutoSync" onclick="syncToDrive()" title="Save to Drive">☁️ Save</button>
+    <button class="gdrive-btn gdrive-btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('play')">⚡ Play</button>
+  <button class="tab-btn" onclick="switchTab('history')">📊 Stats & History</button>
+</div>
+
+<!-- PLAY TAB -->
+<div class="tab-content active" id="tab-play">
+  <div class="input-section">
+    <div class="input-row">
+      <span class="player-num">1</span>
+      <input type="text" id="p1" placeholder="Player one" />
+    </div>
+    <div class="input-row">
+      <span class="player-num">2</span>
+      <input type="text" id="p2" placeholder="Player two" />
+    </div>
+    <div class="input-row">
+      <span class="player-num">3</span>
+      <input type="text" id="p3" placeholder="Player three" />
+    </div>
+    <div class="input-row">
+      <span class="player-num">4</span>
+      <input type="text" id="p4" placeholder="Player four" />
+    </div>
+    <p class="error" id="error">Please enter all 4 player names.</p>
+  </div>
+
+  <button class="btn" onclick="generateTeams()">Generate Teams</button>
+
+  <div class="court-wrapper" id="courtWrapper">
+    <p class="match-title">⚡ Today's Match</p>
+    <div class="court">
+      <div class="court-lines">
+        <div class="line-v"></div>
+        <div class="line-h-left"></div>
+        <div class="line-h-right"></div>
+      </div>
+
+      <div class="side side-left" id="teamA">
+        <div class="player-card">
+          <div class="player-name" id="a1">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <div class="player-card">
+          <div class="player-name" id="a2">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <span class="team-label">TEAM A</span>
+      </div>
+
+      <div class="net">
+        <div class="net-post-top"></div>
+        <div class="net-mesh"></div>
+        <div class="net-post-bottom"></div>
+      </div>
+
+      <div class="side side-right" id="teamB">
+        <div class="player-card">
+          <div class="player-name" id="b1">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <div class="player-card">
+          <div class="player-name" id="b2">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <span class="team-label">TEAM B</span>
+      </div>
+    </div>
+
+    <p class="vs-badge">TEAM A &nbsp;VS&nbsp; TEAM B</p>
+    <button class="regenerate" onclick="shuffle()">🔀 Shuffle Teams</button>
+
+    <!-- SCORE SECTION -->
+    <div class="score-section">
+      <h3>🏆 Save Match Result</h3>
+      <div class="score-inputs">
+        <div class="score-team">
+          <div class="score-team-name" id="scoreTeamA">TEAM A</div>
+          <input class="score-input" type="number" id="scoreA" min="0" max="99" placeholder="0" />
+        </div>
+        <div class="score-vs">VS</div>
+        <div class="score-team">
+          <div class="score-team-name" id="scoreTeamB">TEAM B</div>
+          <input class="score-input" type="number" id="scoreB" min="0" max="99" placeholder="0" />
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveMatch()">💾 Save Result</button>
+      <div class="save-success" id="saveSuccess"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY TAB -->
+<div class="tab-content" id="tab-history">
+  <!-- Drive sync row -->
+  <div class="drive-sync-row" id="driveSyncRow" style="display:none;">
+    <button class="btn-drive-upload" id="btnDriveUpload" onclick="syncToDrive()">☁️ Save to Drive</button>
+    <button class="btn-drive-download" id="btnDriveDownload" onclick="loadFromDrive()">⬇ Load from Drive</button>
+  </div>
+
+  <div class="history-controls">
+    <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
+    <label class="btn-import-label">
+      ⬆ Import JSON
+      <input type="file" id="importFile" accept=".json" onchange="importData(event)" />
+    </label>
+    <button class="btn-clear" onclick="clearData()">🗑</button>
+  </div>
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="no-history" style="grid-column:1/-1">No matches yet. Play and save a game!</div>
+  </div>
+
+  <div class="section-label">Match History</div>
+  <div class="match-list" id="matchList">
+    <div class="no-history">No matches recorded yet.</div>
+  </div>
+</div>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+
+<script>
+  // ─── CONFIG ──────────────────────────────────────────────────────────────
+  const CLIENT_ID = '980841897285-tmtqatif0qkr1jd9k2i154mfie8gujd4.apps.googleusercontent.com';
+  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+  const DRIVE_FILENAME = 'padel-data.json';
+  const STORAGE_KEY = 'padel_data';
+
+  // ─── LOCAL DATA ───────────────────────────────────────────────────────────
+  function loadData() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { matches: [] }; }
+    catch { return { matches: [] }; }
+  }
+
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // ─── STATE ────────────────────────────────────────────────────────────────
+  let players = [];
+  let currentTeamA = [];
+  let currentTeamB = [];
+  let accessToken = null;
+  let driveFileId = null; // cached file ID
+
+  // ─── TABS ─────────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0) === (tab === 'play'));
+    });
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'history') renderHistory();
+  }
+
+  // ─── GOOGLE SIGN IN ───────────────────────────────────────────────────────
+  function signIn() {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: handleTokenResponse,
+    });
+    client.requestAccessToken();
+  }
+
+  function handleTokenResponse(tokenResponse) {
+    if (tokenResponse.error) {
+      console.error('Auth error:', tokenResponse);
+      setDriveStatus('Sign-in failed', 'error');
+      return;
+    }
+    accessToken = tokenResponse.access_token;
+    fetchUserInfo();
+  }
+
+  async function fetchUserInfo() {
+    try {
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: 'Bearer ' + accessToken }
+      });
+      const info = await res.json();
+      showSignedIn(info);
+      // Try to load data from Drive on sign in
+      await loadFromDrive(true);
+    } catch (e) {
+      showSignedIn({ name: 'Google User', picture: null });
+    }
+  }
+
+  function showSignedIn(info) {
+    document.getElementById('gdriveSignedOut').style.display = 'none';
+    document.getElementById('gdriveSignedOutActions').style.display = 'none';
+    document.getElementById('gdriveSignedIn').style.display = 'flex';
+    document.getElementById('gdriveSignedInActions').style.display = 'flex';
+    document.getElementById('driveSyncRow').style.display = 'flex';
+
+    document.getElementById('gdriveName').textContent = info.name || 'Google User';
+
+    const avatar = document.getElementById('gdriveAvatarEl');
+    if (info.picture) {
+      avatar.innerHTML = `<img src="${info.picture}" alt="avatar" />`;
+    } else {
+      avatar.textContent = '👤';
+    }
+    setDriveStatus('Connected', 'synced');
+  }
+
+  function signOut() {
+    if (accessToken) {
+      google.accounts.oauth2.revoke(accessToken, () => {});
+    }
+    accessToken = null;
+    driveFileId = null;
+
+    document.getElementById('gdriveSignedOut').style.display = 'flex';
+    document.getElementById('gdriveSignedOutActions').style.display = 'flex';
+    document.getElementById('gdriveSignedIn').style.display = 'none';
+    document.getElementById('gdriveSignedInActions').style.display = 'none';
+    document.getElementById('driveSyncRow').style.display = 'none';
+  }
+
+  function setDriveStatus(msg, type = '') {
+    const el = document.getElementById('gdriveStatusText');
+    if (el) {
+      el.textContent = msg;
+      el.className = 'gdrive-status' + (type ? ' ' + type : '');
+    }
+  }
+
+  // ─── DRIVE: FIND FILE ─────────────────────────────────────────────────────
+  async function findDriveFile() {
+    if (driveFileId) return driveFileId;
+    const query = encodeURIComponent(`name='${DRIVE_FILENAME}' and trashed=false`);
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)`, {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      driveFileId = data.files[0].id;
+      return driveFileId;
+    }
+    return null;
+  }
+
+  // ─── DRIVE: UPLOAD / SAVE ─────────────────────────────────────────────────
+  async function syncToDrive() {
+    if (!accessToken) { alert('Please sign in with Google first.'); return; }
+
+    setDriveStatus('Saving...', 'syncing');
+    setBtnLoading('btnAutoSync', true);
+    setBtnLoading('btnDriveUpload', true);
+
+    try {
+      const data = loadData();
+      const content = JSON.stringify(data, null, 2);
+      const blob = new Blob([content], { type: 'application/json' });
+
+      const fileId = await findDriveFile();
+      let url, method;
+
+      if (fileId) {
+        // Update existing file
+        url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`;
+        method = 'PATCH';
+      } else {
+        // Create new file with metadata
+        const metadata = { name: DRIVE_FILENAME, mimeType: 'application/json' };
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        form.append('file', blob);
+
+        const createRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + accessToken },
+          body: form
+        });
+        const created = await createRes.json();
+        driveFileId = created.id;
+        setDriveStatus('Saved ✓', 'synced');
+        setBtnLoading('btnAutoSync', false);
+        setBtnLoading('btnDriveUpload', false);
+        return;
+      }
+
+      await fetch(url, {
+        method,
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: content
+      });
+
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setDriveStatus(`Saved ${now}`, 'synced');
+    } catch (e) {
+      console.error(e);
+      setDriveStatus('Save failed', 'error');
+    }
+
+    setBtnLoading('btnAutoSync', false);
+    setBtnLoading('btnDriveUpload', false);
+  }
+
+  // ─── DRIVE: DOWNLOAD / LOAD ───────────────────────────────────────────────
+  async function loadFromDrive(silent = false) {
+    if (!accessToken) {
+      if (!silent) alert('Please sign in with Google first.');
+      return;
+    }
+
+    setDriveStatus('Loading...', 'syncing');
+    setBtnLoading('btnDriveDownload', true);
+
+    try {
+      const fileId = await findDriveFile();
+      if (!fileId) {
+        setDriveStatus('No data on Drive yet', '');
+        setBtnLoading('btnDriveDownload', false);
+        if (!silent) alert('No padel-data.json found in your Drive. Save a match first!');
+        return;
+      }
+
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+        headers: { Authorization: 'Bearer ' + accessToken }
+      });
+      const data = await res.json();
+      if (!Array.isArray(data.matches)) throw new Error('Invalid format');
+
+      // Merge: keep newer matches from both sources
+      const local = loadData();
+      const localIds = new Set(local.matches.map(m => m.id));
+      const driveIds = new Set(data.matches.map(m => m.id));
+
+      // Combine unique matches from both
+      const merged = [...data.matches];
+      local.matches.forEach(m => { if (!driveIds.has(m.id)) merged.push(m); });
+      merged.sort((a, b) => b.id - a.id);
+
+      const mergedData = { matches: merged };
+      saveData(mergedData);
+      renderHistory();
+
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setDriveStatus(`Synced ${now}`, 'synced');
+      if (!silent) {
+        const added = merged.length - local.matches.length;
+        alert(`✓ Loaded from Drive! ${merged.length} matches total${added > 0 ? ` (${added} new)` : ''}.`);
+      }
+    } catch (e) {
+      console.error(e);
+      setDriveStatus('Load failed', 'error');
+      if (!silent) alert('Failed to load from Drive. Please try again.');
+    }
+
+    setBtnLoading('btnDriveDownload', false);
+  }
+
+  function setBtnLoading(id, loading) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.disabled = loading;
+    if (loading) {
+      el._originalText = el.innerHTML;
+      el.innerHTML = '<span class="spinner"></span>';
+    } else {
+      if (el._originalText) el.innerHTML = el._originalText;
+    }
+  }
+
+  // ─── GENERATE TEAMS ───────────────────────────────────────────────────────
+  function generateTeams() {
+    const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim());
+    const err = document.getElementById('error');
+    if (inputs.some(v => !v)) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    players = inputs;
+    shuffle();
+    document.getElementById('courtWrapper').style.display = 'flex';
+  }
+
+  function shuffle() {
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    currentTeamA = [shuffled[0], shuffled[1]];
+    currentTeamB = [shuffled[2], shuffled[3]];
+
+    document.getElementById('a1').textContent = shuffled[0];
+    document.getElementById('a2').textContent = shuffled[1];
+    document.getElementById('b1').textContent = shuffled[2];
+    document.getElementById('b2').textContent = shuffled[3];
+
+    document.getElementById('scoreTeamA').textContent = shuffled[0].split(' ')[0] + ' & ' + shuffled[1].split(' ')[0];
+    document.getElementById('scoreTeamB').textContent = shuffled[2].split(' ')[0] + ' & ' + shuffled[3].split(' ')[0];
+
+    document.getElementById('scoreA').value = '';
+    document.getElementById('scoreB').value = '';
+    document.getElementById('saveSuccess').textContent = '';
+
+    const wrapper = document.getElementById('courtWrapper');
+    wrapper.style.animation = 'none';
+    wrapper.offsetHeight;
+    wrapper.style.animation = 'fadeUp 0.5s ease forwards';
+  }
+
+  // ─── SAVE MATCH ───────────────────────────────────────────────────────────
+  async function saveMatch() {
+    const sA = parseInt(document.getElementById('scoreA').value);
+    const sB = parseInt(document.getElementById('scoreB').value);
+
+    if (isNaN(sA) || isNaN(sB)) {
+      showSaveMsg('Please enter scores for both teams.', '#e07070'); return;
+    }
+    if (!currentTeamA.length) {
+      showSaveMsg('Generate teams first!', '#e07070'); return;
+    }
+
+    const data = loadData();
+    const match = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      teamA: [...currentTeamA],
+      teamB: [...currentTeamB],
+      scoreA: sA,
+      scoreB: sB,
+    };
+    data.matches.unshift(match);
+    saveData(data);
+    showSaveMsg('✔ Match saved!', '#5fa872');
+
+    // Auto-sync to Drive if signed in
+    if (accessToken) {
+      showSaveMsg('✔ Saved — syncing to Drive…', '#5fa872');
+      await syncToDrive();
+      showSaveMsg('✔ Saved & synced to Drive!', '#5fa872');
+    }
+  }
+
+  function showSaveMsg(msg, color) {
+    const el = document.getElementById('saveSuccess');
+    el.textContent = msg;
+    el.style.color = color;
+    el.style.opacity = '1';
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+  }
+
+  // ─── RENDER HISTORY ───────────────────────────────────────────────────────
+  function renderHistory() {
+    const data = loadData();
+    renderStats(data.matches);
+    renderMatches(data.matches);
+  }
+
+  function renderStats(matches) {
+    const grid = document.getElementById('statsGrid');
+    if (!matches.length) {
+      grid.innerHTML = '<div class="no-history" style="grid-column:1/-1">No matches yet. Play and save a game!</div>';
+      return;
+    }
+
+    const playerStats = {};
+    matches.forEach(m => {
+      const wonA = m.scoreA > m.scoreB;
+      const wonB = m.scoreB > m.scoreA;
+      [...m.teamA, ...m.teamB].forEach(p => {
+        if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 };
+      });
+      m.teamA.forEach(p => {
+        playerStats[p].wins += wonA ? 1 : 0;
+        playerStats[p].losses += wonB ? 1 : 0;
+        playerStats[p].goalsFor += m.scoreA;
+        playerStats[p].goalsAgainst += m.scoreB;
+      });
+      m.teamB.forEach(p => {
+        playerStats[p].wins += wonB ? 1 : 0;
+        playerStats[p].losses += wonA ? 1 : 0;
+        playerStats[p].goalsFor += m.scoreB;
+        playerStats[p].goalsAgainst += m.scoreA;
+      });
+    });
+
+    grid.innerHTML = Object.entries(playerStats).map(([name, s]) => {
+      const played = s.wins + s.losses;
+      const wr = played ? Math.round((s.wins / played) * 100) : 0;
+      return `
+        <div class="stat-card">
+          <div class="stat-name">${name}</div>
+          <div class="stat-row"><span>Played</span><span>${played}</span></div>
+          <div class="stat-row"><span>Wins</span><span>${s.wins}</span></div>
+          <div class="stat-row"><span>Losses</span><span>${s.losses}</span></div>
+          <div class="stat-row"><span>GF / GA</span><span>${s.goalsFor} / ${s.goalsAgainst}</span></div>
+          <div class="stat-winrate">Win rate ${wr}%</div>
+          <div class="winrate-bar"><div class="winrate-fill" style="width:${wr}%"></div></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderMatches(matches) {
+    const list = document.getElementById('matchList');
+    if (!matches.length) {
+      list.innerHTML = '<div class="no-history">No matches recorded yet.</div>';
+      return;
+    }
+
+    list.innerHTML = matches.map(m => {
+      const wonA = m.scoreA > m.scoreB;
+      const wonB = m.scoreB > m.scoreA;
+      const date = new Date(m.date).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+      return `
+        <div class="match-item">
+          <div class="match-team">
+            <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.join(' & ')}</div>
+            <div class="match-date">${date}</div>
+          </div>
+          <div class="match-score-display">${m.scoreA} – ${m.scoreB}</div>
+          <div class="match-team match-item-right">
+            <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.join(' & ')}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ─── EXPORT / IMPORT / CLEAR ──────────────────────────────────────────────
+  function exportData() {
+    const data = loadData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'padel-data.json'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!Array.isArray(data.matches)) throw new Error('Invalid format');
+        saveData(data);
+        renderHistory();
+        alert('✔ Data imported! ' + data.matches.length + ' matches loaded.');
+      } catch {
+        alert('❌ Invalid file. Please use a padel-data.json exported from this app.');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  function clearData() {
+    if (confirm('Clear all match history and stats? This cannot be undone.')) {
+      saveData({ matches: [] });
+      renderHistory();
+    }
+  }
+
+  // Init
+  renderHistory();
+</script>
+</body>
+</html>
