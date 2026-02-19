@@ -312,6 +312,7 @@
 
   .save-success { text-align: center; font-size: 0.85rem; letter-spacing: 0.1em; margin-top: 10px; height: 20px; transition: opacity 0.5s; }
 
+  /* HISTORY CONTROLS — export only */
   .history-controls { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 24px; flex-wrap: wrap; }
 
   .history-controls button {
@@ -323,27 +324,48 @@
   .btn-export { background: transparent; border-color: var(--accent); color: var(--accent); }
   .btn-export:hover { background: var(--accent); color: var(--dark); }
 
-  .btn-import-label {
-    flex: 1; padding: 10px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.15em;
-    border-radius: 10px; cursor: pointer; transition: all 0.2s;
-    border: 1.5px solid var(--clay); color: var(--clay); background: transparent;
-    text-align: center; display: flex; align-items: center; justify-content: center;
+  /* DATE FILTER */
+  .date-filter-bar {
+    width: 100%; max-width: 480px;
+    display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
   }
-  .btn-import-label:hover { background: var(--clay); color: var(--dark); }
-  #importFile { display: none; }
-
-  .btn-clear { background: transparent; border-color: #e07070; color: #e07070; flex: 0 0 auto; padding: 10px 14px; }
-  .btn-clear:hover { background: #e07070; color: #fff; }
+  .date-filter-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.18em;
+    color: var(--clay); flex-shrink: 0;
+  }
+  .date-input {
+    flex: 1; min-width: 120px;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 8px; padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+    color-scheme: dark;
+  }
+  .date-input:focus { border-color: var(--accent); }
+  .date-filter-sep { color: rgba(245,237,226,0.3); font-size: 0.8rem; flex-shrink: 0; }
+  .btn-clear-filter {
+    padding: 8px 14px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em;
+    background: transparent; border: 1.5px solid rgba(200,119,61,0.3); color: rgba(200,119,61,0.6);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+  }
+  .btn-clear-filter:hover { background: rgba(200,119,61,0.15); color: var(--clay); }
 
   .stats-grid { width: 100%; max-width: 480px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
-  .stat-card  { background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.2); border-radius: 12px; padding: 16px; animation: fadeUp 0.4s ease forwards; }
+  .stat-card  {
+    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.2);
+    border-radius: 12px; padding: 16px; animation: fadeUp 0.4s ease forwards;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  }
+  .stat-card:hover { border-color: rgba(242,201,76,0.4); background: rgba(255,255,255,0.07); }
   .stat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid rgba(200,119,61,0.2); padding-bottom: 8px; text-transform: uppercase; }
   .stat-row   { display: flex; justify-content: space-between; font-size: 0.78rem; color: rgba(245,237,226,0.6); margin-bottom: 4px; }
   .stat-row span:last-child { color: var(--text); font-weight: 600; }
   .stat-winrate { margin-top: 8px; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--clay); }
   .winrate-bar  { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
   .winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 2px; transition: width 0.6s ease; }
+  .stat-card-hint { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,237,226,0.2); margin-top: 8px; text-align: right; }
 
   .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--clay); width: 100%; max-width: 480px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(200,119,61,0.2); }
   .match-list    { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
@@ -363,17 +385,11 @@
   .match-item-right { text-align: right; }
   .match-item-right .match-team-names { text-align: right; }
 
-  .match-actions { display: flex; flex-direction: column; gap: 4px; }
-
-  .btn-delete-match, .btn-edit-match {
-    background: transparent; border-radius: 6px;
-    width: 28px; height: 28px; font-size: 0.75rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; flex-shrink: 0;
+  .btn-edit-match {
+    background: transparent; border: 1px solid rgba(242,201,76,0.3); color: rgba(242,201,76,0.5);
+    border-radius: 6px; width: 28px; height: 28px; font-size: 0.75rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
   }
-  .btn-delete-match { border: 1px solid rgba(224,112,112,0.3); color: rgba(224,112,112,0.5); }
-  .btn-delete-match:hover { background: #e07070; color: #fff; border-color: #e07070; }
-  .btn-edit-match { border: 1px solid rgba(242,201,76,0.3); color: rgba(242,201,76,0.5); }
   .btn-edit-match:hover { background: var(--accent); color: var(--dark); border-color: var(--accent); }
 
   .no-history { text-align: center; color: rgba(245,237,226,0.25); font-size: 0.9rem; letter-spacing: 0.1em; padding: 40px 0; }
@@ -381,7 +397,7 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
 
-  /* EDIT MODAL */
+  /* MODALS SHARED */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
     background: rgba(0,0,0,0.75);
@@ -389,6 +405,7 @@
     padding: 20px;
     backdrop-filter: blur(4px);
     animation: fadeIn 0.2s ease;
+    overflow-y: auto;
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -399,6 +416,7 @@
     padding: 28px 24px;
     width: 100%; max-width: 440px;
     animation: slideUp 0.25s ease;
+    position: relative;
   }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -434,7 +452,7 @@
   .modal-name-input:focus { border-color: var(--accent); }
 
   .modal-score-row {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 22px;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 16px;
   }
   .modal-score-label {
     font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em;
@@ -448,6 +466,25 @@
   }
   .modal-score-input:focus { border-color: var(--accent); }
   .modal-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: rgba(245,237,226,0.2); text-align: center; }
+
+  /* DATE-TIME ROW IN EDIT MODAL */
+  .modal-datetime-row {
+    margin-bottom: 22px;
+  }
+  .modal-datetime-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em;
+    color: rgba(245,237,226,0.35); margin-bottom: 6px;
+  }
+  .modal-datetime-input {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+    color-scheme: dark;
+  }
+  .modal-datetime-input:focus { border-color: var(--accent); }
 
   .modal-buttons { display: flex; gap: 10px; }
   .modal-btn-cancel {
@@ -465,6 +502,82 @@
   }
   .modal-btn-save:hover { background: var(--green-light); }
   .modal-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* PLAYER STATS MODAL */
+  .player-modal {
+    background: #1e160a;
+    border: 1.5px solid rgba(200,119,61,0.4);
+    border-radius: 18px;
+    padding: 28px 24px;
+    width: 100%; max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+    position: relative;
+  }
+
+  .player-modal-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+  }
+  .player-modal-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.1em; color: var(--accent);
+  }
+  .modal-close-btn {
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(200,119,61,0.3);
+    color: rgba(245,237,226,0.5); border-radius: 8px;
+    width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .modal-close-btn:hover { background: rgba(200,119,61,0.2); color: var(--text); }
+
+  .player-stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;
+  }
+  .pstat-box {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(200,119,61,0.2);
+    border-radius: 10px; padding: 12px 8px; text-align: center;
+  }
+  .pstat-val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent);
+    line-height: 1;
+  }
+  .pstat-lbl {
+    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(245,237,226,0.35); margin-top: 4px;
+  }
+
+  .player-winrate-section { margin-bottom: 24px; }
+  .player-winrate-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em;
+    color: var(--clay); margin-bottom: 6px; display: flex; justify-content: space-between;
+  }
+  .player-winrate-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+  .player-winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 4px; transition: width 0.8s ease; }
+
+  .player-matches-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em;
+    color: var(--clay); margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(200,119,61,0.2);
+  }
+  .player-match-item {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(200,119,61,0.12);
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center;
+  }
+  .pm-team { display: flex; flex-direction: column; gap: 1px; }
+  .pm-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pm-team-names.highlight { color: var(--accent); }
+  .pm-team-names.dim { color: rgba(245,237,226,0.45); }
+  .pm-date { font-size: 0.62rem; color: rgba(245,237,226,0.25); letter-spacing: 0.08em; margin-top: 2px; }
+  .pm-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--clay); text-align: center; }
+  .pm-right { text-align: right; }
+  .pm-result-badge {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.65rem; letter-spacing: 0.15em;
+    padding: 2px 7px; border-radius: 4px; margin-top: 3px; display: inline-block;
+  }
+  .pm-result-badge.win  { background: rgba(74,140,92,0.25); color: var(--green-light); border: 1px solid rgba(74,140,92,0.3); }
+  .pm-result-badge.loss { background: rgba(224,112,112,0.15); color: #e07070; border: 1px solid rgba(224,112,112,0.2); }
+  .pm-result-badge.draw { background: rgba(200,119,61,0.15); color: var(--clay); border: 1px solid rgba(200,119,61,0.2); }
 </style>
 </head>
 <body>
@@ -561,15 +674,19 @@
 <div class="tab-content" id="tab-history">
   <div class="history-controls">
     <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
-    <label class="btn-import-label">
-      ⬆ Import JSON
-      <input type="file" id="importFile" accept=".json" onchange="importData(event)" />
-    </label>
-    <button class="btn-clear" onclick="clearData()">🗑</button>
   </div>
 
   <div class="stats-grid" id="statsGrid">
     <div class="no-history" style="grid-column:1/-1">Loading…</div>
+  </div>
+
+  <!-- DATE FILTER -->
+  <div class="date-filter-bar">
+    <span class="date-filter-label">🗓 Filter:</span>
+    <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
+    <span class="date-filter-sep">→</span>
+    <input class="date-input" type="date" id="filterTo" onchange="renderHistory()" />
+    <button class="btn-clear-filter" onclick="clearDateFilter()">✕ Clear</button>
   </div>
 
   <div class="section-label">Match History</div>
@@ -579,7 +696,7 @@
 </div>
 
 <!-- EDIT MODAL -->
-<div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event)">
+<div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event,'editModal')">
   <div class="modal">
     <div class="modal-title">✏️ Edit Match</div>
 
@@ -611,10 +728,40 @@
       </div>
     </div>
 
+    <div class="modal-datetime-row">
+      <div class="modal-datetime-label">📅 Date & Time</div>
+      <input class="modal-datetime-input" type="datetime-local" id="editDateTime" />
+    </div>
+
     <div class="modal-buttons">
-      <button class="modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-btn-cancel" onclick="closeModal('editModal')">Cancel</button>
       <button class="modal-btn-save" id="editSaveBtn" onclick="saveEdit()">💾 Save Changes</button>
     </div>
+  </div>
+</div>
+
+<!-- PLAYER STATS MODAL -->
+<div class="modal-overlay" id="playerModal" style="display:none;" onclick="handleModalOverlayClick(event,'playerModal')">
+  <div class="player-modal">
+    <div class="player-modal-header">
+      <div class="player-modal-name" id="pmName">PLAYER</div>
+      <button class="modal-close-btn" onclick="closeModal('playerModal')">✕</button>
+    </div>
+
+    <div class="player-stats-grid" id="pmStatsGrid"></div>
+
+    <div class="player-winrate-section">
+      <div class="player-winrate-label">
+        <span>Win Rate</span>
+        <span id="pmWinratePct">0%</span>
+      </div>
+      <div class="player-winrate-bar">
+        <div class="player-winrate-fill" id="pmWinrateFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="player-matches-title">Match History</div>
+    <div id="pmMatchList"></div>
   </div>
 </div>
 
@@ -631,6 +778,7 @@
   let isSaving = false;
   let editingMatchId = null;
 
+  // ─── SYNC STATUS ──────────────────────────────────────────────────────────
   function setSyncStatus(state, msg) {
     document.getElementById('syncDot').className = 'sync-dot' + (state ? ' ' + state : '');
     const sub = document.getElementById('syncSub');
@@ -672,6 +820,7 @@
     await loadFromServer(true);
   }
 
+  // ─── TABS ─────────────────────────────────────────────────────────────────
   function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach((b, i) => {
       b.classList.toggle('active', (i === 0) === (tab === 'play'));
@@ -681,6 +830,7 @@
     if (tab === 'history') renderHistory();
   }
 
+  // ─── TEAM MODE ────────────────────────────────────────────────────────────
   function setMode(mode) {
     teamMode = mode;
     document.getElementById('modeRandom').classList.toggle('active', mode === 'random');
@@ -710,14 +860,12 @@
     ['A','B'].forEach(team => {
       const myArr    = team === 'A' ? manualA : manualB;
       const otherArr = team === 'A' ? manualB : manualA;
-
       document.getElementById('picks' + team).innerHTML = names.map(name => {
         const inMe    = myArr.includes(name);
         const inOther = otherArr.includes(name);
         const cls = inMe ? (team === 'A' ? 'selected-a' : 'selected-b') : '';
         return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${name}')" ${inOther && !inMe ? 'disabled' : ''}>${name}</button>`;
       }).join('');
-
       const slots = document.getElementById('slots' + team);
       slots.innerHTML = myArr.length === 0
         ? `<span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span>`
@@ -741,17 +889,16 @@
     renderPickers(getPlayerNames());
   }
 
+  // ─── GENERATE TEAMS ───────────────────────────────────────────────────────
   function generateTeams() {
     const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim().toUpperCase());
     const err = document.getElementById('error');
-
     if (inputs.some(v => !v)) {
       err.textContent = 'Please enter all 4 player names.';
       err.style.display = 'block'; return;
     }
     err.style.display = 'none';
     players = inputs;
-
     if (teamMode === 'manual') {
       if (manualA.length !== 2 || manualB.length !== 2) {
         err.textContent = 'Please assign 2 players to each team.';
@@ -788,11 +935,11 @@
     w.style.animation = 'none'; w.offsetHeight; w.style.animation = 'fadeUp 0.5s ease forwards';
   }
 
+  // ─── SAVE MATCH ───────────────────────────────────────────────────────────
   async function saveMatch() {
     if (isSaving) return;
     const sA = parseInt(document.getElementById('scoreA').value);
     const sB = parseInt(document.getElementById('scoreB').value);
-
     if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', '#e07070'); return; }
     if (!currentTeamA.length)   { showSaveMsg('Generate teams first!', '#e07070'); return; }
 
@@ -829,15 +976,18 @@
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 3500);
   }
 
-  async function deleteMatch(id) {
-    if (!confirm('Delete this match? This cannot be undone.')) return;
-    appData.matches = appData.matches.filter(m => m.id !== id);
-    renderHistory();
-    try { await saveToServer(); }
-    catch { setSyncStatus('error', 'Sync failed after delete'); }
+  // ─── MODALS SHARED ────────────────────────────────────────────────────────
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = '';
+    if (id === 'editModal') editingMatchId = null;
   }
 
-  // ─── EDIT MATCH ───────────────────────────────────────────────────────────
+  function handleModalOverlayClick(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  }
+
+  // ─── EDIT MATCH MODAL ─────────────────────────────────────────────────────
   function openEditModal(id) {
     const match = appData.matches.find(m => m.id === id);
     if (!match) return;
@@ -850,18 +1000,15 @@
     document.getElementById('editScoreA').value = match.scoreA;
     document.getElementById('editScoreB').value = match.scoreB;
 
+    // Set datetime-local value from ISO date
+    const dt = new Date(match.date);
+    // Format: YYYY-MM-DDTHH:mm
+    const pad = n => String(n).padStart(2, '0');
+    const localDT = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+    document.getElementById('editDateTime').value = localDT;
+
     document.getElementById('editModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-  }
-
-  function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-    document.body.style.overflow = '';
-    editingMatchId = null;
-  }
-
-  function handleModalOverlayClick(e) {
-    if (e.target === document.getElementById('editModal')) closeEditModal();
   }
 
   async function saveEdit() {
@@ -873,6 +1020,7 @@
     const b2 = document.getElementById('editB2').value.trim().toUpperCase();
     const sA = parseInt(document.getElementById('editScoreA').value);
     const sB = parseInt(document.getElementById('editScoreB').value);
+    const dtVal = document.getElementById('editDateTime').value;
 
     if (!a1 || !a2 || !b1 || !b2) { alert('Please fill in all player names.'); return; }
     if (isNaN(sA) || isNaN(sB))   { alert('Please enter valid scores.'); return; }
@@ -883,11 +1031,17 @@
 
     const idx = appData.matches.findIndex(m => m.id === editingMatchId);
     if (idx !== -1) {
-      appData.matches[idx] = { ...appData.matches[idx], teamA: [a1, a2], teamB: [b1, b2], scoreA: sA, scoreB: sB };
+      const newDate = dtVal ? new Date(dtVal).toISOString() : appData.matches[idx].date;
+      appData.matches[idx] = {
+        ...appData.matches[idx],
+        teamA: [a1, a2], teamB: [b1, b2],
+        scoreA: sA, scoreB: sB,
+        date: newDate
+      };
     }
 
     renderHistory();
-    closeEditModal();
+    closeModal('editModal');
 
     try { await saveToServer(); }
     catch { setSyncStatus('error', 'Sync failed after edit'); }
@@ -896,10 +1050,83 @@
     btn.textContent = '💾 Save Changes';
   }
 
-  // ─── RENDER ───────────────────────────────────────────────────────────────
+  // ─── DATE FILTER ──────────────────────────────────────────────────────────
+  function clearDateFilter() {
+    document.getElementById('filterFrom').value = '';
+    document.getElementById('filterTo').value = '';
+    renderHistory();
+  }
+
+  function getFilteredMatches() {
+    const from = document.getElementById('filterFrom').value;
+    const to   = document.getElementById('filterTo').value;
+    return appData.matches.filter(m => {
+      const d = m.date.substring(0, 10); // YYYY-MM-DD
+      if (from && d < from) return false;
+      if (to   && d > to)   return false;
+      return true;
+    });
+  }
+
+  // ─── PLAYER STATS MODAL ───────────────────────────────────────────────────
+  function openPlayerModal(playerName) {
+    const matches = appData.matches.filter(m => m.teamA.includes(playerName) || m.teamB.includes(playerName));
+
+    let wins = 0, losses = 0, draws = 0, gf = 0, ga = 0;
+    matches.forEach(m => {
+      const inA = m.teamA.includes(playerName);
+      const ps  = inA ? m.scoreA : m.scoreB;
+      const os  = inA ? m.scoreB : m.scoreA;
+      gf += ps; ga += os;
+      if (ps > os) wins++;
+      else if (ps < os) losses++;
+      else draws++;
+    });
+    const played = matches.length;
+    const wr = played ? Math.round((wins / played) * 100) : 0;
+
+    document.getElementById('pmName').textContent = playerName;
+    document.getElementById('pmStatsGrid').innerHTML = `
+      <div class="pstat-box"><div class="pstat-val">${played}</div><div class="pstat-lbl">Played</div></div>
+      <div class="pstat-box"><div class="pstat-val">${wins}</div><div class="pstat-lbl">Wins</div></div>
+      <div class="pstat-box"><div class="pstat-val">${losses}</div><div class="pstat-lbl">Losses</div></div>
+      <div class="pstat-box"><div class="pstat-val">${draws}</div><div class="pstat-lbl">Draws</div></div>
+    `;
+    document.getElementById('pmWinratePct').textContent = wr + '%';
+    setTimeout(() => { document.getElementById('pmWinrateFill').style.width = wr + '%'; }, 50);
+
+    const matchHTML = matches.map(m => {
+      const inA  = m.teamA.includes(playerName);
+      const ps   = inA ? m.scoreA : m.scoreB;
+      const os   = inA ? m.scoreB : m.scoreA;
+      const myT  = inA ? m.teamA : m.teamB;
+      const opT  = inA ? m.teamB : m.teamA;
+      const res  = ps > os ? 'win' : ps < os ? 'loss' : 'draw';
+      const resLabel = ps > os ? 'WIN' : ps < os ? 'LOSS' : 'DRAW';
+      const date = new Date(m.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      return `<div class="player-match-item">
+        <div class="pm-team">
+          <div class="pm-team-names highlight">${myT.join(' & ')}</div>
+          <div class="pm-date">${date}</div>
+          <span class="pm-result-badge ${res}">${resLabel}</span>
+        </div>
+        <div class="pm-score">${ps} – ${os}</div>
+        <div class="pm-team pm-right">
+          <div class="pm-team-names dim">${opT.join(' & ')}</div>
+        </div>
+      </div>`;
+    }).join('') || '<div class="no-history" style="padding:20px 0">No matches found.</div>';
+
+    document.getElementById('pmMatchList').innerHTML = matchHTML;
+    document.getElementById('playerModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  // ─── RENDER HISTORY ───────────────────────────────────────────────────────
   function renderHistory() {
-    renderStats(appData.matches);
-    renderMatches(appData.matches);
+    const filtered = getFilteredMatches();
+    renderStats(filtered);
+    renderMatches(filtered);
   }
 
   function renderStats(matches) {
@@ -918,7 +1145,7 @@
     grid.innerHTML = Object.entries(ps).map(([name, s]) => {
       const played = s.wins + s.losses;
       const wr = played ? Math.round((s.wins / played) * 100) : 0;
-      return `<div class="stat-card">
+      return `<div class="stat-card" onclick="openPlayerModal('${name.replace(/'/g,"\\'")}')">
         <div class="stat-name">${name}</div>
         <div class="stat-row"><span>Played</span><span>${played}</span></div>
         <div class="stat-row"><span>Wins</span><span>${s.wins}</span></div>
@@ -926,6 +1153,7 @@
         <div class="stat-row"><span>GF / GA</span><span>${s.gf} / ${s.ga}</span></div>
         <div class="stat-winrate">Win rate ${wr}%</div>
         <div class="winrate-bar"><div class="winrate-fill" style="width:${wr}%"></div></div>
+        <div class="stat-card-hint">Tap for details →</div>
       </div>`;
     }).join('');
   }
@@ -945,14 +1173,12 @@
         <div class="match-team match-item-right">
           <div class="match-team-names${wonB?' winner':''}">${m.teamB.join(' & ')}</div>
         </div>
-        <div class="match-actions">
-          <button class="btn-edit-match" onclick="openEditModal(${m.id})" title="Edit match">✏️</button>
-          <button class="btn-delete-match" onclick="deleteMatch(${m.id})" title="Delete match">🗑</button>
-        </div>
+        <button class="btn-edit-match" onclick="openEditModal(${m.id})" title="Edit match">✏️</button>
       </div>`;
     }).join('');
   }
 
+  // ─── EXPORT ───────────────────────────────────────────────────────────────
   function exportData() {
     const blob = new Blob([JSON.stringify(appData, null, 2)], { type:'application/json' });
     const url  = URL.createObjectURL(blob);
@@ -961,34 +1187,7 @@
     URL.revokeObjectURL(url);
   }
 
-  function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async e => {
-      try {
-        const data = JSON.parse(e.target.result);
-        if (!Array.isArray(data.matches)) throw new Error();
-        if (!confirm(`Import ${data.matches.length} matches and merge with existing data?`)) return;
-        const existingIds = new Set(appData.matches.map(m => m.id));
-        data.matches.forEach(m => { if (!existingIds.has(m.id)) appData.matches.push(m); });
-        appData.matches.sort((a, b) => b.id - a.id);
-        renderHistory();
-        await saveToServer();
-        alert('✔ Imported & synced!');
-      } catch { alert('❌ Invalid file format.'); }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
-
-  async function clearData() {
-    if (!confirm('Clear ALL match history for everyone? This cannot be undone.')) return;
-    appData = { matches: [] };
-    renderHistory();
-    await saveToServer();
-  }
-
+  // ─── INIT ─────────────────────────────────────────────────────────────────
   loadFromServer();
 </script>
 </body>
