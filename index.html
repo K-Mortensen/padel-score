@@ -57,7 +57,6 @@
     text-align: center;
   }
 
-  /* SYNC STATUS BAR */
   .sync-bar {
     width: 100%; max-width: 480px;
     background: rgba(255,255,255,0.04);
@@ -105,7 +104,6 @@
   .sync-btn:hover    { background: var(--clay); color: var(--dark); }
   .sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* TABS */
   .tabs {
     display: flex; gap: 4px;
     background: rgba(255,255,255,0.05);
@@ -127,7 +125,6 @@
   .tab-content { display: none; width: 100%; max-width: 600px; flex-direction: column; align-items: center; }
   .tab-content.active { display: flex; }
 
-  /* PLAYER INPUTS */
   .input-section {
     width: 100%; max-width: 480px;
     display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;
@@ -147,11 +144,11 @@
     border-radius: 10px; padding: 14px 18px;
     font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text);
     outline: none; transition: border-color 0.2s, background 0.2s;
+    text-transform: uppercase;
   }
-  input[type="text"]::placeholder { color: rgba(245,237,226,0.3); }
+  input[type="text"]::placeholder { color: rgba(245,237,226,0.3); text-transform: none; }
   input[type="text"]:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-  /* TEAM MODE */
   .team-mode-row {
     width: 100%; max-width: 480px;
     display: flex; gap: 10px; margin-bottom: 16px;
@@ -167,7 +164,6 @@
   }
   .mode-btn.active { background: var(--clay); color: var(--dark); border-color: var(--clay); }
 
-  /* MANUAL PICKERS */
   .manual-teams {
     width: 100%; max-width: 480px;
     display: none; gap: 14px; margin-bottom: 20px; flex-direction: column;
@@ -193,6 +189,7 @@
     border-radius: 8px; cursor: pointer; transition: all 0.15s;
     border: 1.5px solid rgba(200,119,61,0.35);
     background: rgba(255,255,255,0.05); color: rgba(245,237,226,0.6);
+    text-transform: uppercase;
   }
   .pick-btn.selected-a { background: rgba(242,201,76,0.2); border-color: var(--accent); color: var(--accent); }
   .pick-btn.selected-b { background: rgba(91,155,213,0.2); border-color: #5b9bd5; color: #7ab3e0; }
@@ -202,14 +199,13 @@
 
   .slot-chip {
     padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 6px; text-transform: uppercase;
   }
   .slot-chip-a { background: rgba(242,201,76,0.2); color: var(--accent); border: 1px solid rgba(242,201,76,0.3); }
   .slot-chip-b { background: rgba(91,155,213,0.2); color: #7ab3e0; border: 1px solid rgba(91,155,213,0.3); }
   .slot-chip button { background: none; border: none; cursor: pointer; color: inherit; font-size: 0.9rem; line-height: 1; padding: 0; opacity: 0.7; }
   .slot-chip button:hover { opacity: 1; }
 
-  /* MAIN BUTTON */
   .btn {
     width: 100%; max-width: 480px; padding: 16px;
     font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.15em;
@@ -222,7 +218,6 @@
 
   .error { color: #e07070; font-size: 0.85rem; text-align: center; margin-top: -4px; display: none; }
 
-  /* COURT */
   .court-wrapper {
     width: 100%; max-width: 600px; margin-top: 40px;
     display: none; flex-direction: column; align-items: center;
@@ -268,7 +263,7 @@
   .side-right { right: 0; }
 
   .player-card { background: rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 18px; text-align: center; width: 75%; backdrop-filter: blur(4px); }
-  .player-card .player-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  .player-card .player-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); text-transform: uppercase; }
   .player-card .player-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
   .team-label { position: absolute; bottom: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.4); }
@@ -285,7 +280,6 @@
   }
   .regenerate:hover { background: var(--clay); color: var(--dark); }
 
-  /* SCORE SECTION */
   .score-section {
     margin-top: 28px; width: 100%; max-width: 480px;
     background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.25);
@@ -296,7 +290,7 @@
 
   .score-inputs     { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 20px; }
   .score-team       { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .score-team-name  { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.12em; color: rgba(245,237,226,0.5); text-align: center; }
+  .score-team-name  { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.12em; color: rgba(245,237,226,0.5); text-align: center; text-transform: uppercase; }
 
   .score-input {
     width: 80px; height: 80px;
@@ -318,7 +312,6 @@
 
   .save-success { text-align: center; font-size: 0.85rem; letter-spacing: 0.1em; margin-top: 10px; height: 20px; transition: opacity 0.5s; }
 
-  /* HISTORY TAB */
   .history-controls { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 24px; flex-wrap: wrap; }
 
   .history-controls button {
@@ -343,17 +336,15 @@
   .btn-clear { background: transparent; border-color: #e07070; color: #e07070; flex: 0 0 auto; padding: 10px 14px; }
   .btn-clear:hover { background: #e07070; color: #fff; }
 
-  /* STATS */
   .stats-grid { width: 100%; max-width: 480px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
   .stat-card  { background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.2); border-radius: 12px; padding: 16px; animation: fadeUp 0.4s ease forwards; }
-  .stat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid rgba(200,119,61,0.2); padding-bottom: 8px; }
+  .stat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid rgba(200,119,61,0.2); padding-bottom: 8px; text-transform: uppercase; }
   .stat-row   { display: flex; justify-content: space-between; font-size: 0.78rem; color: rgba(245,237,226,0.6); margin-bottom: 4px; }
   .stat-row span:last-child { color: var(--text); font-weight: 600; }
   .stat-winrate { margin-top: 8px; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--clay); }
   .winrate-bar  { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
   .winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 2px; transition: width 0.6s ease; }
 
-  /* MATCH LIST */
   .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--clay); width: 100%; max-width: 480px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(200,119,61,0.2); }
   .match-list    { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
 
@@ -365,26 +356,115 @@
     animation: fadeUp 0.3s ease forwards;
   }
   .match-team       { display: flex; flex-direction: column; gap: 2px; }
-  .match-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.07em; color: var(--text); }
+  .match-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.07em; color: var(--text); text-transform: uppercase; }
   .match-team-names.winner { color: var(--accent); }
   .match-date       { font-size: 0.68rem; color: rgba(245,237,226,0.3); letter-spacing: 0.1em; }
   .match-score-display { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--clay); text-align: center; }
   .match-item-right { text-align: right; }
   .match-item-right .match-team-names { text-align: right; }
 
-  .btn-delete-match {
-    background: transparent; border: 1px solid rgba(224,112,112,0.3);
-    color: rgba(224,112,112,0.5); border-radius: 6px;
-    width: 28px; height: 28px; font-size: 0.8rem; cursor: pointer;
+  .match-actions { display: flex; flex-direction: column; gap: 4px; }
+
+  .btn-delete-match, .btn-edit-match {
+    background: transparent; border-radius: 6px;
+    width: 28px; height: 28px; font-size: 0.75rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s; flex-shrink: 0;
   }
+  .btn-delete-match { border: 1px solid rgba(224,112,112,0.3); color: rgba(224,112,112,0.5); }
   .btn-delete-match:hover { background: #e07070; color: #fff; border-color: #e07070; }
+  .btn-edit-match { border: 1px solid rgba(242,201,76,0.3); color: rgba(242,201,76,0.5); }
+  .btn-edit-match:hover { background: var(--accent); color: var(--dark); border-color: var(--accent); }
 
   .no-history { text-align: center; color: rgba(245,237,226,0.25); font-size: 0.9rem; letter-spacing: 0.1em; padding: 40px 0; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
+
+  /* EDIT MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.75);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: #221a0e;
+    border: 1.5px solid rgba(200,119,61,0.4);
+    border-radius: 18px;
+    padding: 28px 24px;
+    width: 100%; max-width: 440px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 0.2em; color: var(--accent);
+    margin-bottom: 22px; text-align: center;
+  }
+
+  .modal-teams {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: start; margin-bottom: 20px;
+  }
+  .modal-team-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
+    color: rgba(245,237,226,0.4); margin-bottom: 6px;
+  }
+  .modal-team-label.team-a { color: var(--accent); }
+  .modal-team-label.team-b { color: #7ab3e0; }
+
+  .modal-vs-col { display: flex; align-items: center; justify-content: center; padding-top: 28px; }
+
+  .modal-name-input {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+    text-transform: uppercase;
+    margin-bottom: 6px; display: block;
+  }
+  .modal-name-input:last-child { margin-bottom: 0; }
+  .modal-name-input:focus { border-color: var(--accent); }
+
+  .modal-score-row {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 22px;
+  }
+  .modal-score-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em;
+    color: rgba(245,237,226,0.35); text-align: center; margin-bottom: 6px;
+  }
+  .modal-score-input {
+    width: 100%; height: 70px;
+    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(200,119,61,0.35);
+    border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
+    color: var(--accent); text-align: center; outline: none; transition: border-color 0.2s;
+  }
+  .modal-score-input:focus { border-color: var(--accent); }
+  .modal-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: rgba(245,237,226,0.2); text-align: center; }
+
+  .modal-buttons { display: flex; gap: 10px; }
+  .modal-btn-cancel {
+    flex: 1; padding: 12px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em;
+    background: transparent; border: 1.5px solid rgba(200,119,61,0.4); color: var(--clay);
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .modal-btn-cancel:hover { background: rgba(200,119,61,0.15); }
+  .modal-btn-save {
+    flex: 2; padding: 12px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em;
+    background: var(--green); color: #fff; border: none;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .modal-btn-save:hover { background: var(--green-light); }
+  .modal-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -392,7 +472,6 @@
 <h1>PADEL SCORE</h1>
 <p class="subtitle">Track · Play · Win</p>
 
-<!-- SYNC STATUS BAR -->
 <div class="sync-bar">
   <div class="sync-info">
     <div class="sync-dot" id="syncDot"></div>
@@ -404,7 +483,6 @@
   <button class="sync-btn" id="syncRefreshBtn" onclick="loadFromServer()">↻ Refresh</button>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('play')">⚡ Play</button>
   <button class="tab-btn" onclick="switchTab('history')">📊 Stats & History</button>
@@ -412,7 +490,6 @@
 
 <!-- PLAY TAB -->
 <div class="tab-content active" id="tab-play">
-
   <div class="input-section">
     <div class="input-row"><span class="player-num">1</span><input type="text" id="p1" placeholder="Player one"   oninput="onPlayerInput()" /></div>
     <div class="input-row"><span class="player-num">2</span><input type="text" id="p2" placeholder="Player two"   oninput="onPlayerInput()" /></div>
@@ -501,11 +578,49 @@
   </div>
 </div>
 
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Match</div>
+
+    <div class="modal-teams">
+      <div>
+        <div class="modal-team-label team-a">⚡ Team A</div>
+        <input class="modal-name-input" id="editA1" type="text" placeholder="Player 1" />
+        <input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" />
+      </div>
+      <div class="modal-vs-col">
+        <span class="modal-vs">VS</span>
+      </div>
+      <div>
+        <div class="modal-team-label team-b">🌊 Team B</div>
+        <input class="modal-name-input" id="editB1" type="text" placeholder="Player 1" />
+        <input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" />
+      </div>
+    </div>
+
+    <div class="modal-score-row">
+      <div>
+        <div class="modal-score-label">SCORE A</div>
+        <input class="modal-score-input" type="number" id="editScoreA" min="0" max="99" placeholder="0" />
+      </div>
+      <div class="modal-vs">–</div>
+      <div>
+        <div class="modal-score-label">SCORE B</div>
+        <input class="modal-score-input" type="number" id="editScoreB" min="0" max="99" placeholder="0" />
+      </div>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-btn-save" id="editSaveBtn" onclick="saveEdit()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ─── CONFIG ───────────────────────────────────────────────────────────────
   const API_URL = 'https://script.google.com/macros/s/AKfycbwPreRnSFqTOhf0HGUejWjjwJNoPhVFEI7M4XExfS8XbVbMyx0oiFTInEMvqo8yg42H8Q/exec';
 
-  // ─── STATE ────────────────────────────────────────────────────────────────
   let appData = { matches: [] };
   let players = [];
   let currentTeamA = [];
@@ -514,8 +629,8 @@
   let manualA = [];
   let manualB = [];
   let isSaving = false;
+  let editingMatchId = null;
 
-  // ─── SYNC STATUS ──────────────────────────────────────────────────────────
   function setSyncStatus(state, msg) {
     document.getElementById('syncDot').className = 'sync-dot' + (state ? ' ' + state : '');
     const sub = document.getElementById('syncSub');
@@ -523,7 +638,6 @@
     sub.textContent = msg;
   }
 
-  // ─── LOAD FROM SERVER ─────────────────────────────────────────────────────
   async function loadFromServer(silent = false) {
     setSyncStatus('syncing', 'Loading…');
     document.getElementById('syncRefreshBtn').disabled = true;
@@ -546,23 +660,18 @@
     document.getElementById('syncRefreshBtn').disabled = false;
   }
 
-  // ─── SAVE TO SERVER ───────────────────────────────────────────────────────
   async function saveToServer() {
     setSyncStatus('syncing', 'Saving…');
-    // Apps Script POST requires no-cors mode — we can't read the response body,
-    // so we re-fetch after a short delay to confirm the write went through.
     await fetch(API_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appData),
     });
-    // Give Apps Script ~2s to process, then re-fetch to get confirmed server state
     await new Promise(r => setTimeout(r, 2000));
     await loadFromServer(true);
   }
 
-  // ─── TABS ─────────────────────────────────────────────────────────────────
   function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach((b, i) => {
       b.classList.toggle('active', (i === 0) === (tab === 'play'));
@@ -572,7 +681,6 @@
     if (tab === 'history') renderHistory();
   }
 
-  // ─── TEAM MODE ────────────────────────────────────────────────────────────
   function setMode(mode) {
     teamMode = mode;
     document.getElementById('modeRandom').classList.toggle('active', mode === 'random');
@@ -587,8 +695,12 @@
     if (teamMode === 'manual') buildPickers();
   }
 
+  function getPlayerNames() {
+    return ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim().toUpperCase()).filter(Boolean);
+  }
+
   function buildPickers() {
-    const names = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean);
+    const names = getPlayerNames();
     manualA = manualA.filter(n => names.includes(n));
     manualB = manualB.filter(n => names.includes(n));
     renderPickers(names);
@@ -620,18 +732,17 @@
     if (other.includes(name)) return;
     if (arr.length >= 2) arr.shift();
     arr.push(name);
-    renderPickers(['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean));
+    renderPickers(getPlayerNames());
   }
 
   function removePick(team, name) {
     if (team === 'A') manualA = manualA.filter(n => n !== name);
     else              manualB = manualB.filter(n => n !== name);
-    renderPickers(['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim()).filter(Boolean));
+    renderPickers(getPlayerNames());
   }
 
-  // ─── GENERATE TEAMS ───────────────────────────────────────────────────────
   function generateTeams() {
-    const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim());
+    const inputs = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value.trim().toUpperCase());
     const err = document.getElementById('error');
 
     if (inputs.some(v => !v)) {
@@ -677,7 +788,6 @@
     w.style.animation = 'none'; w.offsetHeight; w.style.animation = 'fadeUp 0.5s ease forwards';
   }
 
-  // ─── SAVE MATCH ───────────────────────────────────────────────────────────
   async function saveMatch() {
     if (isSaving) return;
     const sA = parseInt(document.getElementById('scoreA').value);
@@ -719,7 +829,6 @@
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 3500);
   }
 
-  // ─── DELETE MATCH ─────────────────────────────────────────────────────────
   async function deleteMatch(id) {
     if (!confirm('Delete this match? This cannot be undone.')) return;
     appData.matches = appData.matches.filter(m => m.id !== id);
@@ -728,7 +837,66 @@
     catch { setSyncStatus('error', 'Sync failed after delete'); }
   }
 
-  // ─── RENDER HISTORY ───────────────────────────────────────────────────────
+  // ─── EDIT MATCH ───────────────────────────────────────────────────────────
+  function openEditModal(id) {
+    const match = appData.matches.find(m => m.id === id);
+    if (!match) return;
+    editingMatchId = id;
+
+    document.getElementById('editA1').value     = match.teamA[0] || '';
+    document.getElementById('editA2').value     = match.teamA[1] || '';
+    document.getElementById('editB1').value     = match.teamB[0] || '';
+    document.getElementById('editB2').value     = match.teamB[1] || '';
+    document.getElementById('editScoreA').value = match.scoreA;
+    document.getElementById('editScoreB').value = match.scoreB;
+
+    document.getElementById('editModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    document.body.style.overflow = '';
+    editingMatchId = null;
+  }
+
+  function handleModalOverlayClick(e) {
+    if (e.target === document.getElementById('editModal')) closeEditModal();
+  }
+
+  async function saveEdit() {
+    if (editingMatchId === null) return;
+
+    const a1 = document.getElementById('editA1').value.trim().toUpperCase();
+    const a2 = document.getElementById('editA2').value.trim().toUpperCase();
+    const b1 = document.getElementById('editB1').value.trim().toUpperCase();
+    const b2 = document.getElementById('editB2').value.trim().toUpperCase();
+    const sA = parseInt(document.getElementById('editScoreA').value);
+    const sB = parseInt(document.getElementById('editScoreB').value);
+
+    if (!a1 || !a2 || !b1 || !b2) { alert('Please fill in all player names.'); return; }
+    if (isNaN(sA) || isNaN(sB))   { alert('Please enter valid scores.'); return; }
+
+    const btn = document.getElementById('editSaveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const idx = appData.matches.findIndex(m => m.id === editingMatchId);
+    if (idx !== -1) {
+      appData.matches[idx] = { ...appData.matches[idx], teamA: [a1, a2], teamB: [b1, b2], scoreA: sA, scoreB: sB };
+    }
+
+    renderHistory();
+    closeEditModal();
+
+    try { await saveToServer(); }
+    catch { setSyncStatus('error', 'Sync failed after edit'); }
+
+    btn.disabled = false;
+    btn.textContent = '💾 Save Changes';
+  }
+
+  // ─── RENDER ───────────────────────────────────────────────────────────────
   function renderHistory() {
     renderStats(appData.matches);
     renderMatches(appData.matches);
@@ -777,12 +945,14 @@
         <div class="match-team match-item-right">
           <div class="match-team-names${wonB?' winner':''}">${m.teamB.join(' & ')}</div>
         </div>
-        <button class="btn-delete-match" onclick="deleteMatch(${m.id})" title="Delete match">🗑</button>
+        <div class="match-actions">
+          <button class="btn-edit-match" onclick="openEditModal(${m.id})" title="Edit match">✏️</button>
+          <button class="btn-delete-match" onclick="deleteMatch(${m.id})" title="Delete match">🗑</button>
+        </div>
       </div>`;
     }).join('');
   }
 
-  // ─── EXPORT / IMPORT / CLEAR ──────────────────────────────────────────────
   function exportData() {
     const blob = new Blob([JSON.stringify(appData, null, 2)], { type:'application/json' });
     const url  = URL.createObjectURL(blob);
@@ -819,7 +989,6 @@
     await saveToServer();
   }
 
-  // ─── INIT ─────────────────────────────────────────────────────────────────
   loadFromServer();
 </script>
 </body>
