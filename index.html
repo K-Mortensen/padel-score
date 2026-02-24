@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,8 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
+  /* ── DARK THEME (default) ── */
+  :root, [data-theme="dark"] {
     --clay: #c8773d;
     --court: #d4895a;
     --green: #4a8c5c;
@@ -16,11 +17,119 @@
     --dark: #1a1208;
     --text: #f5ede2;
     --accent: #f2c94c;
+
+    --bg: #1a1208;
+    --bg-card: rgba(255,255,255,0.04);
+    --bg-card-hover: rgba(255,255,255,0.07);
+    --bg-input: rgba(255,255,255,0.06);
+    --bg-input-focus: rgba(255,255,255,0.1);
+    --bg-tabs: rgba(255,255,255,0.05);
+    --bg-modal: #221a0e;
+    --bg-player-modal: #1e160a;
+    --border: rgba(200,119,61,0.25);
+    --border-input: rgba(200,119,61,0.35);
+    --border-mode: rgba(200,119,61,0.4);
+    --text-muted: rgba(245,237,226,0.35);
+    --text-dim: rgba(245,237,226,0.4);
+    --text-faint: rgba(245,237,226,0.2);
+    --text-mid: rgba(245,237,226,0.5);
+    --text-mid2: rgba(245,237,226,0.6);
+    --text-placeholder: rgba(245,237,226,0.3);
+    --gradient-radial: radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.18) 0%, transparent 70%);
+    --shadow-btn: 0 4px 20px rgba(242,201,76,0.3);
+    --shadow-btn-hover: 0 8px 30px rgba(242,201,76,0.4);
+    --shadow-court: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(0,0,0,0.15);
+    --player-card-bg: rgba(0,0,0,0.35);
+    --net-post: #aaa;
+    --vs-badge: rgba(245,237,226,0.3);
+    --score-vs: rgba(245,237,226,0.2);
+    --match-border: rgba(200,119,61,0.15);
+    --stat-border-accent: rgba(200,119,61,0.2);
+    --delete-border: rgba(224,112,112,0.3);
+    --delete-color: rgba(224,112,112,0.5);
+    --spinner-track: rgba(255,255,255,0.3);
+    --no-history: rgba(245,237,226,0.25);
+    --pstat-bg: rgba(255,255,255,0.05);
+    --pstat-border: rgba(200,119,61,0.2);
+    --winrate-bg: rgba(255,255,255,0.1);
+    --pm-match-bg: rgba(255,255,255,0.04);
+    --pm-match-border: rgba(200,119,61,0.12);
+    --close-btn-bg: rgba(255,255,255,0.06);
+    --date-filter-sep: rgba(245,237,226,0.3);
+    --clear-filter-border: rgba(200,119,61,0.3);
+    --clear-filter-color: rgba(200,119,61,0.6);
+    --modal-overlay: rgba(0,0,0,0.75);
+    --h1-shadow: 0 4px 30px rgba(242,201,76,0.3);
+
+    /* theme toggle */
+    --toggle-bg: rgba(255,255,255,0.06);
+    --toggle-border: rgba(200,119,61,0.4);
+    --toggle-color: var(--clay);
+    --toggle-icon: '☀️';
+  }
+
+  /* ── LIGHT THEME ── */
+  [data-theme="light"] {
+    --clay: #b5601a;
+    --court: #c97b42;
+    --green: #2e7d4f;
+    --green-light: #3a9960;
+    --dark: #fff8f0;
+    --text: #2c1a0a;
+    --accent: #c8860a;
+
+    --bg: #fff8f0;
+    --bg-card: rgba(0,0,0,0.04);
+    --bg-card-hover: rgba(0,0,0,0.07);
+    --bg-input: rgba(0,0,0,0.05);
+    --bg-input-focus: rgba(0,0,0,0.08);
+    --bg-tabs: rgba(0,0,0,0.06);
+    --bg-modal: #fff3e6;
+    --bg-player-modal: #fff8f0;
+    --border: rgba(160,90,30,0.22);
+    --border-input: rgba(160,90,30,0.35);
+    --border-mode: rgba(160,90,30,0.4);
+    --text-muted: rgba(44,26,10,0.5);
+    --text-dim: rgba(44,26,10,0.5);
+    --text-faint: rgba(44,26,10,0.2);
+    --text-mid: rgba(44,26,10,0.55);
+    --text-mid2: rgba(44,26,10,0.65);
+    --text-placeholder: rgba(44,26,10,0.3);
+    --gradient-radial: radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.12) 0%, transparent 70%);
+    --shadow-btn: 0 4px 20px rgba(200,134,10,0.25);
+    --shadow-btn-hover: 0 8px 30px rgba(200,134,10,0.35);
+    --shadow-court: 0 20px 60px rgba(0,0,0,0.18), inset 0 0 80px rgba(0,0,0,0.06);
+    --player-card-bg: rgba(255,255,255,0.55);
+    --net-post: #888;
+    --vs-badge: rgba(44,26,10,0.3);
+    --score-vs: rgba(44,26,10,0.2);
+    --match-border: rgba(160,90,30,0.15);
+    --stat-border-accent: rgba(160,90,30,0.2);
+    --delete-border: rgba(180,60,60,0.3);
+    --delete-color: rgba(180,60,60,0.6);
+    --spinner-track: rgba(0,0,0,0.15);
+    --no-history: rgba(44,26,10,0.3);
+    --pstat-bg: rgba(0,0,0,0.04);
+    --pstat-border: rgba(160,90,30,0.2);
+    --winrate-bg: rgba(0,0,0,0.08);
+    --pm-match-bg: rgba(0,0,0,0.03);
+    --pm-match-border: rgba(160,90,30,0.12);
+    --close-btn-bg: rgba(0,0,0,0.05);
+    --date-filter-sep: rgba(44,26,10,0.3);
+    --clear-filter-border: rgba(160,90,30,0.3);
+    --clear-filter-color: rgba(160,90,30,0.7);
+    --modal-overlay: rgba(60,30,0,0.5);
+    --h1-shadow: 0 4px 30px rgba(200,134,10,0.2);
+
+    --toggle-bg: rgba(0,0,0,0.05);
+    --toggle-border: rgba(160,90,30,0.4);
+    --toggle-color: var(--clay);
+    --toggle-icon: '🌙';
   }
 
   body {
     min-height: 100vh;
-    background: var(--dark);
+    background: var(--bg);
     font-family: 'DM Sans', sans-serif;
     color: var(--text);
     display: flex;
@@ -28,13 +137,36 @@
     align-items: center;
     padding: 40px 20px 80px;
     overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
   }
 
   body::before {
     content: '';
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.18) 0%, transparent 70%);
+    background: var(--gradient-radial);
     pointer-events: none;
+  }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 42px; height: 42px;
+    background: var(--toggle-bg);
+    border: 1.5px solid var(--toggle-border);
+    border-radius: 10px;
+    color: var(--toggle-color);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    z-index: 100;
+  }
+  .theme-toggle:hover {
+    background: var(--clay);
+    color: #fff;
+    border-color: var(--clay);
+    transform: rotate(20deg) scale(1.05);
   }
 
   h1 {
@@ -44,7 +176,7 @@
     color: var(--accent);
     text-align: center;
     line-height: 1;
-    text-shadow: 0 4px 30px rgba(242,201,76,0.3);
+    text-shadow: var(--h1-shadow);
   }
 
   .subtitle {
@@ -59,8 +191,8 @@
 
   .sync-bar {
     width: 100%; max-width: 480px;
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(200,119,61,0.25);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
     border-radius: 14px;
     padding: 12px 18px;
     display: flex;
@@ -75,7 +207,7 @@
   .sync-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: rgba(245,237,226,0.2);
+    background: var(--text-faint);
     flex-shrink: 0;
     transition: background 0.3s;
   }
@@ -87,7 +219,7 @@
 
   .sync-text { display: flex; flex-direction: column; }
   .sync-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.12em; color: var(--text); }
-  .sync-sub   { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,237,226,0.35); }
+  .sync-sub   { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
   .sync-sub.ok      { color: var(--green-light); }
   .sync-sub.syncing { color: var(--accent); }
   .sync-sub.error   { color: #e07070; }
@@ -97,7 +229,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.82rem; letter-spacing: 0.15em;
     background: transparent;
-    border: 1.5px solid rgba(200,119,61,0.4);
+    border: 1.5px solid var(--border-mode);
     color: var(--clay);
     border-radius: 8px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
   }
@@ -106,7 +238,7 @@
 
   .tabs {
     display: flex; gap: 4px;
-    background: rgba(255,255,255,0.05);
+    background: var(--bg-tabs);
     border-radius: 12px; padding: 4px;
     margin-bottom: 36px;
     width: 100%; max-width: 480px;
@@ -117,7 +249,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1rem; letter-spacing: 0.15em;
     background: transparent; border: none;
-    color: rgba(245,237,226,0.4);
+    color: var(--text-dim);
     border-radius: 9px; cursor: pointer; transition: all 0.2s;
   }
   .tab-btn.active { background: var(--clay); color: var(--dark); }
@@ -139,15 +271,15 @@
 
   input[type="text"] {
     flex: 1;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-input);
     border-radius: 10px; padding: 14px 18px;
     font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text);
     outline: none; transition: border-color 0.2s, background 0.2s;
     text-transform: uppercase;
   }
-  input[type="text"]::placeholder { color: rgba(245,237,226,0.3); text-transform: none; }
-  input[type="text"]:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+  input[type="text"]::placeholder { color: var(--text-placeholder); text-transform: none; }
+  input[type="text"]:focus { border-color: var(--accent); background: var(--bg-input-focus); }
 
   .team-mode-row {
     width: 100%; max-width: 480px;
@@ -159,8 +291,8 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.95rem; letter-spacing: 0.15em;
     border-radius: 10px; cursor: pointer; transition: all 0.2s;
-    border: 1.5px solid rgba(200,119,61,0.4);
-    background: transparent; color: rgba(245,237,226,0.5);
+    border: 1.5px solid var(--border-mode);
+    background: transparent; color: var(--text-mid);
   }
   .mode-btn.active { background: var(--clay); color: var(--dark); border-color: var(--clay); }
 
@@ -171,8 +303,8 @@
   .manual-teams.visible { display: flex; }
 
   .manual-team-box {
-    background: rgba(255,255,255,0.04);
-    border: 1.5px solid rgba(200,119,61,0.25);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
     border-radius: 12px; padding: 16px;
   }
 
@@ -187,8 +319,8 @@
     padding: 7px 14px;
     font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
     border-radius: 8px; cursor: pointer; transition: all 0.15s;
-    border: 1.5px solid rgba(200,119,61,0.35);
-    background: rgba(255,255,255,0.05); color: rgba(245,237,226,0.6);
+    border: 1.5px solid var(--border-input);
+    background: var(--bg-card); color: var(--text-mid2);
     text-transform: uppercase;
   }
   .pick-btn.selected-a { background: rgba(242,201,76,0.2); border-color: var(--accent); color: var(--accent); }
@@ -211,9 +343,9 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.15em;
     background: var(--accent); color: var(--dark); border: none; border-radius: 12px;
     cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 20px rgba(242,201,76,0.3);
+    box-shadow: var(--shadow-btn);
   }
-  .btn:hover  { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(242,201,76,0.4); }
+  .btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow-btn-hover); }
   .btn:active { transform: translateY(0); }
 
   .error { color: #e07070; font-size: 0.85rem; text-align: center; margin-top: -4px; display: none; }
@@ -239,7 +371,7 @@
     background: var(--court); border-radius: 16px;
     border: 3px solid rgba(255,255,255,0.15);
     position: relative; overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-court);
   }
   .court::before { content: ''; position: absolute; inset: 8%; border: 2px solid rgba(255,255,255,0.5); border-radius: 4px; }
 
@@ -249,7 +381,7 @@
   .line-h-right{ position: absolute; left: 50%; right: 8%; top: 50%; height: 2px; background: rgba(255,255,255,0.5); transform: translateY(-50%); }
 
   .net { position: absolute; left: 50%; top: 0; bottom: 0; width: 16px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; }
-  .net-post-top, .net-post-bottom { width: 10px; height: 10px; background: #aaa; border-radius: 50%; flex-shrink: 0; }
+  .net-post-top, .net-post-bottom { width: 10px; height: 10px; background: var(--net-post); border-radius: 50%; flex-shrink: 0; }
   .net-mesh {
     flex: 1; width: 10px;
     background:
@@ -262,7 +394,7 @@
   .side-left  { left: 0; }
   .side-right { right: 0; }
 
-  .player-card { background: rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 18px; text-align: center; width: 75%; backdrop-filter: blur(4px); }
+  .player-card { background: var(--player-card-bg); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 18px; text-align: center; width: 75%; backdrop-filter: blur(4px); }
   .player-card .player-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); text-transform: uppercase; }
   .player-card .player-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
@@ -270,7 +402,7 @@
   .side-left  .team-label { left: 12px; }
   .side-right .team-label { right: 12px; }
 
-  .vs-badge { margin-top: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.4em; color: rgba(245,237,226,0.3); }
+  .vs-badge { margin-top: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.4em; color: var(--vs-badge); }
 
   .regenerate {
     margin-top: 16px;
@@ -282,7 +414,7 @@
 
   .score-section {
     margin-top: 28px; width: 100%; max-width: 480px;
-    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.25);
+    background: var(--bg-card); border: 1.5px solid var(--border);
     border-radius: 16px; padding: 24px;
     animation: fadeUp 0.5s ease 0.2s both;
   }
@@ -290,16 +422,16 @@
 
   .score-inputs     { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 20px; }
   .score-team       { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .score-team-name  { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.12em; color: rgba(245,237,226,0.5); text-align: center; text-transform: uppercase; }
+  .score-team-name  { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.12em; color: var(--text-mid); text-align: center; text-transform: uppercase; }
 
   .score-input {
     width: 80px; height: 80px;
-    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
     border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
     color: var(--accent); text-align: center; outline: none; transition: border-color 0.2s;
   }
   .score-input:focus { border-color: var(--accent); }
-  .score-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: rgba(245,237,226,0.2); }
+  .score-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--score-vs); }
 
   .save-btn {
     width: 100%; padding: 14px;
@@ -312,7 +444,6 @@
 
   .save-success { text-align: center; font-size: 0.85rem; letter-spacing: 0.1em; margin-top: 10px; height: 20px; transition: opacity 0.5s; }
 
-  /* HISTORY CONTROLS — export only */
   .history-controls { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 24px; flex-wrap: wrap; }
 
   .history-controls button {
@@ -324,7 +455,6 @@
   .btn-export { background: transparent; border-color: var(--accent); color: var(--accent); }
   .btn-export:hover { background: var(--accent); color: var(--dark); }
 
-  /* DATE FILTER */
   .date-filter-bar {
     width: 100%; max-width: 480px;
     display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
@@ -335,43 +465,44 @@
   }
   .date-input {
     flex: 1; min-width: 120px;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 8px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text);
     outline: none; transition: border-color 0.2s;
     color-scheme: dark;
   }
+  [data-theme="light"] .date-input { color-scheme: light; }
   .date-input:focus { border-color: var(--accent); }
-  .date-filter-sep { color: rgba(245,237,226,0.3); font-size: 0.8rem; flex-shrink: 0; }
+  .date-filter-sep { color: var(--date-filter-sep); font-size: 0.8rem; flex-shrink: 0; }
   .btn-clear-filter {
     padding: 8px 14px;
     font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em;
-    background: transparent; border: 1.5px solid rgba(200,119,61,0.3); color: rgba(200,119,61,0.6);
+    background: transparent; border: 1.5px solid var(--clear-filter-border); color: var(--clear-filter-color);
     border-radius: 8px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
   }
   .btn-clear-filter:hover { background: rgba(200,119,61,0.15); color: var(--clay); }
 
   .stats-grid { width: 100%; max-width: 480px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
   .stat-card  {
-    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.2);
+    background: var(--bg-card); border: 1.5px solid var(--stat-border-accent);
     border-radius: 12px; padding: 16px; animation: fadeUp 0.4s ease forwards;
     cursor: pointer; transition: border-color 0.2s, background 0.2s;
   }
-  .stat-card:hover { border-color: rgba(242,201,76,0.4); background: rgba(255,255,255,0.07); }
-  .stat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid rgba(200,119,61,0.2); padding-bottom: 8px; text-transform: uppercase; }
-  .stat-row   { display: flex; justify-content: space-between; font-size: 0.78rem; color: rgba(245,237,226,0.6); margin-bottom: 4px; }
+  .stat-card:hover { border-color: rgba(242,201,76,0.4); background: var(--bg-card-hover); }
+  .stat-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; border-bottom: 1px solid var(--stat-border-accent); padding-bottom: 8px; text-transform: uppercase; }
+  .stat-row   { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-mid2); margin-bottom: 4px; }
   .stat-row span:last-child { color: var(--text); font-weight: 600; }
   .stat-winrate { margin-top: 8px; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--clay); }
-  .winrate-bar  { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .winrate-bar  { height: 4px; background: var(--winrate-bg); border-radius: 2px; margin-top: 4px; overflow: hidden; }
   .winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 2px; transition: width 0.6s ease; }
-  .stat-card-hint { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,237,226,0.2); margin-top: 8px; text-align: right; }
+  .stat-card-hint { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); margin-top: 8px; text-align: right; }
 
-  .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--clay); width: 100%; max-width: 480px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(200,119,61,0.2); }
+  .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--clay); width: 100%; max-width: 480px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
   .match-list    { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
 
   .match-item {
-    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(200,119,61,0.15);
+    background: var(--bg-card); border: 1.5px solid var(--match-border);
     border-radius: 12px; padding: 12px 14px;
     display: grid; grid-template-columns: 1fr auto 1fr auto;
     gap: 8px; align-items: center;
@@ -380,7 +511,7 @@
   .match-team       { display: flex; flex-direction: column; gap: 2px; }
   .match-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.07em; color: var(--text); text-transform: uppercase; }
   .match-team-names.winner { color: var(--accent); }
-  .match-date       { font-size: 0.68rem; color: rgba(245,237,226,0.3); letter-spacing: 0.1em; }
+  .match-date       { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.1em; }
   .match-score-display { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--clay); text-align: center; }
   .match-item-right { text-align: right; }
   .match-item-right .match-team-names { text-align: right; }
@@ -392,15 +523,15 @@
   }
   .btn-edit-match:hover { background: var(--accent); color: var(--dark); border-color: var(--accent); }
 
-  .no-history { text-align: center; color: rgba(245,237,226,0.25); font-size: 0.9rem; letter-spacing: 0.1em; padding: 40px 0; }
+  .no-history { text-align: center; color: var(--no-history); font-size: 0.9rem; letter-spacing: 0.1em; padding: 40px 0; }
 
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--spinner-track); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
 
   /* MODALS SHARED */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
-    background: rgba(0,0,0,0.75);
+    background: var(--modal-overlay);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
     backdrop-filter: blur(4px);
@@ -410,7 +541,7 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
   .modal {
-    background: #221a0e;
+    background: var(--bg-modal);
     border: 1.5px solid rgba(200,119,61,0.4);
     border-radius: 18px;
     padding: 28px 24px;
@@ -431,7 +562,7 @@
   }
   .modal-team-label {
     font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
-    color: rgba(245,237,226,0.4); margin-bottom: 6px;
+    color: var(--text-dim); margin-bottom: 6px;
   }
   .modal-team-label.team-a { color: var(--accent); }
   .modal-team-label.team-b { color: #7ab3e0; }
@@ -440,8 +571,8 @@
 
   .modal-name-input {
     width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 10px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
     outline: none; transition: border-color 0.2s;
@@ -456,41 +587,39 @@
   }
   .modal-score-label {
     font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em;
-    color: rgba(245,237,226,0.35); text-align: center; margin-bottom: 6px;
+    color: var(--text-muted); text-align: center; margin-bottom: 6px;
   }
   .modal-score-input {
     width: 100%; height: 70px;
-    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
     border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
     color: var(--accent); text-align: center; outline: none; transition: border-color 0.2s;
   }
   .modal-score-input:focus { border-color: var(--accent); }
-  .modal-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: rgba(245,237,226,0.2); text-align: center; }
+  .modal-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--score-vs); text-align: center; }
 
-  /* DATE-TIME ROW IN EDIT MODAL */
-  .modal-datetime-row {
-    margin-bottom: 22px;
-  }
+  .modal-datetime-row { margin-bottom: 22px; }
   .modal-datetime-label {
     font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em;
-    color: rgba(245,237,226,0.35); margin-bottom: 6px;
+    color: var(--text-muted); margin-bottom: 6px;
   }
   .modal-datetime-input {
     width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(200,119,61,0.35);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 10px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
     outline: none; transition: border-color 0.2s;
     color-scheme: dark;
   }
+  [data-theme="light"] .modal-datetime-input { color-scheme: light; }
   .modal-datetime-input:focus { border-color: var(--accent); }
 
   .modal-buttons { display: flex; gap: 10px; }
   .modal-btn-cancel {
     flex: 1; padding: 12px;
     font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em;
-    background: transparent; border: 1.5px solid rgba(200,119,61,0.4); color: var(--clay);
+    background: transparent; border: 1.5px solid var(--border-mode); color: var(--clay);
     border-radius: 10px; cursor: pointer; transition: all 0.2s;
   }
   .modal-btn-cancel:hover { background: rgba(200,119,61,0.15); }
@@ -505,7 +634,7 @@
 
   /* PLAYER STATS MODAL */
   .player-modal {
-    background: #1e160a;
+    background: var(--bg-player-modal);
     border: 1.5px solid rgba(200,119,61,0.4);
     border-radius: 18px;
     padding: 28px 24px;
@@ -523,8 +652,8 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.1em; color: var(--accent);
   }
   .modal-close-btn {
-    background: rgba(255,255,255,0.06); border: 1.5px solid rgba(200,119,61,0.3);
-    color: rgba(245,237,226,0.5); border-radius: 8px;
+    background: var(--close-btn-bg); border: 1.5px solid var(--border);
+    color: var(--text-mid); border-radius: 8px;
     width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center; transition: all 0.2s;
   }
@@ -534,16 +663,15 @@
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;
   }
   .pstat-box {
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(200,119,61,0.2);
+    background: var(--pstat-bg); border: 1px solid var(--pstat-border);
     border-radius: 10px; padding: 12px 8px; text-align: center;
   }
   .pstat-val {
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent);
-    line-height: 1;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); line-height: 1;
   }
   .pstat-lbl {
     font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: rgba(245,237,226,0.35); margin-top: 4px;
+    color: var(--text-muted); margin-top: 4px;
   }
 
   .player-winrate-section { margin-bottom: 24px; }
@@ -551,24 +679,24 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em;
     color: var(--clay); margin-bottom: 6px; display: flex; justify-content: space-between;
   }
-  .player-winrate-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+  .player-winrate-bar { height: 8px; background: var(--winrate-bg); border-radius: 4px; overflow: hidden; }
   .player-winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 4px; transition: width 0.8s ease; }
 
   .player-matches-title {
     font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em;
     color: var(--clay); margin-bottom: 12px; padding-bottom: 8px;
-    border-bottom: 1px solid rgba(200,119,61,0.2);
+    border-bottom: 1px solid var(--border);
   }
   .player-match-item {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(200,119,61,0.12);
+    background: var(--pm-match-bg); border: 1px solid var(--pm-match-border);
     border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
     display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center;
   }
   .pm-team { display: flex; flex-direction: column; gap: 1px; }
   .pm-team-names { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
   .pm-team-names.highlight { color: var(--accent); }
-  .pm-team-names.dim { color: rgba(245,237,226,0.45); }
-  .pm-date { font-size: 0.62rem; color: rgba(245,237,226,0.25); letter-spacing: 0.08em; margin-top: 2px; }
+  .pm-team-names.dim { color: var(--text-mid); }
+  .pm-date { font-size: 0.62rem; color: var(--text-muted); letter-spacing: 0.08em; margin-top: 2px; }
   .pm-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--clay); text-align: center; }
   .pm-right { text-align: right; }
   .pm-result-badge {
@@ -581,6 +709,9 @@
 </style>
 </head>
 <body>
+
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
 
 <h1>PADEL SCORE</h1>
 <p class="subtitle">Track · Play · Win</p>
@@ -620,12 +751,12 @@
     <div class="manual-team-box">
       <div class="manual-team-label">⚡ Team A — Pick 2 Players</div>
       <div class="manual-team-picks" id="picksA"></div>
-      <div class="manual-team-slots" id="slotsA"><span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span></div>
+      <div class="manual-team-slots" id="slotsA"><span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span></div>
     </div>
     <div class="manual-team-box">
       <div class="manual-team-label" style="color:#7ab3e0;">🌊 Team B — Pick 2 Players</div>
       <div class="manual-team-picks" id="picksB"></div>
-      <div class="manual-team-slots" id="slotsB"><span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span></div>
+      <div class="manual-team-slots" id="slotsB"><span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span></div>
     </div>
   </div>
 
@@ -680,7 +811,6 @@
     <div class="no-history" style="grid-column:1/-1">Loading…</div>
   </div>
 
-  <!-- DATE FILTER -->
   <div class="date-filter-bar">
     <span class="date-filter-label">🗓 Filter:</span>
     <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
@@ -699,23 +829,19 @@
 <div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event,'editModal')">
   <div class="modal">
     <div class="modal-title">✏️ Edit Match</div>
-
     <div class="modal-teams">
       <div>
         <div class="modal-team-label team-a">⚡ Team A</div>
         <input class="modal-name-input" id="editA1" type="text" placeholder="Player 1" />
         <input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" />
       </div>
-      <div class="modal-vs-col">
-        <span class="modal-vs">VS</span>
-      </div>
+      <div class="modal-vs-col"><span class="modal-vs">VS</span></div>
       <div>
         <div class="modal-team-label team-b">🌊 Team B</div>
         <input class="modal-name-input" id="editB1" type="text" placeholder="Player 1" />
         <input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" />
       </div>
     </div>
-
     <div class="modal-score-row">
       <div>
         <div class="modal-score-label">SCORE A</div>
@@ -727,12 +853,10 @@
         <input class="modal-score-input" type="number" id="editScoreB" min="0" max="99" placeholder="0" />
       </div>
     </div>
-
     <div class="modal-datetime-row">
       <div class="modal-datetime-label">📅 Date & Time</div>
       <input class="modal-datetime-input" type="datetime-local" id="editDateTime" />
     </div>
-
     <div class="modal-buttons">
       <button class="modal-btn-cancel" onclick="closeModal('editModal')">Cancel</button>
       <button class="modal-btn-save" id="editSaveBtn" onclick="saveEdit()">💾 Save Changes</button>
@@ -747,9 +871,7 @@
       <div class="player-modal-name" id="pmName">PLAYER</div>
       <button class="modal-close-btn" onclick="closeModal('playerModal')">✕</button>
     </div>
-
     <div class="player-stats-grid" id="pmStatsGrid"></div>
-
     <div class="player-winrate-section">
       <div class="player-winrate-label">
         <span>Win Rate</span>
@@ -759,7 +881,6 @@
         <div class="player-winrate-fill" id="pmWinrateFill" style="width:0%"></div>
       </div>
     </div>
-
     <div class="player-matches-title">Match History</div>
     <div id="pmMatchList"></div>
   </div>
@@ -777,6 +898,27 @@
   let manualB = [];
   let isSaving = false;
   let editingMatchId = null;
+
+  // ─── THEME TOGGLE ─────────────────────────────────────────────────────────
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+    try { localStorage.setItem('padel-theme', newTheme); } catch {}
+  }
+
+  // Apply saved theme on load
+  (function() {
+    try {
+      const saved = localStorage.getItem('padel-theme');
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.getElementById('themeToggle').textContent = '🌙';
+      }
+    } catch {}
+  })();
 
   // ─── SYNC STATUS ──────────────────────────────────────────────────────────
   function setSyncStatus(state, msg) {
@@ -868,7 +1010,7 @@
       }).join('');
       const slots = document.getElementById('slots' + team);
       slots.innerHTML = myArr.length === 0
-        ? `<span style="font-size:0.75rem;color:rgba(245,237,226,0.2);letter-spacing:0.1em;">— no players selected —</span>`
+        ? `<span style="font-size:0.75rem;letter-spacing:0.1em;opacity:0.3;">— no players selected —</span>`
         : myArr.map(name => `<span class="slot-chip slot-chip-${team.toLowerCase()}">${name} <button onclick="removePick('${team}','${name}')">✕</button></span>`).join('');
     });
   }
@@ -976,7 +1118,7 @@
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 3500);
   }
 
-  // ─── MODALS SHARED ────────────────────────────────────────────────────────
+  // ─── MODALS ───────────────────────────────────────────────────────────────
   function closeModal(id) {
     document.getElementById(id).style.display = 'none';
     document.body.style.overflow = '';
@@ -987,33 +1129,26 @@
     if (e.target === document.getElementById(id)) closeModal(id);
   }
 
-  // ─── EDIT MATCH MODAL ─────────────────────────────────────────────────────
   function openEditModal(id) {
     const match = appData.matches.find(m => m.id === id);
     if (!match) return;
     editingMatchId = id;
-
     document.getElementById('editA1').value     = match.teamA[0] || '';
     document.getElementById('editA2').value     = match.teamA[1] || '';
     document.getElementById('editB1').value     = match.teamB[0] || '';
     document.getElementById('editB2').value     = match.teamB[1] || '';
     document.getElementById('editScoreA').value = match.scoreA;
     document.getElementById('editScoreB').value = match.scoreB;
-
-    // Set datetime-local value from ISO date
     const dt = new Date(match.date);
-    // Format: YYYY-MM-DDTHH:mm
     const pad = n => String(n).padStart(2, '0');
     const localDT = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     document.getElementById('editDateTime').value = localDT;
-
     document.getElementById('editModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
 
   async function saveEdit() {
     if (editingMatchId === null) return;
-
     const a1 = document.getElementById('editA1').value.trim().toUpperCase();
     const a2 = document.getElementById('editA2').value.trim().toUpperCase();
     const b1 = document.getElementById('editB1').value.trim().toUpperCase();
@@ -1021,31 +1156,20 @@
     const sA = parseInt(document.getElementById('editScoreA').value);
     const sB = parseInt(document.getElementById('editScoreB').value);
     const dtVal = document.getElementById('editDateTime').value;
-
     if (!a1 || !a2 || !b1 || !b2) { alert('Please fill in all player names.'); return; }
     if (isNaN(sA) || isNaN(sB))   { alert('Please enter valid scores.'); return; }
-
     const btn = document.getElementById('editSaveBtn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
-
     const idx = appData.matches.findIndex(m => m.id === editingMatchId);
     if (idx !== -1) {
       const newDate = dtVal ? new Date(dtVal).toISOString() : appData.matches[idx].date;
-      appData.matches[idx] = {
-        ...appData.matches[idx],
-        teamA: [a1, a2], teamB: [b1, b2],
-        scoreA: sA, scoreB: sB,
-        date: newDate
-      };
+      appData.matches[idx] = { ...appData.matches[idx], teamA: [a1, a2], teamB: [b1, b2], scoreA: sA, scoreB: sB, date: newDate };
     }
-
     renderHistory();
     closeModal('editModal');
-
     try { await saveToServer(); }
     catch { setSyncStatus('error', 'Sync failed after edit'); }
-
     btn.disabled = false;
     btn.textContent = '💾 Save Changes';
   }
@@ -1061,7 +1185,7 @@
     const from = document.getElementById('filterFrom').value;
     const to   = document.getElementById('filterTo').value;
     return appData.matches.filter(m => {
-      const d = m.date.substring(0, 10); // YYYY-MM-DD
+      const d = m.date.substring(0, 10);
       if (from && d < from) return false;
       if (to   && d > to)   return false;
       return true;
@@ -1071,7 +1195,6 @@
   // ─── PLAYER STATS MODAL ───────────────────────────────────────────────────
   function openPlayerModal(playerName) {
     const matches = appData.matches.filter(m => m.teamA.includes(playerName) || m.teamB.includes(playerName));
-
     let wins = 0, losses = 0, draws = 0, gf = 0, ga = 0;
     matches.forEach(m => {
       const inA = m.teamA.includes(playerName);
@@ -1084,7 +1207,6 @@
     });
     const played = matches.length;
     const wr = played ? Math.round((wins / played) * 100) : 0;
-
     document.getElementById('pmName').textContent = playerName;
     document.getElementById('pmStatsGrid').innerHTML = `
       <div class="pstat-box"><div class="pstat-val">${played}</div><div class="pstat-lbl">Played</div></div>
@@ -1094,7 +1216,6 @@
     `;
     document.getElementById('pmWinratePct').textContent = wr + '%';
     setTimeout(() => { document.getElementById('pmWinrateFill').style.width = wr + '%'; }, 50);
-
     const matchHTML = matches.map(m => {
       const inA  = m.teamA.includes(playerName);
       const ps   = inA ? m.scoreA : m.scoreB;
@@ -1116,7 +1237,6 @@
         </div>
       </div>`;
     }).join('') || '<div class="no-history" style="padding:20px 0">No matches found.</div>';
-
     document.getElementById('pmMatchList').innerHTML = matchHTML;
     document.getElementById('playerModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
