@@ -8,7 +8,6 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── DARK THEME (default) ── */
   :root, [data-theme="dark"] {
     --clay: #c8773d;
     --court: #d4895a;
@@ -17,6 +16,9 @@
     --dark: #1a1208;
     --text: #f5ede2;
     --accent: #f2c94c;
+    --elo-gold: #f2c94c;
+    --elo-silver: #b0bec5;
+    --elo-bronze: #cd7f32;
 
     --bg: #1a1208;
     --bg-card: rgba(255,255,255,0.04);
@@ -60,15 +62,11 @@
     --clear-filter-color: rgba(200,119,61,0.6);
     --modal-overlay: rgba(0,0,0,0.75);
     --h1-shadow: 0 4px 30px rgba(242,201,76,0.3);
-
-    /* theme toggle */
     --toggle-bg: rgba(255,255,255,0.06);
     --toggle-border: rgba(200,119,61,0.4);
     --toggle-color: var(--clay);
-    --toggle-icon: '☀️';
   }
 
-  /* ── LIGHT THEME ── */
   [data-theme="light"] {
     --clay: #b5601a;
     --court: #c97b42;
@@ -77,6 +75,9 @@
     --dark: #fff8f0;
     --text: #2c1a0a;
     --accent: #c8860a;
+    --elo-gold: #c8860a;
+    --elo-silver: #607d8b;
+    --elo-bronze: #8b5e2a;
 
     --bg: #fff8f0;
     --bg-card: rgba(0,0,0,0.04);
@@ -120,11 +121,9 @@
     --clear-filter-color: rgba(160,90,30,0.7);
     --modal-overlay: rgba(60,30,0,0.5);
     --h1-shadow: 0 4px 30px rgba(200,134,10,0.2);
-
     --toggle-bg: rgba(0,0,0,0.05);
     --toggle-border: rgba(160,90,30,0.4);
     --toggle-color: var(--clay);
-    --toggle-icon: '🌙';
   }
 
   body {
@@ -147,7 +146,6 @@
     pointer-events: none;
   }
 
-  /* ── THEME TOGGLE ── */
   .theme-toggle {
     position: absolute;
     top: 20px; right: 20px;
@@ -162,12 +160,7 @@
     transition: all 0.2s;
     z-index: 100;
   }
-  .theme-toggle:hover {
-    background: var(--clay);
-    color: #fff;
-    border-color: var(--clay);
-    transform: rotate(20deg) scale(1.05);
-  }
+  .theme-toggle:hover { background: var(--clay); color: #fff; border-color: var(--clay); transform: rotate(20deg) scale(1.05); }
 
   h1 {
     font-family: 'Bebas Neue', sans-serif;
@@ -203,14 +196,7 @@
   }
 
   .sync-info { display: flex; align-items: center; gap: 10px; }
-
-  .sync-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--text-faint);
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; transition: background 0.3s; }
   .sync-dot.ok      { background: var(--green-light); box-shadow: 0 0 6px rgba(95,168,114,0.5); }
   .sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
   .sync-dot.error   { background: #e07070; }
@@ -241,13 +227,13 @@
     background: var(--bg-tabs);
     border-radius: 12px; padding: 4px;
     margin-bottom: 36px;
-    width: 100%; max-width: 480px;
+    width: 100%; max-width: 600px;
   }
 
   .tab-btn {
     flex: 1; padding: 10px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem; letter-spacing: 0.15em;
+    font-size: 0.95rem; letter-spacing: 0.12em;
     background: transparent; border: none;
     color: var(--text-dim);
     border-radius: 9px; cursor: pointer; transition: all 0.2s;
@@ -280,6 +266,22 @@
   }
   input[type="text"]::placeholder { color: var(--text-placeholder); text-transform: none; }
   input[type="text"]:focus { border-color: var(--accent); background: var(--bg-input-focus); }
+
+  /* Elo badge next to player input */
+  .input-elo-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.82rem; letter-spacing: 0.1em;
+    color: var(--accent);
+    background: rgba(242,201,76,0.1);
+    border: 1px solid rgba(242,201,76,0.25);
+    border-radius: 6px;
+    padding: 4px 8px;
+    flex-shrink: 0;
+    min-width: 54px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .input-elo-badge.provisional { color: var(--text-muted); background: var(--bg-card); border-color: var(--border); }
 
   .team-mode-row {
     width: 100%; max-width: 480px;
@@ -356,10 +358,7 @@
     animation: fadeUp 0.5s ease forwards;
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
   .match-title {
     font-family: 'Bebas Neue', sans-serif;
@@ -390,17 +389,42 @@
     border-left: 2px solid rgba(200,190,170,0.8); border-right: 2px solid rgba(200,190,170,0.8);
   }
 
-  .side       { position: absolute; top: 0; bottom: 0; width: calc(50% - 8px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  .side       { position: absolute; top: 0; bottom: 0; width: calc(50% - 8px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
   .side-left  { left: 0; }
   .side-right { right: 0; }
 
-  .player-card { background: var(--player-card-bg); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 18px; text-align: center; width: 75%; backdrop-filter: blur(4px); }
-  .player-card .player-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); text-transform: uppercase; }
-  .player-card .player-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .player-card { background: var(--player-card-bg); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 8px 14px; text-align: center; width: 80%; backdrop-filter: blur(4px); }
+  .player-card .player-name  { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.1em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); text-transform: uppercase; }
+  .player-card .player-elo   { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.15em; color: rgba(242,201,76,0.85); margin-top: 1px; }
+  .player-card .player-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 1px; }
 
-  .team-label { position: absolute; bottom: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.4); }
-  .side-left  .team-label { left: 12px; }
-  .side-right .team-label { right: 12px; }
+  /* Team Elo bar at bottom of each side */
+  .team-elo-bar {
+    position: absolute; bottom: 6px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.55);
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+  }
+  .side-left  .team-elo-bar { left: 6px; align-items: flex-start; }
+  .side-right .team-elo-bar { right: 6px; align-items: flex-end; }
+  .team-elo-value { color: rgba(242,201,76,0.9); font-size: 1rem; }
+
+  /* Court center Elo matchup */
+  .court-elo-matchup {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+    border: 1px solid rgba(242,201,76,0.3);
+    border-radius: 8px; padding: 3px 10px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; letter-spacing: 0.15em;
+    color: rgba(242,201,76,0.8);
+    white-space: nowrap;
+    z-index: 20;
+  }
+
+  .team-label { position: absolute; bottom: 24px; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.35); }
+  .side-left  .team-label { left: 10px; }
+  .side-right .team-label { right: 10px; }
 
   .vs-badge { margin-top: 20px; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.4em; color: var(--vs-badge); }
 
@@ -433,6 +457,18 @@
   .score-input:focus { border-color: var(--accent); }
   .score-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--score-vs); }
 
+  /* Elo preview in score section */
+  .elo-preview {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(242,201,76,0.06); border: 1px solid rgba(242,201,76,0.15);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+  }
+  .elo-preview-team { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .elo-preview-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+  .elo-preview-val   { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--accent); }
+  .elo-preview-sep   { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; color: var(--text-faint); }
+  .elo-change-hint   { font-size: 0.65rem; color: var(--text-muted); text-align: center; margin-top: 3px; letter-spacing: 0.08em; }
+
   .save-btn {
     width: 100%; padding: 14px;
     font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em;
@@ -445,13 +481,11 @@
   .save-success { text-align: center; font-size: 0.85rem; letter-spacing: 0.1em; margin-top: 10px; height: 20px; transition: opacity 0.5s; }
 
   .history-controls { display: flex; gap: 10px; width: 100%; max-width: 480px; margin-bottom: 24px; flex-wrap: wrap; }
-
   .history-controls button {
     flex: 1; padding: 10px;
     font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.15em;
     border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1.5px solid;
   }
-
   .btn-export { background: transparent; border-color: var(--accent); color: var(--accent); }
   .btn-export:hover { background: var(--accent); color: var(--dark); }
 
@@ -459,14 +493,10 @@
     width: 100%; max-width: 480px;
     display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
   }
-  .date-filter-label {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.18em;
-    color: var(--clay); flex-shrink: 0;
-  }
+  .date-filter-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; letter-spacing: 0.18em; color: var(--clay); flex-shrink: 0; }
   .date-input {
     flex: 1; min-width: 120px;
-    background: var(--bg-input);
-    border: 1.5px solid var(--border-input);
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 8px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text);
     outline: none; transition: border-color 0.2s;
@@ -528,6 +558,119 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--spinner-track); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
 
+  /* ─── ELO TAB ─── */
+  .elo-tab-content {
+    width: 100%; max-width: 560px;
+  }
+
+  .elo-header {
+    text-align: center; margin-bottom: 32px;
+  }
+  .elo-header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; letter-spacing: 0.35em; color: var(--clay); margin-bottom: 6px;
+  }
+  .elo-header-desc {
+    font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.08em; max-width: 380px; margin: 0 auto;
+  }
+
+  .elo-leaderboard {
+    width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px;
+  }
+
+  .elo-row {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 12px; align-items: center;
+    background: var(--bg-card);
+    border: 1.5px solid var(--match-border);
+    border-radius: 14px; padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .elo-row:hover { border-color: rgba(242,201,76,0.35); background: var(--bg-card-hover); transform: translateX(3px); }
+  .elo-row.rank-1 { border-color: rgba(242,201,76,0.4); background: rgba(242,201,76,0.05); }
+  .elo-row.rank-2 { border-color: rgba(176,190,197,0.35); }
+  .elo-row.rank-3 { border-color: rgba(205,127,50,0.35); }
+  .elo-row.provisional { opacity: 0.6; }
+
+  .elo-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem; letter-spacing: 0.05em;
+    text-align: center; line-height: 1;
+  }
+  .rank-1 .elo-rank { color: var(--elo-gold); }
+  .rank-2 .elo-rank { color: var(--elo-silver); }
+  .rank-3 .elo-rank { color: var(--elo-bronze); }
+  .elo-row:not(.rank-1):not(.rank-2):not(.rank-3) .elo-rank { color: var(--text-muted); }
+
+  .elo-player-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .elo-player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 0.08em; color: var(--text);
+    text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .elo-player-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .elo-meta-chip {
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px;
+  }
+  .elo-meta-chip.win  { color: var(--green-light); border-color: rgba(74,140,92,0.3); background: rgba(74,140,92,0.1); }
+  .elo-meta-chip.loss { color: #e07070; border-color: rgba(224,112,112,0.2); background: rgba(224,112,112,0.08); }
+  .elo-meta-chip.prov { color: var(--clay); border-color: rgba(200,119,61,0.3); }
+
+  /* Form dots */
+  .elo-form { display: flex; gap: 3px; align-items: center; }
+  .form-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .form-dot.w { background: var(--green-light); }
+  .form-dot.d { background: var(--clay); }
+  .form-dot.l { background: #e07070; }
+
+  .elo-rating-block { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
+  .elo-rating-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem; line-height: 1;
+    letter-spacing: 0.03em;
+  }
+  .rank-1 .elo-rating-val { color: var(--elo-gold); }
+  .rank-2 .elo-rating-val { color: var(--elo-silver); }
+  .rank-3 .elo-rating-val { color: var(--elo-bronze); }
+  .elo-row:not(.rank-1):not(.rank-2):not(.rank-3) .elo-rating-val { color: var(--text); }
+
+  .elo-rating-delta {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.1em;
+  }
+  .elo-rating-delta.up   { color: var(--green-light); }
+  .elo-rating-delta.down { color: #e07070; }
+  .elo-rating-delta.flat { color: var(--text-faint); }
+
+  .elo-rating-lbl { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* Provisional section divider */
+  .elo-section-divider {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; margin: 8px 0 4px;
+  }
+  .elo-section-divider span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.2em; color: var(--text-faint); white-space: nowrap;
+  }
+  .elo-section-divider::before, .elo-section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* Elo history chart placeholder */
+  .elo-history-note {
+    text-align: center; padding: 20px;
+    font-size: 0.75rem; color: var(--text-faint); letter-spacing: 0.1em;
+  }
+
   /* MODALS SHARED */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
@@ -551,28 +694,17 @@
   }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-  .modal-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem; letter-spacing: 0.2em; color: var(--accent);
-    margin-bottom: 22px; text-align: center;
-  }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 22px; text-align: center; }
 
-  .modal-teams {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: start; margin-bottom: 20px;
-  }
-  .modal-team-label {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
-    color: var(--text-dim); margin-bottom: 6px;
-  }
+  .modal-teams { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: start; margin-bottom: 20px; }
+  .modal-team-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 6px; }
   .modal-team-label.team-a { color: var(--accent); }
   .modal-team-label.team-b { color: #7ab3e0; }
-
   .modal-vs-col { display: flex; align-items: center; justify-content: center; padding-top: 28px; }
 
   .modal-name-input {
     width: 100%;
-    background: var(--bg-input);
-    border: 1.5px solid var(--border-input);
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 10px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
     outline: none; transition: border-color 0.2s;
@@ -582,13 +714,8 @@
   .modal-name-input:last-child { margin-bottom: 0; }
   .modal-name-input:focus { border-color: var(--accent); }
 
-  .modal-score-row {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 16px;
-  }
-  .modal-score-label {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em;
-    color: var(--text-muted); text-align: center; margin-bottom: 6px;
-  }
+  .modal-score-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .modal-score-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-muted); text-align: center; margin-bottom: 6px; }
   .modal-score-input {
     width: 100%; height: 70px;
     background: var(--bg-input); border: 1.5px solid var(--border-input);
@@ -599,18 +726,13 @@
   .modal-vs { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--score-vs); text-align: center; }
 
   .modal-datetime-row { margin-bottom: 22px; }
-  .modal-datetime-label {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em;
-    color: var(--text-muted); margin-bottom: 6px;
-  }
+  .modal-datetime-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 6px; }
   .modal-datetime-input {
     width: 100%;
-    background: var(--bg-input);
-    border: 1.5px solid var(--border-input);
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
     border-radius: 8px; padding: 10px 12px;
     font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
-    outline: none; transition: border-color 0.2s;
-    color-scheme: dark;
+    outline: none; transition: border-color 0.2s; color-scheme: dark;
   }
   [data-theme="light"] .modal-datetime-input { color-scheme: light; }
   .modal-datetime-input:focus { border-color: var(--accent); }
@@ -636,57 +758,43 @@
   .player-modal {
     background: var(--bg-player-modal);
     border: 1.5px solid rgba(200,119,61,0.4);
-    border-radius: 18px;
-    padding: 28px 24px;
+    border-radius: 18px; padding: 28px 24px;
     width: 100%; max-width: 500px;
-    max-height: 85vh;
-    overflow-y: auto;
-    animation: slideUp 0.25s ease;
-    position: relative;
+    max-height: 85vh; overflow-y: auto;
+    animation: slideUp 0.25s ease; position: relative;
   }
 
-  .player-modal-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
-  }
-  .player-modal-name {
-    font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.1em; color: var(--accent);
+  .player-modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; gap: 12px; }
+  .player-modal-name-group { display: flex; flex-direction: column; gap: 4px; }
+  .player-modal-name { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.1em; color: var(--accent); }
+  .player-modal-elo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em;
+    color: var(--clay);
   }
   .modal-close-btn {
-    background: var(--close-btn-bg); border: 1.5px solid var(--border);
-    color: var(--text-mid); border-radius: 8px;
-    width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    background: var(--close-btn-bg); border: 1.5px solid var(--border); color: var(--text-mid);
+    border-radius: 8px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
   }
   .modal-close-btn:hover { background: rgba(200,119,61,0.2); color: var(--text); }
 
-  .player-stats-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;
-  }
-  .pstat-box {
-    background: var(--pstat-bg); border: 1px solid var(--pstat-border);
-    border-radius: 10px; padding: 12px 8px; text-align: center;
-  }
-  .pstat-val {
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); line-height: 1;
-  }
-  .pstat-lbl {
-    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--text-muted); margin-top: 4px;
-  }
+  .player-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+  .pstat-box { background: var(--pstat-bg); border: 1px solid var(--pstat-border); border-radius: 10px; padding: 12px 8px; text-align: center; }
+  .pstat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); line-height: 1; }
+  .pstat-lbl { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
 
   .player-winrate-section { margin-bottom: 24px; }
-  .player-winrate-label {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em;
-    color: var(--clay); margin-bottom: 6px; display: flex; justify-content: space-between;
-  }
+  .player-winrate-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--clay); margin-bottom: 6px; display: flex; justify-content: space-between; }
   .player-winrate-bar { height: 8px; background: var(--winrate-bg); border-radius: 4px; overflow: hidden; }
   .player-winrate-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 4px; transition: width 0.8s ease; }
 
-  .player-matches-title {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em;
-    color: var(--clay); margin-bottom: 12px; padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+  /* Elo history mini chart in player modal */
+  .player-elo-section { margin-bottom: 24px; }
+  .player-elo-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--clay); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .elo-spark { width: 100%; height: 60px; position: relative; }
+  .elo-spark svg { width: 100%; height: 100%; }
+
+  .player-matches-title { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em; color: var(--clay); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
   .player-match-item {
     background: var(--pm-match-bg); border: 1px solid var(--pm-match-border);
     border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
@@ -706,11 +814,19 @@
   .pm-result-badge.win  { background: rgba(74,140,92,0.25); color: var(--green-light); border: 1px solid rgba(74,140,92,0.3); }
   .pm-result-badge.loss { background: rgba(224,112,112,0.15); color: #e07070; border: 1px solid rgba(224,112,112,0.2); }
   .pm-result-badge.draw { background: rgba(200,119,61,0.15); color: var(--clay); border: 1px solid rgba(200,119,61,0.2); }
+  .pm-elo-delta { font-size: 0.62rem; letter-spacing: 0.08em; margin-top: 2px; }
+  .pm-elo-delta.up   { color: var(--green-light); }
+  .pm-elo-delta.down { color: #e07070; }
+
+  @media (max-width: 420px) {
+    .player-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .elo-row { grid-template-columns: 28px 1fr auto; }
+    .elo-rating-val { font-size: 1.6rem; }
+  }
 </style>
 </head>
 <body>
 
-<!-- THEME TOGGLE -->
 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
 
 <h1>PADEL SCORE</h1>
@@ -729,16 +845,33 @@
 
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('play')">⚡ Play</button>
-  <button class="tab-btn" onclick="switchTab('history')">📊 Stats & History</button>
+  <button class="tab-btn" onclick="switchTab('history')">📊 Stats</button>
+  <button class="tab-btn" onclick="switchTab('elo')">🏆 Elo</button>
 </div>
 
 <!-- PLAY TAB -->
 <div class="tab-content active" id="tab-play">
   <div class="input-section">
-    <div class="input-row"><span class="player-num">1</span><input type="text" id="p1" placeholder="Player one"   oninput="onPlayerInput()" /></div>
-    <div class="input-row"><span class="player-num">2</span><input type="text" id="p2" placeholder="Player two"   oninput="onPlayerInput()" /></div>
-    <div class="input-row"><span class="player-num">3</span><input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" /></div>
-    <div class="input-row"><span class="player-num">4</span><input type="text" id="p4" placeholder="Player four"  oninput="onPlayerInput()" /></div>
+    <div class="input-row">
+      <span class="player-num">1</span>
+      <input type="text" id="p1" placeholder="Player one"   oninput="onPlayerInput()" />
+      <span class="input-elo-badge provisional" id="elo-p1">—</span>
+    </div>
+    <div class="input-row">
+      <span class="player-num">2</span>
+      <input type="text" id="p2" placeholder="Player two"   oninput="onPlayerInput()" />
+      <span class="input-elo-badge provisional" id="elo-p2">—</span>
+    </div>
+    <div class="input-row">
+      <span class="player-num">3</span>
+      <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
+      <span class="input-elo-badge provisional" id="elo-p3">—</span>
+    </div>
+    <div class="input-row">
+      <span class="player-num">4</span>
+      <input type="text" id="p4" placeholder="Player four"  oninput="onPlayerInput()" />
+      <span class="input-elo-badge provisional" id="elo-p4">—</span>
+    </div>
     <p class="error" id="error"></p>
   </div>
 
@@ -766,16 +899,42 @@
     <p class="match-title">⚡ Today's Match</p>
     <div class="court">
       <div class="court-lines"><div class="line-v"></div><div class="line-h-left"></div><div class="line-h-right"></div></div>
+      <!-- Elo matchup top badge -->
+      <div class="court-elo-matchup" id="courtEloMatchup">ELO —</div>
       <div class="side side-left">
-        <div class="player-card"><div class="player-name" id="a1">—</div><div class="player-label">Player</div></div>
-        <div class="player-card"><div class="player-name" id="a2">—</div><div class="player-label">Player</div></div>
+        <div class="player-card">
+          <div class="player-name" id="a1">—</div>
+          <div class="player-elo" id="a1elo">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <div class="player-card">
+          <div class="player-name" id="a2">—</div>
+          <div class="player-elo" id="a2elo">—</div>
+          <div class="player-label">Player</div>
+        </div>
         <span class="team-label">TEAM A</span>
+        <div class="team-elo-bar">
+          <span>TEAM ELO</span>
+          <span class="team-elo-value" id="teamAElo">—</span>
+        </div>
       </div>
       <div class="net"><div class="net-post-top"></div><div class="net-mesh"></div><div class="net-post-bottom"></div></div>
       <div class="side side-right">
-        <div class="player-card"><div class="player-name" id="b1">—</div><div class="player-label">Player</div></div>
-        <div class="player-card"><div class="player-name" id="b2">—</div><div class="player-label">Player</div></div>
+        <div class="player-card">
+          <div class="player-name" id="b1">—</div>
+          <div class="player-elo" id="b1elo">—</div>
+          <div class="player-label">Player</div>
+        </div>
+        <div class="player-card">
+          <div class="player-name" id="b2">—</div>
+          <div class="player-elo" id="b2elo">—</div>
+          <div class="player-label">Player</div>
+        </div>
         <span class="team-label">TEAM B</span>
+        <div class="team-elo-bar">
+          <span>TEAM ELO</span>
+          <span class="team-elo-value" id="teamBElo">—</span>
+        </div>
       </div>
     </div>
 
@@ -787,12 +946,26 @@
       <div class="score-inputs">
         <div class="score-team">
           <div class="score-team-name" id="scoreTeamA">TEAM A</div>
-          <input class="score-input" type="number" id="scoreA" min="0" max="99" placeholder="0" />
+          <input class="score-input" type="number" id="scoreA" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
         </div>
         <div class="score-vs">VS</div>
         <div class="score-team">
           <div class="score-team-name" id="scoreTeamB">TEAM B</div>
-          <input class="score-input" type="number" id="scoreB" min="0" max="99" placeholder="0" />
+          <input class="score-input" type="number" id="scoreB" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
+        </div>
+      </div>
+      <!-- Elo change preview -->
+      <div class="elo-preview" id="eloPreview">
+        <div class="elo-preview-team">
+          <div class="elo-preview-label">Team A Elo</div>
+          <div class="elo-preview-val" id="previewA">—</div>
+          <div class="elo-change-hint" id="previewADelta"></div>
+        </div>
+        <div class="elo-preview-sep">⚡</div>
+        <div class="elo-preview-team">
+          <div class="elo-preview-label">Team B Elo</div>
+          <div class="elo-preview-val" id="previewB">—</div>
+          <div class="elo-change-hint" id="previewBDelta"></div>
         </div>
       </div>
       <button class="save-btn" id="saveBtn" onclick="saveMatch()">💾 Save Result</button>
@@ -822,6 +995,19 @@
   <div class="section-label">Match History</div>
   <div class="match-list" id="matchList">
     <div class="no-history">Loading…</div>
+  </div>
+</div>
+
+<!-- ELO TAB -->
+<div class="tab-content" id="tab-elo">
+  <div class="elo-tab-content">
+    <div class="elo-header">
+      <div class="elo-header-title">⚡ Elo Power Rankings</div>
+      <div class="elo-header-desc">Starting Elo 1200 · K-factor 32 · Minimum 3 games for ranked status · Click a player for full history</div>
+    </div>
+    <div class="elo-leaderboard" id="eloLeaderboard">
+      <div class="no-history">Loading…</div>
+    </div>
   </div>
 </div>
 
@@ -868,7 +1054,10 @@
 <div class="modal-overlay" id="playerModal" style="display:none;" onclick="handleModalOverlayClick(event,'playerModal')">
   <div class="player-modal">
     <div class="player-modal-header">
-      <div class="player-modal-name" id="pmName">PLAYER</div>
+      <div class="player-modal-name-group">
+        <div class="player-modal-name" id="pmName">PLAYER</div>
+        <div class="player-modal-elo" id="pmEloDisplay">ELO —</div>
+      </div>
       <button class="modal-close-btn" onclick="closeModal('playerModal')">✕</button>
     </div>
     <div class="player-stats-grid" id="pmStatsGrid"></div>
@@ -881,6 +1070,13 @@
         <div class="player-winrate-fill" id="pmWinrateFill" style="width:0%"></div>
       </div>
     </div>
+    <div class="player-elo-section">
+      <div class="player-elo-section-title">
+        <span>Elo History</span>
+        <span id="pmEloPeak" style="font-size:0.7rem;letter-spacing:0.1em;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400;"></span>
+      </div>
+      <div class="elo-spark" id="pmEloSpark"></div>
+    </div>
     <div class="player-matches-title">Match History</div>
     <div id="pmMatchList"></div>
   </div>
@@ -888,6 +1084,10 @@
 
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbwPreRnSFqTOhf0HGUejWjjwJNoPhVFEI7M4XExfS8XbVbMyx0oiFTInEMvqo8yg42H8Q/exec';
+
+  const ELO_DEFAULT = 1200;
+  const ELO_K       = 32;
+  const ELO_MIN_GAMES_RANKED = 3;
 
   let appData = { matches: [] };
   let players = [];
@@ -899,6 +1099,78 @@
   let isSaving = false;
   let editingMatchId = null;
 
+  // ─── ELO ENGINE ───────────────────────────────────────────────────────────
+  /**
+   * Compute Elo ratings by replaying all matches in chronological order.
+   * Returns { [playerName]: { rating, history: [{rating, matchId, delta}], gamesPlayed } }
+   */
+  function computeElo(matches) {
+    const ratings = {};  // playerName -> current rating
+    const history = {};  // playerName -> [{rating, matchId, delta, date}]
+    const gamesPlayed = {};
+
+    function getR(p) { return ratings[p] ?? ELO_DEFAULT; }
+
+    // Sort chronologically
+    const sorted = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sorted.forEach(m => {
+      const [a1, a2, b1, b2] = [...m.teamA, ...m.teamB];
+      const rA = (getR(a1) + getR(a2)) / 2;
+      const rB = (getR(b1) + getR(b2)) / 2;
+
+      // Expected scores
+      const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
+      const expB = 1 - expA;
+
+      // Actual scores
+      let actA, actB;
+      if (m.scoreA > m.scoreB)       { actA = 1; actB = 0; }
+      else if (m.scoreA < m.scoreB)  { actA = 0; actB = 1; }
+      else                           { actA = 0.5; actB = 0.5; }
+
+      // Deltas (same delta applied to each player on the team)
+      const dA = Math.round(ELO_K * (actA - expA));
+      const dB = Math.round(ELO_K * (actB - expB));
+
+      [a1, a2].forEach(p => {
+        const prev = getR(p);
+        ratings[p] = prev + dA;
+        gamesPlayed[p] = (gamesPlayed[p] || 0) + 1;
+        if (!history[p]) history[p] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
+        history[p].push({ rating: ratings[p], matchId: m.id, delta: dA, date: m.date });
+      });
+      [b1, b2].forEach(p => {
+        const prev = getR(p);
+        ratings[p] = prev + dB;
+        gamesPlayed[p] = (gamesPlayed[p] || 0) + 1;
+        if (!history[p]) history[p] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
+        history[p].push({ rating: ratings[p], matchId: m.id, delta: dB, date: m.date });
+      });
+    });
+
+    const result = {};
+    Object.keys(ratings).forEach(p => {
+      result[p] = {
+        rating: ratings[p],
+        history: history[p] || [{ rating: ELO_DEFAULT }],
+        gamesPlayed: gamesPlayed[p] || 0,
+      };
+    });
+    return result;
+  }
+
+  function getEloRatings() { return computeElo(appData.matches); }
+
+  function getPlayerElo(name) {
+    const all = getEloRatings();
+    return all[name]?.rating ?? ELO_DEFAULT;
+  }
+
+  function getTeamElo(team) {
+    return Math.round(team.reduce((s, p) => s + getPlayerElo(p), 0) / team.length);
+  }
+
   // ─── THEME TOGGLE ─────────────────────────────────────────────────────────
   function toggleTheme() {
     const html = document.documentElement;
@@ -909,7 +1181,6 @@
     try { localStorage.setItem('padel-theme', newTheme); } catch {}
   }
 
-  // Apply saved theme on load
   (function() {
     try {
       const saved = localStorage.getItem('padel-theme');
@@ -940,6 +1211,8 @@
       if (!Array.isArray(data.matches)) data = { matches: [] };
       appData = data;
       renderHistory();
+      renderEloTab();
+      updatePlayerEloBadges();
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setSyncStatus('ok', 'Synced ' + now);
     } catch (e) {
@@ -965,11 +1238,12 @@
   // ─── TABS ─────────────────────────────────────────────────────────────────
   function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', (i === 0) === (tab === 'play'));
+      b.classList.toggle('active', ['play','history','elo'][i] === tab);
     });
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     if (tab === 'history') renderHistory();
+    if (tab === 'elo') renderEloTab();
   }
 
   // ─── TEAM MODE ────────────────────────────────────────────────────────────
@@ -984,7 +1258,23 @@
   }
 
   function onPlayerInput() {
+    updatePlayerEloBadges();
     if (teamMode === 'manual') buildPickers();
+  }
+
+  function updatePlayerEloBadges() {
+    ['p1','p2','p3','p4'].forEach(id => {
+      const name = document.getElementById(id).value.trim().toUpperCase();
+      const badge = document.getElementById('elo-' + id);
+      if (!name) {
+        badge.textContent = '—';
+        badge.className = 'input-elo-badge provisional';
+        return;
+      }
+      const elo = getPlayerElo(name);
+      badge.textContent = elo;
+      badge.className = 'input-elo-badge';
+    });
   }
 
   function getPlayerNames() {
@@ -999,6 +1289,7 @@
   }
 
   function renderPickers(names) {
+    const eloRatings = getEloRatings();
     ['A','B'].forEach(team => {
       const myArr    = team === 'A' ? manualA : manualB;
       const otherArr = team === 'A' ? manualB : manualA;
@@ -1006,7 +1297,8 @@
         const inMe    = myArr.includes(name);
         const inOther = otherArr.includes(name);
         const cls = inMe ? (team === 'A' ? 'selected-a' : 'selected-b') : '';
-        return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${name}')" ${inOther && !inMe ? 'disabled' : ''}>${name}</button>`;
+        const elo = eloRatings[name]?.rating ?? ELO_DEFAULT;
+        return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${name}')" ${inOther && !inMe ? 'disabled' : ''}>${name} <span style="opacity:0.6;font-size:0.75em">${elo}</span></button>`;
       }).join('');
       const slots = document.getElementById('slots' + team);
       slots.innerHTML = myArr.length === 0
@@ -1064,17 +1356,80 @@
   }
 
   function renderCourt(tA, tB) {
+    const eloRatings = getEloRatings();
+    const eA = eloRatings[tA[0]]?.rating ?? ELO_DEFAULT;
+    const eA2 = eloRatings[tA[1]]?.rating ?? ELO_DEFAULT;
+    const eB = eloRatings[tB[0]]?.rating ?? ELO_DEFAULT;
+    const eB2 = eloRatings[tB[1]]?.rating ?? ELO_DEFAULT;
+    const teamAEloAvg = Math.round((eA + eA2) / 2);
+    const teamBEloAvg = Math.round((eB + eB2) / 2);
+
     document.getElementById('a1').textContent = tA[0];
     document.getElementById('a2').textContent = tA[1];
     document.getElementById('b1').textContent = tB[0];
     document.getElementById('b2').textContent = tB[1];
+    document.getElementById('a1elo').textContent = eA;
+    document.getElementById('a2elo').textContent = eA2;
+    document.getElementById('b1elo').textContent = eB;
+    document.getElementById('b2elo').textContent = eB2;
+    document.getElementById('teamAElo').textContent = teamAEloAvg;
+    document.getElementById('teamBElo').textContent = teamBEloAvg;
+
+    // Court center Elo matchup
+    const diff = teamAEloAvg - teamBEloAvg;
+    const diffStr = diff > 0 ? `+${diff} A` : diff < 0 ? `+${Math.abs(diff)} B` : 'EVEN';
+    document.getElementById('courtEloMatchup').textContent = `${teamAEloAvg} ⚡ ${teamBEloAvg}  (${diffStr})`;
+
     document.getElementById('scoreTeamA').textContent = tA[0].split(' ')[0] + ' & ' + tA[1].split(' ')[0];
     document.getElementById('scoreTeamB').textContent = tB[0].split(' ')[0] + ' & ' + tB[1].split(' ')[0];
     document.getElementById('scoreA').value = '';
     document.getElementById('scoreB').value = '';
     document.getElementById('saveSuccess').textContent = '';
+
+    // Set preview base values
+    document.getElementById('previewA').textContent = teamAEloAvg;
+    document.getElementById('previewB').textContent = teamBEloAvg;
+    document.getElementById('previewADelta').textContent = '';
+    document.getElementById('previewBDelta').textContent = '';
+
     const w = document.getElementById('courtWrapper');
     w.style.animation = 'none'; w.offsetHeight; w.style.animation = 'fadeUp 0.5s ease forwards';
+  }
+
+  // ─── ELO PREVIEW ──────────────────────────────────────────────────────────
+  function updateEloPreview() {
+    if (!currentTeamA.length) return;
+    const sA = parseInt(document.getElementById('scoreA').value);
+    const sB = parseInt(document.getElementById('scoreB').value);
+    if (isNaN(sA) || isNaN(sB)) return;
+
+    const eloRatings = getEloRatings();
+    const rA1 = eloRatings[currentTeamA[0]]?.rating ?? ELO_DEFAULT;
+    const rA2 = eloRatings[currentTeamA[1]]?.rating ?? ELO_DEFAULT;
+    const rB1 = eloRatings[currentTeamB[0]]?.rating ?? ELO_DEFAULT;
+    const rB2 = eloRatings[currentTeamB[1]]?.rating ?? ELO_DEFAULT;
+    const avgA = (rA1 + rA2) / 2;
+    const avgB = (rB1 + rB2) / 2;
+
+    const expA = 1 / (1 + Math.pow(10, (avgB - avgA) / 400));
+    const expB = 1 - expA;
+    let actA, actB;
+    if (sA > sB)      { actA = 1; actB = 0; }
+    else if (sA < sB) { actA = 0; actB = 1; }
+    else              { actA = 0.5; actB = 0.5; }
+
+    const dA = Math.round(ELO_K * (actA - expA));
+    const dB = Math.round(ELO_K * (actB - expB));
+
+    const newAvgA = Math.round(avgA) + dA;
+    const newAvgB = Math.round(avgB) + dB;
+
+    document.getElementById('previewA').textContent = newAvgA;
+    document.getElementById('previewB').textContent = newAvgB;
+    document.getElementById('previewADelta').textContent = (dA >= 0 ? '+' : '') + dA + ' pts each';
+    document.getElementById('previewADelta').style.color = dA >= 0 ? 'var(--green-light)' : '#e07070';
+    document.getElementById('previewBDelta').textContent = (dB >= 0 ? '+' : '') + dB + ' pts each';
+    document.getElementById('previewBDelta').style.color = dB >= 0 ? 'var(--green-light)' : '#e07070';
   }
 
   // ─── SAVE MATCH ───────────────────────────────────────────────────────────
@@ -1083,6 +1438,7 @@
     const sA = parseInt(document.getElementById('scoreA').value);
     const sB = parseInt(document.getElementById('scoreB').value);
     if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', '#e07070'); return; }
+    if (sA < 0 || sB < 0 || sA > 99 || sB > 99) { showSaveMsg('Scores must be between 0 and 99.', '#e07070'); return; }
     if (!currentTeamA.length)   { showSaveMsg('Generate teams first!', '#e07070'); return; }
 
     isSaving = true;
@@ -1091,7 +1447,7 @@
     btn.innerHTML = '<span class="spinner"></span>Saving…';
 
     appData.matches.unshift({
-      id: Date.now(),
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now(),
       date: new Date().toISOString(),
       teamA: [...currentTeamA],
       teamB: [...currentTeamB],
@@ -1101,6 +1457,8 @@
 
     try {
       await saveToServer();
+      renderEloTab();
+      updatePlayerEloBadges();
       showSaveMsg('✔ Match saved & synced!', '#5fa872');
     } catch {
       showSaveMsg('⚠ Saved — sync failed. Try refreshing.', '#e07070');
@@ -1159,19 +1517,19 @@
     if (!a1 || !a2 || !b1 || !b2) { alert('Please fill in all player names.'); return; }
     if (isNaN(sA) || isNaN(sB))   { alert('Please enter valid scores.'); return; }
     const btn = document.getElementById('editSaveBtn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
+    btn.disabled = true; btn.textContent = 'Saving…';
     const idx = appData.matches.findIndex(m => m.id === editingMatchId);
     if (idx !== -1) {
       const newDate = dtVal ? new Date(dtVal).toISOString() : appData.matches[idx].date;
       appData.matches[idx] = { ...appData.matches[idx], teamA: [a1, a2], teamB: [b1, b2], scoreA: sA, scoreB: sB, date: newDate };
     }
     renderHistory();
+    renderEloTab();
+    updatePlayerEloBadges();
     closeModal('editModal');
     try { await saveToServer(); }
     catch { setSyncStatus('error', 'Sync failed after edit'); }
-    btn.disabled = false;
-    btn.textContent = '💾 Save Changes';
+    btn.disabled = false; btn.textContent = '💾 Save Changes';
   }
 
   // ─── DATE FILTER ──────────────────────────────────────────────────────────
@@ -1192,8 +1550,118 @@
     });
   }
 
+  // ─── ELO TAB RENDER ───────────────────────────────────────────────────────
+  function renderEloTab() {
+    const container = document.getElementById('eloLeaderboard');
+    const eloData = getEloRatings();
+
+    if (!Object.keys(eloData).length) {
+      container.innerHTML = '<div class="no-history">No matches yet. Play some games to build Elo rankings!</div>';
+      return;
+    }
+
+    // Sort by rating desc
+    const sorted = Object.entries(eloData)
+      .sort((a, b) => b[1].rating - a[1].rating);
+
+    const ranked     = sorted.filter(([,d]) => d.gamesPlayed >= ELO_MIN_GAMES_RANKED);
+    const provisional = sorted.filter(([,d]) => d.gamesPlayed < ELO_MIN_GAMES_RANKED);
+
+    let html = '';
+
+    ranked.forEach(([name, data], idx) => {
+      html += buildEloRow(name, data, idx + 1, false);
+    });
+
+    if (provisional.length) {
+      html += `<div class="elo-section-divider"><span>PROVISIONAL (< ${ELO_MIN_GAMES_RANKED} games)</span></div>`;
+      provisional.forEach(([name, data]) => {
+        html += buildEloRow(name, data, null, true);
+      });
+    }
+
+    container.innerHTML = html;
+  }
+
+  function buildEloRow(name, data, rank, isProvisional) {
+    // Form: last 5 results
+    const playerMatches = appData.matches
+      .filter(m => m.teamA.includes(name) || m.teamB.includes(name))
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5);
+
+    const formDots = playerMatches.map(m => {
+      const inA = m.teamA.includes(name);
+      const ps = inA ? m.scoreA : m.scoreB;
+      const os = inA ? m.scoreB : m.scoreA;
+      if (ps > os) return '<span class="form-dot w" title="Win"></span>';
+      if (ps < os) return '<span class="form-dot l" title="Loss"></span>';
+      return '<span class="form-dot d" title="Draw"></span>';
+    }).join('');
+
+    // Delta from last match
+    const hist = data.history;
+    const lastDelta = hist.length > 1 ? hist[hist.length - 1].delta : 0;
+    const deltaStr = lastDelta > 0 ? `+${lastDelta}` : lastDelta < 0 ? `${lastDelta}` : '—';
+    const deltaClass = lastDelta > 0 ? 'up' : lastDelta < 0 ? 'down' : 'flat';
+
+    // W/D/L counts
+    let wins = 0, draws = 0, losses = 0;
+    playerMatches.forEach(m => {
+      const inA = m.teamA.includes(name);
+      const ps = inA ? m.scoreA : m.scoreB;
+      const os = inA ? m.scoreB : m.scoreA;
+      if (ps > os) wins++;
+      else if (ps < os) losses++;
+      else draws++;
+    });
+    // Full record
+    let fW = 0, fD = 0, fL = 0;
+    appData.matches.forEach(m => {
+      if (!m.teamA.includes(name) && !m.teamB.includes(name)) return;
+      const inA = m.teamA.includes(name);
+      const ps = inA ? m.scoreA : m.scoreB;
+      const os = inA ? m.scoreB : m.scoreA;
+      if (ps > os) fW++;
+      else if (ps < os) fL++;
+      else fD++;
+    });
+
+    const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+    const provClass = isProvisional ? ' provisional' : '';
+    const rankDisplay = rank ? rank : '?';
+
+    const safeName = name.replace(/'/g, "\\'");
+
+    return `
+      <div class="elo-row ${rankClass}${provClass}" onclick="openPlayerModal('${safeName}')" style="animation-delay:${(rank||10)*0.05}s">
+        <div class="elo-rank">${rankDisplay}</div>
+        <div class="elo-player-info">
+          <div class="elo-player-name">${name}</div>
+          <div class="elo-player-meta">
+            <span class="elo-meta-chip">${data.gamesPlayed}P</span>
+            <span class="elo-meta-chip win">${fW}W</span>
+            <span class="elo-meta-chip loss">${fL}L</span>
+            ${fD > 0 ? `<span class="elo-meta-chip">${fD}D</span>` : ''}
+            ${isProvisional ? `<span class="elo-meta-chip prov">Provisional</span>` : ''}
+          </div>
+          <div class="elo-form">${formDots}</div>
+        </div>
+        <div class="elo-rating-block">
+          <div class="elo-rating-val">${data.rating}</div>
+          <div class="elo-rating-delta ${deltaClass}">${deltaStr !== '—' ? deltaStr + ' last' : '—'}</div>
+          <div class="elo-rating-lbl">ELO</div>
+        </div>
+      </div>`;
+  }
+
   // ─── PLAYER STATS MODAL ───────────────────────────────────────────────────
   function openPlayerModal(playerName) {
+    const eloData = getEloRatings();
+    const playerElo = eloData[playerName];
+    const currentRating = playerElo?.rating ?? ELO_DEFAULT;
+    const eloHistory = playerElo?.history ?? [{ rating: ELO_DEFAULT }];
+
     const matches = appData.matches.filter(m => m.teamA.includes(playerName) || m.teamB.includes(playerName));
     let wins = 0, losses = 0, draws = 0, gf = 0, ga = 0;
     matches.forEach(m => {
@@ -1205,9 +1673,14 @@
       else if (ps < os) losses++;
       else draws++;
     });
-    const played = matches.length;
+    const played = wins + draws + losses;
     const wr = played ? Math.round((wins / played) * 100) : 0;
+
+    // Elo peak
+    const peakRating = Math.max(...eloHistory.map(h => h.rating));
+
     document.getElementById('pmName').textContent = playerName;
+    document.getElementById('pmEloDisplay').textContent = `ELO ${currentRating}${played >= ELO_MIN_GAMES_RANKED ? '' : '  (Provisional)'}`;
     document.getElementById('pmStatsGrid').innerHTML = `
       <div class="pstat-box"><div class="pstat-val">${played}</div><div class="pstat-lbl">Played</div></div>
       <div class="pstat-box"><div class="pstat-val">${wins}</div><div class="pstat-lbl">Wins</div></div>
@@ -1216,30 +1689,88 @@
     `;
     document.getElementById('pmWinratePct').textContent = wr + '%';
     setTimeout(() => { document.getElementById('pmWinrateFill').style.width = wr + '%'; }, 50);
-    const matchHTML = matches.map(m => {
-      const inA  = m.teamA.includes(playerName);
-      const ps   = inA ? m.scoreA : m.scoreB;
-      const os   = inA ? m.scoreB : m.scoreA;
-      const myT  = inA ? m.teamA : m.teamB;
-      const opT  = inA ? m.teamB : m.teamA;
-      const res  = ps > os ? 'win' : ps < os ? 'loss' : 'draw';
-      const resLabel = ps > os ? 'WIN' : ps < os ? 'LOSS' : 'DRAW';
-      const date = new Date(m.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-      return `<div class="player-match-item">
-        <div class="pm-team">
-          <div class="pm-team-names highlight">${myT.join(' & ')}</div>
-          <div class="pm-date">${date}</div>
-          <span class="pm-result-badge ${res}">${resLabel}</span>
-        </div>
-        <div class="pm-score">${ps} – ${os}</div>
-        <div class="pm-team pm-right">
-          <div class="pm-team-names dim">${opT.join(' & ')}</div>
-        </div>
-      </div>`;
-    }).join('') || '<div class="no-history" style="padding:20px 0">No matches found.</div>';
+
+    // Elo spark chart
+    document.getElementById('pmEloPeak').textContent = `Peak: ${peakRating}`;
+    renderEloSparkline(eloHistory, 'pmEloSpark');
+
+    // Match history with elo deltas
+    const matchHTML = matches
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map(m => {
+        const inA  = m.teamA.includes(playerName);
+        const ps   = inA ? m.scoreA : m.scoreB;
+        const os   = inA ? m.scoreB : m.scoreA;
+        const myT  = inA ? m.teamA : m.teamB;
+        const opT  = inA ? m.teamB : m.teamA;
+        const res  = ps > os ? 'win' : ps < os ? 'loss' : 'draw';
+        const resLabel = ps > os ? 'WIN' : ps < os ? 'LOSS' : 'DRAW';
+        const date = new Date(m.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+
+        // Find elo delta for this match
+        const matchHistEntry = eloHistory.find(h => h.matchId === m.id);
+        const delta = matchHistEntry?.delta ?? null;
+        const deltaHTML = delta !== null
+          ? `<div class="pm-elo-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta} ELO</div>`
+          : '';
+
+        return `<div class="player-match-item">
+          <div class="pm-team">
+            <div class="pm-team-names highlight">${myT.join(' & ')}</div>
+            <div class="pm-date">${date}</div>
+            <span class="pm-result-badge ${res}">${resLabel}</span>
+            ${deltaHTML}
+          </div>
+          <div class="pm-score">${ps} – ${os}</div>
+          <div class="pm-team pm-right">
+            <div class="pm-team-names dim">${opT.join(' & ')}</div>
+          </div>
+        </div>`;
+      }).join('') || '<div class="no-history" style="padding:20px 0">No matches found.</div>';
+
     document.getElementById('pmMatchList').innerHTML = matchHTML;
     document.getElementById('playerModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+  }
+
+  function renderEloSparkline(history, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container || history.length < 2) {
+      container.innerHTML = '<div style="text-align:center;font-size:0.7rem;color:var(--text-faint);padding:20px 0;letter-spacing:0.1em;">Not enough data yet</div>';
+      return;
+    }
+
+    const ratings = history.map(h => h.rating);
+    const min = Math.min(...ratings) - 20;
+    const max = Math.max(...ratings) + 20;
+    const range = max - min || 1;
+    const W = 400; const H = 60;
+
+    const points = ratings.map((r, i) => {
+      const x = (i / (ratings.length - 1)) * W;
+      const y = H - ((r - min) / range) * H;
+      return `${x},${y}`;
+    }).join(' ');
+
+    // Fill area below line
+    const firstX = 0;
+    const lastX = W;
+    const fillPoints = `0,${H} ${points} ${lastX},${H}`;
+
+    const currentColor = 'var(--accent)';
+    const svg = `
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f2c94c" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#f2c94c" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon points="${fillPoints}" fill="url(#spark-grad)"/>
+        <polyline points="${points}" fill="none" stroke="${currentColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="${(ratings.length-1)/(ratings.length-1)*W}" cy="${H - ((ratings[ratings.length-1]-min)/range)*H}" r="3" fill="${currentColor}"/>
+      </svg>`;
+    container.innerHTML = svg;
   }
 
   // ─── RENDER HISTORY ───────────────────────────────────────────────────────
@@ -1255,18 +1786,23 @@
       grid.innerHTML = '<div class="no-history" style="grid-column:1/-1">No matches yet. Play and save a game!</div>';
       return;
     }
+    const eloData = getEloRatings();
     const ps = {};
     matches.forEach(m => {
       const wonA = m.scoreA > m.scoreB, wonB = m.scoreB > m.scoreA;
-      [...m.teamA, ...m.teamB].forEach(p => { if (!ps[p]) ps[p] = { wins:0, losses:0, gf:0, ga:0 }; });
-      m.teamA.forEach(p => { ps[p].wins += wonA?1:0; ps[p].losses += wonB?1:0; ps[p].gf += m.scoreA; ps[p].ga += m.scoreB; });
-      m.teamB.forEach(p => { ps[p].wins += wonB?1:0; ps[p].losses += wonA?1:0; ps[p].gf += m.scoreB; ps[p].ga += m.scoreA; });
+      const draw = m.scoreA === m.scoreB;
+      [...m.teamA, ...m.teamB].forEach(p => { if (!ps[p]) ps[p] = { wins:0, losses:0, draws:0, gf:0, ga:0 }; });
+      m.teamA.forEach(p => { ps[p].wins += wonA?1:0; ps[p].losses += wonB?1:0; ps[p].draws += draw?1:0; ps[p].gf += m.scoreA; ps[p].ga += m.scoreB; });
+      m.teamB.forEach(p => { ps[p].wins += wonB?1:0; ps[p].losses += wonA?1:0; ps[p].draws += draw?1:0; ps[p].gf += m.scoreB; ps[p].ga += m.scoreA; });
     });
     grid.innerHTML = Object.entries(ps).map(([name, s]) => {
-      const played = s.wins + s.losses;
+      const played = s.wins + s.losses + s.draws;
       const wr = played ? Math.round((s.wins / played) * 100) : 0;
-      return `<div class="stat-card" onclick="openPlayerModal('${name.replace(/'/g,"\\'")}')">
+      const elo = eloData[name]?.rating ?? ELO_DEFAULT;
+      const safeName = name.replace(/'/g, "\\'");
+      return `<div class="stat-card" onclick="openPlayerModal('${safeName}')">
         <div class="stat-name">${name}</div>
+        <div class="stat-row"><span>Elo</span><span>${elo}</span></div>
         <div class="stat-row"><span>Played</span><span>${played}</span></div>
         <div class="stat-row"><span>Wins</span><span>${s.wins}</span></div>
         <div class="stat-row"><span>Losses</span><span>${s.losses}</span></div>
@@ -1293,14 +1829,19 @@
         <div class="match-team match-item-right">
           <div class="match-team-names${wonB?' winner':''}">${m.teamB.join(' & ')}</div>
         </div>
-        <button class="btn-edit-match" onclick="openEditModal(${m.id})" title="Edit match">✏️</button>
+        <button class="btn-edit-match" onclick="openEditModal('${m.id}')" title="Edit match">✏️</button>
       </div>`;
     }).join('');
   }
 
   // ─── EXPORT ───────────────────────────────────────────────────────────────
   function exportData() {
-    const blob = new Blob([JSON.stringify(appData, null, 2)], { type:'application/json' });
+    const eloData = getEloRatings();
+    const exportObj = {
+      ...appData,
+      eloRatings: Object.fromEntries(Object.entries(eloData).map(([k, v]) => [k, v.rating]))
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type:'application/json' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href = url; a.download = 'padel-score-data.json'; a.click();
