@@ -33,23 +33,31 @@
 
     <!-- ═══════════════════════════════ PLAY TAB ═══════════════════════════════ -->
     <div class="tab-content active" id="tab-play">
+
+        <!-- FORMAT SELECTOR -->
+        <div class="format-row">
+            <span class="format-label">FORMAT:</span>
+            <button class="format-btn active" id="format2v2" onclick="setFormat('2v2')">👥 2 vs 2</button>
+            <button class="format-btn" id="format1v1" onclick="setFormat('1v1')">🧍 1 vs 1</button>
+        </div>
+
         <div class="input-section">
-            <div class="input-row">
+            <div class="input-row" id="inputRow1">
                 <span class="player-num">1</span>
                 <input type="text" id="p1" placeholder="Player one" oninput="onPlayerInput()" />
                 <span class="input-elo-badge provisional" id="elo-p1">—</span>
             </div>
-            <div class="input-row">
+            <div class="input-row" id="inputRow2">
                 <span class="player-num">2</span>
                 <input type="text" id="p2" placeholder="Player two" oninput="onPlayerInput()" />
                 <span class="input-elo-badge provisional" id="elo-p2">—</span>
             </div>
-            <div class="input-row">
+            <div class="input-row" id="inputRow3">
                 <span class="player-num">3</span>
                 <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
                 <span class="input-elo-badge provisional" id="elo-p3">—</span>
             </div>
-            <div class="input-row">
+            <div class="input-row" id="inputRow4">
                 <span class="player-num">4</span>
                 <input type="text" id="p4" placeholder="Player four" oninput="onPlayerInput()" />
                 <span class="input-elo-badge provisional" id="elo-p4">—</span>
@@ -89,43 +97,49 @@
                     <div class="line-h-left"></div>
                     <div class="line-h-right"></div>
                 </div>
+
+                <!-- Corner team name labels -->
+                <div class="corner-label corner-label-a" id="cornerLabelA">TEAM A</div>
+                <div class="corner-label corner-label-b" id="cornerLabelB">TEAM B</div>
+
                 <div class="court-elo-matchup" id="courtEloMatchup">ELO —</div>
+
                 <div class="side side-left">
-                    <div class="player-card">
+                    <div class="player-card" id="playerCard1A">
                         <div class="player-name" id="a1">—</div>
                         <div class="player-elo" id="a1elo">—</div>
                         <div class="player-label">Player</div>
                     </div>
-                    <div class="player-card">
+                    <div class="player-card" id="playerCard2A">
                         <div class="player-name" id="a2">—</div>
                         <div class="player-elo" id="a2elo">—</div>
                         <div class="player-label">Player</div>
                     </div>
-                    <span class="team-label">TEAM A</span>
                     <div class="team-elo-bar">
-                        <span>TEAM ELO</span>
+                        <span>ELO</span>
                         <span class="team-elo-value" id="teamAElo">—</span>
                     </div>
                 </div>
+
                 <div class="net">
                     <div class="net-post-top"></div>
                     <div class="net-mesh"></div>
                     <div class="net-post-bottom"></div>
                 </div>
+
                 <div class="side side-right">
-                    <div class="player-card">
+                    <div class="player-card" id="playerCard1B">
                         <div class="player-name" id="b1">—</div>
                         <div class="player-elo" id="b1elo">—</div>
                         <div class="player-label">Player</div>
                     </div>
-                    <div class="player-card">
+                    <div class="player-card" id="playerCard2B">
                         <div class="player-name" id="b2">—</div>
                         <div class="player-elo" id="b2elo">—</div>
                         <div class="player-label">Player</div>
                     </div>
-                    <span class="team-label">TEAM B</span>
                     <div class="team-elo-bar">
-                        <span>TEAM ELO</span>
+                        <span>ELO</span>
                         <span class="team-elo-value" id="teamBElo">—</span>
                     </div>
                 </div>
@@ -149,13 +163,13 @@
                 </div>
                 <div class="elo-preview">
                     <div class="elo-preview-team">
-                        <div class="elo-preview-label">Team A Elo</div>
+                        <div class="elo-preview-label">A Elo After</div>
                         <div class="elo-preview-val" id="previewA">—</div>
                         <div class="elo-change-hint" id="previewADelta"></div>
                     </div>
                     <div class="elo-preview-sep">⚡</div>
                     <div class="elo-preview-team">
-                        <div class="elo-preview-label">Team B Elo</div>
+                        <div class="elo-preview-label">B Elo After</div>
                         <div class="elo-preview-val" id="previewB">—</div>
                         <div class="elo-change-hint" id="previewBDelta"></div>
                     </div>
@@ -192,8 +206,15 @@
         <div class="elo-tab-content">
             <div class="elo-header">
                 <div class="elo-header-title">⚡ Elo Power Rankings</div>
-                <div class="elo-header-desc">Starting Elo 1200 · K-factor 32 · Minimum 3 games for ranked status · Click a player for full history</div>
+                <div class="elo-header-desc" id="eloHeaderDesc">Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status · Click a player for details</div>
             </div>
+
+            <!-- 1v1 / 2v2 toggle -->
+            <div class="elo-view-toggle">
+                <button class="elo-view-btn active" id="eloView2v2" onclick="setEloTabView('2v2')">👥 2v2</button>
+                <button class="elo-view-btn" id="eloView1v1" onclick="setEloTabView('1v1')">🧍 1v1</button>
+            </div>
+
             <div class="elo-leaderboard" id="eloLeaderboard">
                 <div class="no-history">Loading…</div>
             </div>
@@ -208,13 +229,13 @@
                 <div>
                     <div class="modal-team-label team-a">⚡ Team A</div>
                     <input class="modal-name-input" id="editA1" type="text" placeholder="Player 1" />
-                    <input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" />
+                    <span id="editA2Row"><input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" /></span>
                 </div>
                 <div class="modal-vs-col"><span class="modal-vs">VS</span></div>
                 <div>
                     <div class="modal-team-label team-b">🌊 Team B</div>
                     <input class="modal-name-input" id="editB1" type="text" placeholder="Player 1" />
-                    <input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" />
+                    <span id="editB2Row"><input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" /></span>
                 </div>
             </div>
             <div class="modal-score-row">
@@ -261,7 +282,7 @@
             </div>
             <div class="player-elo-section">
                 <div class="player-elo-section-title">
-                    <span>Elo History</span>
+                    <span>2v2 Elo History</span>
                     <span id="pmEloPeak" style="font-size:0.7rem;letter-spacing:0.1em;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400;"></span>
                 </div>
                 <div class="elo-spark" id="pmEloSpark"></div>
@@ -272,7 +293,6 @@
     </div>
 
     <!-- ════════════════════════════ SCRIPTS ════════════════════════════════ -->
-    <!-- Load order matters: state first, then elo engine, then everything else -->
     <script src="js/state.js"></script>
     <script src="js/elo.js"></script>
     <script src="js/sync.js"></script>
@@ -282,7 +302,6 @@
     <script src="js/modals.js"></script>
 
     <script>
-        // Entry point — runs after all scripts are loaded
         loadFromServer();
     </script>
 
