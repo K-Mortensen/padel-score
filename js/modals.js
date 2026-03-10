@@ -64,6 +64,7 @@ async function saveEdit() {
         const newTeamA = is1v1 ? [a1] : [a1, a2];
         const newTeamB = is1v1 ? [b1] : [b1, b2];
         appData.matches[idx] = { ...appData.matches[idx], teamA: newTeamA, teamB: newTeamB, scoreA: sA, scoreB: sB, date: newDate };
+        invalidateEloCache();
     }
 
     renderHistory();

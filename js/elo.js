@@ -2,6 +2,22 @@
 // Computes Elo ratings by replaying all matches in chronological order.
 // Returns { [playerName]: { rating, history: [{rating, matchId, delta, date}], gamesPlayed } }
 
+// ── Cache ──────────────────────────────────────────────────────────────────
+let _eloCache = {};
+function invalidateEloCache() { _eloCache = {}; }
+
+// ── Shared delta helper ────────────────────────────────────────────────────
+function computeEloDelta(rA, rB, scoreA, scoreB) {
+    const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
+    let actA;
+    if (scoreA > scoreB) actA = 1;
+    else if (scoreA < scoreB) actA = 0;
+    else actA = 0.5;
+    const dA = Math.round(ELO_K * (actA - expA));
+    const dB = Math.round(ELO_K * ((1 - actA) - (1 - expA)));
+    return { dA, dB };
+}
+
 function computeElo(matches, format) {
     // format: '2v2' or '1v1'. If undefined, compute for all matches (legacy).
     const filteredMatches = format
@@ -14,7 +30,15 @@ function computeElo(matches, format) {
 
     function getR(p) { return ratings[p] ?? ELO_DEFAULT; }
 
-    const sorted = [...filteredMatches].sort((a, b) => new Date(a.date) - new Date(b.date));
+    // ISO date strings sort correctly as plain strings — no Date construction needed
+    const sorted = [...filteredMatches].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+    function applyUpdate(p, delta, m) {
+        ratings[p] = getR(p) + delta;
+        gamesPlayed[p] = (gamesPlayed[p] || 0) + 1;
+        if (!history[p]) history[p] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
+        history[p].push({ rating: ratings[p], matchId: m.id, delta, date: m.date });
+    }
 
     sorted.forEach(m => {
         const is1v1 = (m.format || '2v2') === '1v1';
@@ -22,57 +46,16 @@ function computeElo(matches, format) {
         if (is1v1) {
             const [a1] = m.teamA;
             const [b1] = m.teamB;
-            const rA = getR(a1);
-            const rB = getR(b1);
-
-            const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
-            const expB = 1 - expA;
-
-            let actA, actB;
-            if (m.scoreA > m.scoreB) { actA = 1; actB = 0; }
-            else if (m.scoreA < m.scoreB) { actA = 0; actB = 1; }
-            else { actA = 0.5; actB = 0.5; }
-
-            const dA = Math.round(ELO_K * (actA - expA));
-            const dB = Math.round(ELO_K * (actB - expB));
-
-            ratings[a1] = getR(a1) + dA;
-            gamesPlayed[a1] = (gamesPlayed[a1] || 0) + 1;
-            if (!history[a1]) history[a1] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
-            history[a1].push({ rating: ratings[a1], matchId: m.id, delta: dA, date: m.date });
-
-            ratings[b1] = getR(b1) + dB;
-            gamesPlayed[b1] = (gamesPlayed[b1] || 0) + 1;
-            if (!history[b1]) history[b1] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
-            history[b1].push({ rating: ratings[b1], matchId: m.id, delta: dB, date: m.date });
+            const { dA, dB } = computeEloDelta(getR(a1), getR(b1), m.scoreA, m.scoreB);
+            applyUpdate(a1, dA, m);
+            applyUpdate(b1, dB, m);
         } else {
             const [a1, a2, b1, b2] = [...m.teamA, ...m.teamB];
             const rA = (getR(a1) + getR(a2)) / 2;
             const rB = (getR(b1) + getR(b2)) / 2;
-
-            const expA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
-            const expB = 1 - expA;
-
-            let actA, actB;
-            if (m.scoreA > m.scoreB) { actA = 1; actB = 0; }
-            else if (m.scoreA < m.scoreB) { actA = 0; actB = 1; }
-            else { actA = 0.5; actB = 0.5; }
-
-            const dA = Math.round(ELO_K * (actA - expA));
-            const dB = Math.round(ELO_K * (actB - expB));
-
-            [a1, a2].forEach(p => {
-                ratings[p] = getR(p) + dA;
-                gamesPlayed[p] = (gamesPlayed[p] || 0) + 1;
-                if (!history[p]) history[p] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
-                history[p].push({ rating: ratings[p], matchId: m.id, delta: dA, date: m.date });
-            });
-            [b1, b2].forEach(p => {
-                ratings[p] = getR(p) + dB;
-                gamesPlayed[p] = (gamesPlayed[p] || 0) + 1;
-                if (!history[p]) history[p] = [{ rating: ELO_DEFAULT, matchId: null, delta: 0, date: null }];
-                history[p].push({ rating: ratings[p], matchId: m.id, delta: dB, date: m.date });
-            });
+            const { dA, dB } = computeEloDelta(rA, rB, m.scoreA, m.scoreB);
+            [a1, a2].forEach(p => applyUpdate(p, dA, m));
+            [b1, b2].forEach(p => applyUpdate(p, dB, m));
         }
     });
 
@@ -88,11 +71,13 @@ function computeElo(matches, format) {
 }
 
 function getEloRatings(format) {
-    return computeElo(appData.matches, format || '2v2');
+    const fmt = format || '2v2';
+    if (!_eloCache[fmt]) _eloCache[fmt] = computeElo(appData.matches, fmt);
+    return _eloCache[fmt];
 }
 
 function getElo1v1Ratings() {
-    return computeElo(appData.matches, '1v1');
+    return getEloRatings('1v1');
 }
 
 function getPlayerElo(name, format) {

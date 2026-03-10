@@ -47,13 +47,20 @@ function renderEloTab() {
 function buildEloRow(name, data, rank, isProvisional) {
     const fmt = eloTabView;
 
-    // Last 5 matches of correct format for form dots
+    // Single pass: collect all player matches in this format, sorted newest-first
     const playerMatches = appData.matches
         .filter(m => (m.format || '2v2') === fmt && (m.teamA.includes(name) || m.teamB.includes(name)))
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 5);
+        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
-    const formDots = playerMatches.map(m => {
+    let fW = 0, fD = 0, fL = 0;
+    playerMatches.forEach(m => {
+        const inA = m.teamA.includes(name);
+        const ps = inA ? m.scoreA : m.scoreB;
+        const os = inA ? m.scoreB : m.scoreA;
+        if (ps > os) fW++; else if (ps < os) fL++; else fD++;
+    });
+
+    const formDots = playerMatches.slice(0, 5).map(m => {
         const inA = m.teamA.includes(name);
         const ps = inA ? m.scoreA : m.scoreB;
         const os = inA ? m.scoreB : m.scoreA;
@@ -66,19 +73,6 @@ function buildEloRow(name, data, rank, isProvisional) {
     const lastDelta = hist.length > 1 ? hist[hist.length - 1].delta : 0;
     const deltaStr = lastDelta > 0 ? `+${lastDelta}` : lastDelta < 0 ? `${lastDelta}` : '—';
     const deltaClass = lastDelta > 0 ? 'up' : lastDelta < 0 ? 'down' : 'flat';
-
-    let fW = 0, fD = 0, fL = 0;
-    appData.matches
-        .filter(m => (m.format || '2v2') === fmt)
-        .forEach(m => {
-            if (!m.teamA.includes(name) && !m.teamB.includes(name)) return;
-            const inA = m.teamA.includes(name);
-            const ps = inA ? m.scoreA : m.scoreB;
-            const os = inA ? m.scoreB : m.scoreA;
-            if (ps > os) fW++;
-            else if (ps < os) fL++;
-            else fD++;
-        });
 
     const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
     const provClass = isProvisional ? ' provisional' : '';

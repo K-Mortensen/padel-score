@@ -1,10 +1,6 @@
 // ─── TABS ─────────────────────────────────────────────────────────────────
 function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-        b.classList.toggle('active', ['play', 'history', 'elo'].indexOf(tab) !== -1
-            ? ['play', 'history', 'elo'][i] === tab
-            : i === 0);
-    });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
     if (tab === 'history') renderHistory();
@@ -65,6 +61,7 @@ function onPlayerInput() {
 
 function updatePlayerEloBadges() {
     const fmt = matchFormat || '2v2';
+    const ratings = getEloRatings(fmt);
     ['p1', 'p2', 'p3', 'p4'].forEach(id => {
         const input = document.getElementById(id);
         const badge = document.getElementById('elo-' + id);
@@ -75,7 +72,7 @@ function updatePlayerEloBadges() {
             badge.className = 'input-elo-badge provisional';
             return;
         }
-        badge.textContent = getPlayerElo(name, fmt);
+        badge.textContent = ratings[name]?.rating ?? ELO_DEFAULT;
         badge.className = 'input-elo-badge';
     });
 }
@@ -182,8 +179,8 @@ function renderCourt(tA, tB) {
     const eB = eloRatings[tB[0]]?.rating ?? ELO_DEFAULT;
     const eB2 = tB[1] ? (eloRatings[tB[1]]?.rating ?? ELO_DEFAULT) : null;
 
-    const teamAElo = is1v1 ? eA : Math.round((eA + eA2) / 2);
-    const teamBElo = is1v1 ? eB : Math.round((eB + eB2) / 2);
+    const teamAElo = getTeamElo(tA, fmt);
+    const teamBElo = getTeamElo(tB, fmt);
 
     // Corner labels
     document.getElementById('cornerLabelA').textContent = is1v1 ? tA[0] : 'TEAM A';
@@ -233,34 +230,13 @@ function updateEloPreview() {
     if (isNaN(sA) || isNaN(sB)) return;
 
     const fmt = matchFormat || '2v2';
-    const eloRatings = getEloRatings(fmt);
     const is1v1 = fmt === '1v1';
+    const avgA = getTeamElo(currentTeamA, fmt);
+    const avgB = getTeamElo(currentTeamB, fmt);
+    const { dA, dB } = computeEloDelta(avgA, avgB, sA, sB);
 
-    let avgA, avgB;
-    if (is1v1) {
-        avgA = eloRatings[currentTeamA[0]]?.rating ?? ELO_DEFAULT;
-        avgB = eloRatings[currentTeamB[0]]?.rating ?? ELO_DEFAULT;
-    } else {
-        const rA1 = eloRatings[currentTeamA[0]]?.rating ?? ELO_DEFAULT;
-        const rA2 = eloRatings[currentTeamA[1]]?.rating ?? ELO_DEFAULT;
-        const rB1 = eloRatings[currentTeamB[0]]?.rating ?? ELO_DEFAULT;
-        const rB2 = eloRatings[currentTeamB[1]]?.rating ?? ELO_DEFAULT;
-        avgA = (rA1 + rA2) / 2;
-        avgB = (rB1 + rB2) / 2;
-    }
-
-    const expA = 1 / (1 + Math.pow(10, (avgB - avgA) / 400));
-    const expB = 1 - expA;
-    let actA, actB;
-    if (sA > sB) { actA = 1; actB = 0; }
-    else if (sA < sB) { actA = 0; actB = 1; }
-    else { actA = 0.5; actB = 0.5; }
-
-    const dA = Math.round(ELO_K * (actA - expA));
-    const dB = Math.round(ELO_K * (actB - expB));
-
-    document.getElementById('previewA').textContent = Math.round(avgA) + dA;
-    document.getElementById('previewB').textContent = Math.round(avgB) + dB;
+    document.getElementById('previewA').textContent = avgA + dA;
+    document.getElementById('previewB').textContent = avgB + dB;
 
     const fmtDelta = (d) => (d >= 0 ? '+' : '') + d + ' pts';
     document.getElementById('previewADelta').textContent = fmtDelta(dA) + (is1v1 ? '' : ' each');
@@ -292,6 +268,7 @@ async function saveMatch() {
         scoreA: sA,
         scoreB: sB,
     });
+    invalidateEloCache();
 
     try {
         await saveToServer();
