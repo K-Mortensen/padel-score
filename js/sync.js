@@ -1,10 +1,14 @@
 // ─── THEME TOGGLE ─────────────────────────────────────────────────────────
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
 function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-    document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+    applyTheme(newTheme);
     try { localStorage.setItem('padel-theme', newTheme); } catch { }
 }
 
@@ -12,11 +16,7 @@ function toggleTheme() {
 (function () {
     try {
         const saved = localStorage.getItem('padel-theme');
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            const btn = document.getElementById('themeToggle');
-            if (btn) btn.textContent = '🌙';
-        }
+        if (saved) applyTheme(saved);
     } catch { }
 })();
 
@@ -39,6 +39,7 @@ async function loadFromServer(silent = false) {
         try { data = JSON.parse(text); } catch { data = { matches: [] }; }
         if (!Array.isArray(data.matches)) data = { matches: [] };
         appData = data;
+        invalidateEloCache();
         renderHistory();
         renderEloTab();
         updatePlayerEloBadges();
