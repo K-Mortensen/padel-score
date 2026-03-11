@@ -50,9 +50,8 @@ function renderStats(matches) {
         const wr = played ? Math.round((s.wins / played) * 100) : 0;
         const elo2v2 = eloData2v2[name]?.rating ?? ELO_DEFAULT;
         const elo1v1 = eloData1v1[name]?.rating;
-        const safeName = name.replace(/'/g, "\\'");
-        return `<div class="stat-card" onclick="openPlayerModal('${safeName}')">
-      <div class="stat-name">${name}</div>
+        return `<div class="stat-card" onclick="openPlayerModal('${esc(name)}')">
+      <div class="stat-name">${esc(name)}</div>
       <div class="stat-row"><span>2v2 Elo</span><span>${elo2v2}</span></div>
       ${elo1v1 !== undefined ? `<div class="stat-row"><span>1v1 Elo</span><span>${elo1v1}</span></div>` : ''}
       <div class="stat-row"><span>Played</span><span>${played}</span></div>
@@ -80,14 +79,14 @@ function renderMatches(matches) {
         const badge = is1v1 ? '<span style="font-size:0.6rem;background:rgba(242,201,76,0.15);color:var(--accent);border:1px solid rgba(242,201,76,0.3);border-radius:4px;padding:1px 6px;letter-spacing:0.1em;">1v1</span>' : '';
         return `<div class="match-item">
       <div class="match-team">
-        <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.join(' & ')}</div>
+        <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.map(esc).join(' & ')}</div>
         <div class="match-date">${date} ${badge}</div>
       </div>
       <div class="match-score-display">${m.scoreA} – ${m.scoreB}</div>
       <div class="match-team match-item-right">
-        <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.join(' & ')}</div>
+        <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.map(esc).join(' & ')}</div>
       </div>
-      <button class="btn-edit-match" onclick="openEditModal('${m.id}')" title="Edit match">✏️</button>
+      <button class="btn-edit-match" onclick="openEditModal('${esc(String(m.id))}')" title="Edit match">✏️</button>
     </div>`;
     }).join('');
 }

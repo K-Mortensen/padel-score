@@ -154,14 +154,14 @@ function openPlayerModal(playerName, preferredFmt) {
 
             return `<div class="player-match-item">
         <div class="pm-team">
-          <div class="pm-team-names highlight">${myT.join(' & ')}${fmtBadge}</div>
+          <div class="pm-team-names highlight">${myT.map(esc).join(' & ')}${fmtBadge}</div>
           <div class="pm-date">${date}</div>
           <span class="pm-result-badge ${res}">${resLabel}</span>
           ${deltaHTML}
         </div>
         <div class="pm-score">${ps} – ${os}</div>
         <div class="pm-team pm-right">
-          <div class="pm-team-names dim">${opT.join(' & ')}</div>
+          <div class="pm-team-names dim">${opT.map(esc).join(' & ')}</div>
         </div>
       </div>`;
         }).join('') || '<div class="no-history" style="padding:20px 0">No matches found.</div>';

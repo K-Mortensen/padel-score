@@ -91,7 +91,7 @@ function buildPickers() {
 }
 
 function renderPickers(names) {
-    const eloRatings = getEloRatings('2v2');
+    const eloRatings = getEloRatings(matchFormat || '2v2');
     ['A', 'B'].forEach(team => {
         const myArr = team === 'A' ? manualA : manualB;
         const otherArr = team === 'A' ? manualB : manualA;
@@ -100,13 +100,13 @@ function renderPickers(names) {
             const inOther = otherArr.includes(name);
             const cls = inMe ? (team === 'A' ? 'selected-a' : 'selected-b') : '';
             const elo = eloRatings[name]?.rating ?? ELO_DEFAULT;
-            return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${name}')" ${inOther && !inMe ? 'disabled' : ''}>${name} <span style="opacity:0.6;font-size:0.75em">${elo}</span></button>`;
+            return `<button class="pick-btn ${cls}" onclick="togglePick('${team}','${esc(name)}')" ${inOther && !inMe ? 'disabled' : ''}>${esc(name)} <span style="opacity:0.6;font-size:0.75em">${elo}</span></button>`;
         }).join('');
 
         const slots = document.getElementById('slots' + team);
         slots.innerHTML = myArr.length === 0
             ? `<span style="font-size:0.75rem;letter-spacing:0.1em;opacity:0.3;">— no players selected —</span>`
-            : myArr.map(name => `<span class="slot-chip slot-chip-${team.toLowerCase()}">${name} <button onclick="removePick('${team}','${name}')">✕</button></span>`).join('');
+            : myArr.map(name => `<span class="slot-chip slot-chip-${team.toLowerCase()}">${esc(name)} <button onclick="removePick('${team}','${esc(name)}')">✕</button></span>`).join('');
     });
 }
 
@@ -162,7 +162,11 @@ function generateTeams() {
 
 function shuffle() {
     if (!players.length || matchFormat === '1v1') return;
-    const s = [...players].sort(() => Math.random() - 0.5);
+    const s = [...players];
+    for (let i = s.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [s[i], s[j]] = [s[j], s[i]];
+    }
     currentTeamA = [s[0], s[1]];
     currentTeamB = [s[2], s[3]];
     renderCourt(currentTeamA, currentTeamB);
