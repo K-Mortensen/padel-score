@@ -8,6 +8,34 @@ function setEloTabView(view) {
     renderEloTab();
 }
 
+// Precompute per-player W/L/D stats and recent form for the given format
+// in a single pass over matches, instead of filtering per player (O(n*m) -> O(m)).
+function computePlayerStats(fmt) {
+    const stats = {};   // { name: { w, l, d, recent: [{result, date}] } }
+
+    appData.matches.forEach(m => {
+        if ((m.format || '2v2') !== fmt) return;
+        const process = (team, ps, os) => {
+            team.forEach(name => {
+                if (!stats[name]) stats[name] = { w: 0, l: 0, d: 0, recent: [] };
+                const res = ps > os ? 'w' : ps < os ? 'l' : 'd';
+                stats[name][res]++;
+                stats[name].recent.push({ res, date: m.date });
+            });
+        };
+        process(m.teamA, m.scoreA, m.scoreB);
+        process(m.teamB, m.scoreB, m.scoreA);
+    });
+
+    // Sort recent matches newest-first and keep only 5
+    Object.values(stats).forEach(s => {
+        s.recent.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        s.recent = s.recent.slice(0, 5);
+    });
+
+    return stats;
+}
+
 function renderEloTab() {
     const container = document.getElementById('eloLeaderboard');
     const eloData = eloTabView === '1v1' ? getElo1v1Ratings() : getEloRatings('2v2');
@@ -25,47 +53,34 @@ function renderEloTab() {
         return;
     }
 
+    const playerStats = computePlayerStats(eloTabView);
+
     const sorted = Object.entries(eloData).sort((a, b) => b[1].rating - a[1].rating);
     const ranked = sorted.filter(([, d]) => d.gamesPlayed >= ELO_MIN_GAMES_RANKED);
     const provisional = sorted.filter(([, d]) => d.gamesPlayed < ELO_MIN_GAMES_RANKED);
 
     let html = '';
     ranked.forEach(([name, data], idx) => {
-        html += buildEloRow(name, data, idx + 1, false);
+        html += buildEloRow(name, data, idx + 1, false, playerStats[name]);
     });
 
     if (provisional.length) {
         html += `<div class="elo-section-divider"><span>PROVISIONAL (< ${ELO_MIN_GAMES_RANKED} games)</span></div>`;
         provisional.forEach(([name, data]) => {
-            html += buildEloRow(name, data, null, true);
+            html += buildEloRow(name, data, null, true, playerStats[name]);
         });
     }
 
     container.innerHTML = html;
 }
 
-function buildEloRow(name, data, rank, isProvisional) {
+function buildEloRow(name, data, rank, isProvisional, stats) {
     const fmt = eloTabView;
+    const s = stats || { w: 0, l: 0, d: 0, recent: [] };
 
-    // Single pass: collect all player matches in this format, sorted newest-first
-    const playerMatches = appData.matches
-        .filter(m => (m.format || '2v2') === fmt && (m.teamA.includes(name) || m.teamB.includes(name)))
-        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-
-    let fW = 0, fD = 0, fL = 0;
-    playerMatches.forEach(m => {
-        const inA = m.teamA.includes(name);
-        const ps = inA ? m.scoreA : m.scoreB;
-        const os = inA ? m.scoreB : m.scoreA;
-        if (ps > os) fW++; else if (ps < os) fL++; else fD++;
-    });
-
-    const formDots = playerMatches.slice(0, 5).map(m => {
-        const inA = m.teamA.includes(name);
-        const ps = inA ? m.scoreA : m.scoreB;
-        const os = inA ? m.scoreB : m.scoreA;
-        if (ps > os) return '<span class="form-dot w" title="Win"></span>';
-        if (ps < os) return '<span class="form-dot l" title="Loss"></span>';
+    const formDots = s.recent.map(r => {
+        if (r.res === 'w') return '<span class="form-dot w" title="Win"></span>';
+        if (r.res === 'l') return '<span class="form-dot l" title="Loss"></span>';
         return '<span class="form-dot d" title="Draw"></span>';
     }).join('');
 
@@ -77,18 +92,17 @@ function buildEloRow(name, data, rank, isProvisional) {
     const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
     const provClass = isProvisional ? ' provisional' : '';
     const rankDisplay = rank ?? '?';
-    const safeName = name.replace(/'/g, "\\'");
 
     return `
-    <div class="elo-row ${rankClass}${provClass}" onclick="openPlayerModal('${safeName}','${fmt}')" style="animation-delay:${(rank || 10) * 0.05}s">
+    <div class="elo-row ${rankClass}${provClass}" onclick="openPlayerModal('${esc(name)}','${fmt}')" style="animation-delay:${(rank || 10) * 0.05}s">
       <div class="elo-rank">${rankDisplay}</div>
       <div class="elo-player-info">
-        <div class="elo-player-name">${name}</div>
+        <div class="elo-player-name">${esc(name)}</div>
         <div class="elo-player-meta">
           <span class="elo-meta-chip">${data.gamesPlayed}P</span>
-          <span class="elo-meta-chip win">${fW}W</span>
-          <span class="elo-meta-chip loss">${fL}L</span>
-          ${fD > 0 ? `<span class="elo-meta-chip">${fD}D</span>` : ''}
+          <span class="elo-meta-chip win">${s.w}W</span>
+          <span class="elo-meta-chip loss">${s.l}L</span>
+          ${s.d > 0 ? `<span class="elo-meta-chip">${s.d}D</span>` : ''}
           ${isProvisional ? `<span class="elo-meta-chip prov">Provisional</span>` : ''}
         </div>
         <div class="elo-form">${formDots}</div>

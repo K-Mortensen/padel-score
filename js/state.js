@@ -16,3 +16,8 @@ let manualA = [];
 let manualB = [];
 let isSaving = false;
 let editingMatchId = null;
+
+// ─── HTML ESCAPE HELPER ──────────────────────────────────────────────────
+function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}

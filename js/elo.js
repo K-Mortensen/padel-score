@@ -14,7 +14,7 @@ function computeEloDelta(rA, rB, scoreA, scoreB) {
     else if (scoreA < scoreB) actA = 0;
     else actA = 0.5;
     const dA = Math.round(ELO_K * (actA - expA));
-    const dB = Math.round(ELO_K * ((1 - actA) - (1 - expA)));
+    const dB = -dA; // ensure zero-sum (independent rounding can leak Elo)
     return { dA, dB };
 }
 
