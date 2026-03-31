@@ -71,8 +71,16 @@ function showMainApp() {
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
         await createOrUpdateProfile(session.user);
-        const { data: profile } = await supabaseClient
-            .from('profiles').select('*').eq('id', session.user.id).single();
+
+        // Retry profile fetch up to 3 times
+        let profile = null;
+        for (let i = 0; i < 3; i++) {
+            const { data } = await supabaseClient
+                .from('profiles').select('*').eq('id', session.user.id).single();
+            if (data) { profile = data; break; }
+            await new Promise(r => setTimeout(r, 500));
+        }
+
         currentUser = profile ? { ...session.user, ...profile } : session.user;
         await loadUserClub();
     } else {

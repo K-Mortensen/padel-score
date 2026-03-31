@@ -18,6 +18,15 @@ async function loadUserClub() {
 
 // ─── CREATE CLUB ──────────────────────────────────────────────────────────
 async function createClub() {
+    // Guard: make sure user is loaded
+    if (!currentUser) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) { alert('Not logged in. Please refresh and try again.'); return; }
+        const { data: profile } = await supabaseClient
+            .from('profiles').select('*').eq('id', user.id).single();
+        currentUser = profile ? { ...user, ...profile } : user;
+    }
+
     const nameInput = document.getElementById('newClubName');
     const name = nameInput.value.trim();
     if (!name) { alert('Please enter a club name.'); return; }
@@ -45,6 +54,15 @@ async function createClub() {
 
 // ─── JOIN CLUB ────────────────────────────────────────────────────────────
 async function joinClub() {
+    // Guard: make sure user is loaded
+    if (!currentUser) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) { alert('Not logged in. Please refresh and try again.'); return; }
+        const { data: profile } = await supabaseClient
+            .from('profiles').select('*').eq('id', user.id).single();
+        currentUser = profile ? { ...user, ...profile } : user;
+    }
+
     const codeInput = document.getElementById('joinClubCode');
     const code = codeInput.value.trim().toUpperCase();
     if (!code) { alert('Please enter an invite code.'); return; }
@@ -76,6 +94,7 @@ async function copyInviteCode() {
     try {
         await navigator.clipboard.writeText(currentClub.invite_code);
         const btn = document.getElementById('copyCodeBtn');
+        if (!btn) return;
         const original = btn.textContent;
         btn.textContent = '✓ Copied!';
         setTimeout(() => btn.textContent = original, 2000);
