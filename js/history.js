@@ -77,6 +77,7 @@ function renderMatches(matches) {
         const is1v1 = (m.format || '2v2') === '1v1';
         const date = new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         const badge = is1v1 ? '<span style="font-size:0.6rem;background:rgba(242,201,76,0.15);color:var(--accent);border:1px solid rgba(242,201,76,0.3);border-radius:4px;padding:1px 6px;letter-spacing:0.1em;">1v1</span>' : '';
+        const canEdit = !m.ownerId || (currentUser && m.ownerId === currentUser.id);
         return `<div class="match-item">
       <div class="match-team">
         <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.map(esc).join(' & ')}</div>
@@ -86,7 +87,7 @@ function renderMatches(matches) {
       <div class="match-team match-item-right">
         <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.map(esc).join(' & ')}</div>
       </div>
-      <button class="btn-edit-match" onclick="openEditModal('${esc(String(m.id))}')" title="Edit match">✏️</button>
+      ${canEdit ? `<button class="btn-edit-match" onclick="openEditModal('${esc(String(m.id))}')" title="Edit match">✏️</button>` : '<div></div>'}
     </div>`;
     }).join('');
 }

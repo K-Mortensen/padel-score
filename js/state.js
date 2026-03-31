@@ -1,6 +1,9 @@
-// ─── CONSTANTS ────────────────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbwPreRnSFqTOhf0HGUejWjjwJNoPhVFEI7M4XExfS8XbVbMyx0oiFTInEMvqo8yg42H8Q/exec';
+// ─── SUPABASE ─────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://dxcztfstbznkxskcjezr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4Y3p0ZnN0Ynpua3hza2NqZXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzQ2ODksImV4cCI6MjA5MDU1MDY4OX0.lD3vr-ssxI1kNXZiCoAD-TmYlvwy5zbK0itG7bdrSJ4';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ─── CONSTANTS ────────────────────────────────────────────────────────────
 const ELO_DEFAULT = 1200;
 const ELO_K = 32;
 const ELO_MIN_GAMES_RANKED = 3;
@@ -11,13 +14,15 @@ let players = [];
 let currentTeamA = [];
 let currentTeamB = [];
 let teamMode = 'random';
-let matchFormat = '2v2'; // '2v2' or '1v1'
+let matchFormat = '2v2';
 let manualA = [];
 let manualB = [];
 let isSaving = false;
 let editingMatchId = null;
+let currentUser = null;
+let currentClub = null;
 
-// ─── HTML ESCAPE HELPER ──────────────────────────────────────────────────
+// ─── HTML ESCAPE HELPER ───────────────────────────────────────────────────
 function esc(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }

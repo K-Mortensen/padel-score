@@ -14,6 +14,12 @@ function openEditModal(id) {
     const match = appData.matches.find(m => m.id === id);
     if (!match) return;
 
+    // Only owner can edit
+    if (currentUser && match.ownerId && match.ownerId !== currentUser.id) {
+        alert('You can only edit matches you created.');
+        return;
+    }
+
     editingMatchId = id;
     const is1v1 = (match.format || '2v2') === '1v1';
 

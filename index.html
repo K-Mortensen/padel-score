@@ -3,307 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Padel Score</title>
+    <title>Padel Firematch</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .fullscreen-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .auth-sub {
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--clay);
+            margin-bottom: 32px;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 14px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #fff;
+            color: #333;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+            .google-btn:hover {
+                box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+                transform: translateY(-1px);
+            }
+
+        .club-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+            .club-divider::before, .club-divider::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: var(--border);
+            }
+
+        .club-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-input);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            color: var(--text);
+            outline: none;
+            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+
+            .club-input:focus {
+                border-color: var(--accent);
+            }
+
+        .club-btn {
+            width: 100%;
+            padding: 13px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .club-btn-primary {
+            background: var(--accent);
+            color: var(--dark);
+        }
+
+            .club-btn-primary:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+
+        .club-btn-secondary {
+            background: transparent;
+            color: var(--clay);
+            border: 1.5px solid var(--clay) !important;
+            border: none;
+        }
+
+            .club-btn-secondary:hover {
+                background: var(--clay);
+                color: var(--dark);
+            }
+
+        .profile-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 6px 12px 6px 8px;
+            z-index: 100;
+        }
+
+        #profileAvatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: none;
+            object-fit: cover;
+        }
+
+        .profile-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #profileName {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            color: var(--text);
+        }
+
+        #profileClub {
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--clay);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .profile-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+        }
+
+            .profile-btn:hover {
+                background: var(--clay);
+                color: #fff;
+                border-color: var(--clay);
+            }
+
+        #mainApp {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
-
-    <h1>PADEL SCORE</h1>
-    <p class="subtitle">Track · Play · Win</p>
-
-    <div class="sync-bar">
-        <div class="sync-info">
-            <div class="sync-dot" id="syncDot"></div>
-            <div class="sync-text">
-                <div class="sync-label">Shared Scoreboard</div>
-                <div class="sync-sub" id="syncSub">Connecting…</div>
-            </div>
-        </div>
-        <button class="sync-btn" id="syncRefreshBtn" onclick="loadFromServer()">↻ Refresh</button>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
-        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
-        <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
-    </div>
-
-    <!-- ═══════════════════════════════ PLAY TAB ═══════════════════════════════ -->
-    <div class="tab-content active" id="tab-play">
-
-        <!-- FORMAT SELECTOR -->
-        <div class="format-row">
-            <span class="format-label">FORMAT:</span>
-            <button class="format-btn active" id="format2v2" onclick="setFormat('2v2')">👥 2 vs 2</button>
-            <button class="format-btn" id="format1v1" onclick="setFormat('1v1')">🧍 1 vs 1</button>
-        </div>
-
-        <div class="input-section">
-            <div class="input-row" id="inputRow1">
-                <span class="player-num">1</span>
-                <input type="text" id="p1" placeholder="Player one" oninput="onPlayerInput()" />
-                <span class="input-elo-badge provisional" id="elo-p1">—</span>
-            </div>
-            <div class="input-row" id="inputRow2">
-                <span class="player-num">2</span>
-                <input type="text" id="p2" placeholder="Player two" oninput="onPlayerInput()" />
-                <span class="input-elo-badge provisional" id="elo-p2">—</span>
-            </div>
-            <div class="input-row" id="inputRow3">
-                <span class="player-num">3</span>
-                <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
-                <span class="input-elo-badge provisional" id="elo-p3">—</span>
-            </div>
-            <div class="input-row" id="inputRow4">
-                <span class="player-num">4</span>
-                <input type="text" id="p4" placeholder="Player four" oninput="onPlayerInput()" />
-                <span class="input-elo-badge provisional" id="elo-p4">—</span>
-            </div>
-            <p class="error" id="error"></p>
-        </div>
-
-        <div class="team-mode-row">
-            <button class="mode-btn active" id="modeRandom" onclick="setMode('random')">🔀 Random Teams</button>
-            <button class="mode-btn" id="modeManual" onclick="setMode('manual')">✏️ Pick Teams</button>
-        </div>
-
-        <div class="manual-teams" id="manualTeams">
-            <div class="manual-team-box">
-                <div class="manual-team-label">⚡ Team A — Pick 2 Players</div>
-                <div class="manual-team-picks" id="picksA"></div>
-                <div class="manual-team-slots" id="slotsA">
-                    <span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span>
-                </div>
-            </div>
-            <div class="manual-team-box">
-                <div class="manual-team-label" style="color:#7ab3e0;">🌊 Team B — Pick 2 Players</div>
-                <div class="manual-team-picks" id="picksB"></div>
-                <div class="manual-team-slots" id="slotsB">
-                    <span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn" id="generateBtn" onclick="generateTeams()">Generate Teams</button>
-
-        <div class="court-wrapper" id="courtWrapper">
-            <p class="match-title">⚡ Today's Match</p>
-            <div class="court">
-                <div class="court-lines">
-                    <div class="line-v"></div>
-                    <div class="line-h-left"></div>
-                    <div class="line-h-right"></div>
-                </div>
-
-                <!-- Corner team name labels -->
-                <div class="corner-label corner-label-a" id="cornerLabelA">TEAM A</div>
-                <div class="corner-label corner-label-b" id="cornerLabelB">TEAM B</div>
-
-                <div class="court-elo-matchup" id="courtEloMatchup">ELO —</div>
-
-                <div class="side side-left">
-                    <div class="player-card" id="playerCard1A">
-                        <div class="player-name" id="a1">—</div>
-                        <div class="player-elo" id="a1elo">—</div>
-                        <div class="player-label">Player</div>
-                    </div>
-                    <div class="player-card" id="playerCard2A">
-                        <div class="player-name" id="a2">—</div>
-                        <div class="player-elo" id="a2elo">—</div>
-                        <div class="player-label">Player</div>
-                    </div>
-                    <div class="team-elo-bar">
-                        <span>ELO</span>
-                        <span class="team-elo-value" id="teamAElo">—</span>
-                    </div>
-                </div>
-
-                <div class="net">
-                    <div class="net-post-top"></div>
-                    <div class="net-mesh"></div>
-                    <div class="net-post-bottom"></div>
-                </div>
-
-                <div class="side side-right">
-                    <div class="player-card" id="playerCard1B">
-                        <div class="player-name" id="b1">—</div>
-                        <div class="player-elo" id="b1elo">—</div>
-                        <div class="player-label">Player</div>
-                    </div>
-                    <div class="player-card" id="playerCard2B">
-                        <div class="player-name" id="b2">—</div>
-                        <div class="player-elo" id="b2elo">—</div>
-                        <div class="player-label">Player</div>
-                    </div>
-                    <div class="team-elo-bar">
-                        <span>ELO</span>
-                        <span class="team-elo-value" id="teamBElo">—</span>
-                    </div>
-                </div>
-            </div>
-
-            <p class="vs-badge">TEAM A &nbsp;VS&nbsp; TEAM B</p>
-            <button class="regenerate" id="shuffleBtn" onclick="shuffle()">🔀 Shuffle Teams</button>
-
-            <div class="score-section">
-                <h3>🏆 Save Match Result</h3>
-                <div class="score-inputs">
-                    <div class="score-team">
-                        <div class="score-team-name" id="scoreTeamA">TEAM A</div>
-                        <input class="score-input" type="number" id="scoreA" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
-                    </div>
-                    <div class="score-vs">VS</div>
-                    <div class="score-team">
-                        <div class="score-team-name" id="scoreTeamB">TEAM B</div>
-                        <input class="score-input" type="number" id="scoreB" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
-                    </div>
-                </div>
-                <div class="elo-preview">
-                    <div class="elo-preview-team">
-                        <div class="elo-preview-label">A Elo After</div>
-                        <div class="elo-preview-val" id="previewA">—</div>
-                        <div class="elo-change-hint" id="previewADelta"></div>
-                    </div>
-                    <div class="elo-preview-sep">⚡</div>
-                    <div class="elo-preview-team">
-                        <div class="elo-preview-label">B Elo After</div>
-                        <div class="elo-preview-val" id="previewB">—</div>
-                        <div class="elo-change-hint" id="previewBDelta"></div>
-                    </div>
-                </div>
-                <button class="save-btn" id="saveBtn" onclick="saveMatch()">💾 Save Result</button>
-                <div class="save-success" id="saveSuccess"></div>
-            </div>
+    <!-- ── LOGIN SCREEN ── -->
+    <div class="fullscreen-overlay" id="loginScreen">
+        <div class="auth-card">
+            <div class="auth-title">PADEL FIREMATCH</div>
+            <div class="auth-sub">Track · Play · Win</div>
+            <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.5 5C9.7 39.6 16.3 44 24 44z" /><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.4-2.5 4.4-4.6 5.8l6.2 5.2C40.5 35.8 44 30.3 44 24c0-1.3-.1-2.7-.4-4z" /></svg>
+                Sign in with Google
+            </button>
         </div>
     </div>
 
-    <!-- ═══════════════════════════ HISTORY TAB ═══════════════════════════════ -->
-    <div class="tab-content" id="tab-history">
-        <div class="history-controls">
-            <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
-        </div>
-        <div class="stats-grid" id="statsGrid">
-            <div class="no-history" style="grid-column:1/-1">Loading…</div>
-        </div>
-        <div class="date-filter-bar">
-            <span class="date-filter-label">🗓 Filter:</span>
-            <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
-            <span class="date-filter-sep">→</span>
-            <input class="date-input" type="date" id="filterTo" onchange="renderHistory()" />
-            <button class="btn-clear-filter" onclick="clearDateFilter()">✕ Clear</button>
-        </div>
-        <div class="section-label">Match History</div>
-        <div class="match-list" id="matchList">
-            <div class="no-history">Loading…</div>
+    <!-- ── CLUB SCREEN ── -->
+    <div class="fullscreen-overlay" id="clubScreen">
+        <div class="auth-card">
+            <div class="auth-title">🏟 YOUR CLUB</div>
+            <div class="auth-sub">Create or join a club to start tracking</div>
+
+            <input class="club-input" id="newClubName" type="text" placeholder="Club name (e.g. Office Padel)" />
+            <button class="club-btn club-btn-primary" id="createClubBtn" onclick="createClub()">🏟 Create Club</button>
+
+            <div class="club-divider">or join existing</div>
+
+            <input class="club-input" id="joinClubCode" type="text" placeholder="Enter invite code" style="text-transform:uppercase;letter-spacing:0.2em;" />
+            <button class="club-btn club-btn-secondary" id="joinClubBtn" onclick="joinClub()">🔗 Join Club</button>
         </div>
     </div>
 
-    <!-- ════════════════════════════ ELO TAB ═════════════════════════════════ -->
-    <div class="tab-content" id="tab-elo">
-        <div class="elo-tab-content">
-            <div class="elo-header">
-                <div class="elo-header-title">⚡ Elo Power Rankings</div>
-                <div class="elo-header-desc" id="eloHeaderDesc">Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status · Click a player for details</div>
-            </div>
+    <!-- ── MAIN APP ── -->
+    <div id="mainApp">
 
-            <!-- 1v1 / 2v2 toggle -->
-            <div class="elo-view-toggle">
-                <button class="elo-view-btn active" id="eloView2v2" onclick="setEloTabView('2v2')">👥 2v2</button>
-                <button class="elo-view-btn" id="eloView1v1" onclick="setEloTabView('1v1')">🧍 1v1</button>
+        <!-- Profile bar -->
+        <div class="profile-bar">
+            <img id="profileAvatar" src="" alt="avatar" />
+            <div class="profile-text">
+                <span id="profileName">—</span>
+                <span id="profileClub">—</span>
             </div>
+            <div class="profile-actions">
+                <button class="profile-btn" onclick="copyInviteCode()" title="Copy invite code">📋 Invite</button>
+                <button class="profile-btn" onclick="signOut()">Sign out</button>
+            </div>
+        </div>
 
-            <div class="elo-leaderboard" id="eloLeaderboard">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+
+        <h1>PADEL FIREMATCH</h1>
+        <p class="subtitle">Track · Play · Win</p>
+
+        <div class="sync-bar">
+            <div class="sync-info">
+                <div class="sync-dot" id="syncDot"></div>
+                <div class="sync-text">
+                    <div class="sync-label">Shared Scoreboard</div>
+                    <div class="sync-sub" id="syncSub">Connecting…</div>
+                </div>
+            </div>
+            <button class="sync-btn" id="syncRefreshBtn" onclick="loadFromServer()">↻ Refresh</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
+            <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
+            <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
+        </div>
+
+        <!-- PLAY TAB -->
+        <div class="tab-content active" id="tab-play">
+            <div class="format-row">
+                <span class="format-label">FORMAT:</span>
+                <button class="format-btn active" id="format2v2" onclick="setFormat('2v2')">👥 2 vs 2</button>
+                <button class="format-btn" id="format1v1" onclick="setFormat('1v1')">🧍 1 vs 1</button>
+            </div>
+            <div class="input-section">
+                <div class="input-row" id="inputRow1">
+                    <span class="player-num">1</span>
+                    <input type="text" id="p1" placeholder="Player one" oninput="onPlayerInput()" />
+                    <span class="input-elo-badge provisional" id="elo-p1">—</span>
+                </div>
+                <div class="input-row" id="inputRow2">
+                    <span class="player-num">2</span>
+                    <input type="text" id="p2" placeholder="Player two" oninput="onPlayerInput()" />
+                    <span class="input-elo-badge provisional" id="elo-p2">—</span>
+                </div>
+                <div class="input-row" id="inputRow3">
+                    <span class="player-num">3</span>
+                    <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
+                    <span class="input-elo-badge provisional" id="elo-p3">—</span>
+                </div>
+                <div class="input-row" id="inputRow4">
+                    <span class="player-num">4</span>
+                    <input type="text" id="p4" placeholder="Player four" oninput="onPlayerInput()" />
+                    <span class="input-elo-badge provisional" id="elo-p4">—</span>
+                </div>
+                <p class="error" id="error"></p>
+            </div>
+            <div class="team-mode-row">
+                <button class="mode-btn active" id="modeRandom" onclick="setMode('random')">🔀 Random Teams</button>
+                <button class="mode-btn" id="modeManual" onclick="setMode('manual')">✏️ Pick Teams</button>
+            </div>
+            <div class="manual-teams" id="manualTeams">
+                <div class="manual-team-box">
+                    <div class="manual-team-label">⚡ Team A — Pick 2 Players</div>
+                    <div class="manual-team-picks" id="picksA"></div>
+                    <div class="manual-team-slots" id="slotsA">
+                        <span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span>
+                    </div>
+                </div>
+                <div class="manual-team-box">
+                    <div class="manual-team-label" style="color:#7ab3e0;">🌊 Team B — Pick 2 Players</div>
+                    <div class="manual-team-picks" id="picksB"></div>
+                    <div class="manual-team-slots" id="slotsB">
+                        <span style="font-size:0.75rem;color:var(--text-faint);letter-spacing:0.1em;">— no players selected —</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" id="generateBtn" onclick="generateTeams()">Generate Teams</button>
+            <div class="court-wrapper" id="courtWrapper">
+                <p class="match-title">⚡ Today's Match</p>
+                <div class="court">
+                    <div class="court-lines">
+                        <div class="line-v"></div>
+                        <div class="line-h-left"></div>
+                        <div class="line-h-right"></div>
+                    </div>
+                    <div class="corner-label corner-label-a" id="cornerLabelA">TEAM A</div>
+                    <div class="corner-label corner-label-b" id="cornerLabelB">TEAM B</div>
+                    <div class="court-elo-matchup" id="courtEloMatchup">ELO —</div>
+                    <div class="side side-left">
+                        <div class="player-card" id="playerCard1A">
+                            <div class="player-name" id="a1">—</div>
+                            <div class="player-elo" id="a1elo">—</div>
+                            <div class="player-label">Player</div>
+                        </div>
+                        <div class="player-card" id="playerCard2A">
+                            <div class="player-name" id="a2">—</div>
+                            <div class="player-elo" id="a2elo">—</div>
+                            <div class="player-label">Player</div>
+                        </div>
+                        <div class="team-elo-bar">
+                            <span>ELO</span>
+                            <span class="team-elo-value" id="teamAElo">—</span>
+                        </div>
+                    </div>
+                    <div class="net">
+                        <div class="net-post-top"></div>
+                        <div class="net-mesh"></div>
+                        <div class="net-post-bottom"></div>
+                    </div>
+                    <div class="side side-right">
+                        <div class="player-card" id="playerCard1B">
+                            <div class="player-name" id="b1">—</div>
+                            <div class="player-elo" id="b1elo">—</div>
+                            <div class="player-label">Player</div>
+                        </div>
+                        <div class="player-card" id="playerCard2B">
+                            <div class="player-name" id="b2">—</div>
+                            <div class="player-elo" id="b2elo">—</div>
+                            <div class="player-label">Player</div>
+                        </div>
+                        <div class="team-elo-bar">
+                            <span>ELO</span>
+                            <span class="team-elo-value" id="teamBElo">—</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="vs-badge">TEAM A &nbsp;VS&nbsp; TEAM B</p>
+                <button class="regenerate" id="shuffleBtn" onclick="shuffle()">🔀 Shuffle Teams</button>
+                <div class="score-section">
+                    <h3>🏆 Save Match Result</h3>
+                    <div class="score-inputs">
+                        <div class="score-team">
+                            <div class="score-team-name" id="scoreTeamA">TEAM A</div>
+                            <input class="score-input" type="number" id="scoreA" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
+                        </div>
+                        <div class="score-vs">VS</div>
+                        <div class="score-team">
+                            <div class="score-team-name" id="scoreTeamB">TEAM B</div>
+                            <input class="score-input" type="number" id="scoreB" min="0" max="99" placeholder="0" oninput="updateEloPreview()" />
+                        </div>
+                    </div>
+                    <div class="elo-preview">
+                        <div class="elo-preview-team">
+                            <div class="elo-preview-label">A Elo After</div>
+                            <div class="elo-preview-val" id="previewA">—</div>
+                            <div class="elo-change-hint" id="previewADelta"></div>
+                        </div>
+                        <div class="elo-preview-sep">⚡</div>
+                        <div class="elo-preview-team">
+                            <div class="elo-preview-label">B Elo After</div>
+                            <div class="elo-preview-val" id="previewB">—</div>
+                            <div class="elo-change-hint" id="previewBDelta"></div>
+                        </div>
+                    </div>
+                    <button class="save-btn" id="saveBtn" onclick="saveMatch()">💾 Save Result</button>
+                    <div class="save-success" id="saveSuccess"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY TAB -->
+        <div class="tab-content" id="tab-history">
+            <div class="history-controls">
+                <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <div class="no-history" style="grid-column:1/-1">Loading…</div>
+            </div>
+            <div class="date-filter-bar">
+                <span class="date-filter-label">🗓 Filter:</span>
+                <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
+                <span class="date-filter-sep">→</span>
+                <input class="date-input" type="date" id="filterTo" onchange="renderHistory()" />
+                <button class="btn-clear-filter" onclick="clearDateFilter()">✕ Clear</button>
+            </div>
+            <div class="section-label">Match History</div>
+            <div class="match-list" id="matchList">
                 <div class="no-history">Loading…</div>
             </div>
         </div>
-    </div>
 
-    <!-- ════════════════════════ EDIT MATCH MODAL ════════════════════════════ -->
-    <div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event,'editModal')">
-        <div class="modal">
-            <div class="modal-title">✏️ Edit Match</div>
-            <div class="modal-teams">
-                <div>
-                    <div class="modal-team-label team-a">⚡ Team A</div>
-                    <input class="modal-name-input" id="editA1" type="text" placeholder="Player 1" />
-                    <span id="editA2Row"><input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" /></span>
+        <!-- ELO TAB -->
+        <div class="tab-content" id="tab-elo">
+            <div class="elo-tab-content">
+                <div class="elo-header">
+                    <div class="elo-header-title">⚡ Elo Power Rankings</div>
+                    <div class="elo-header-desc" id="eloHeaderDesc">Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status</div>
                 </div>
-                <div class="modal-vs-col"><span class="modal-vs">VS</span></div>
-                <div>
-                    <div class="modal-team-label team-b">🌊 Team B</div>
-                    <input class="modal-name-input" id="editB1" type="text" placeholder="Player 1" />
-                    <span id="editB2Row"><input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" /></span>
+                <div class="elo-view-toggle">
+                    <button class="elo-view-btn active" id="eloView2v2" onclick="setEloTabView('2v2')">👥 2v2</button>
+                    <button class="elo-view-btn" id="eloView1v1" onclick="setEloTabView('1v1')">🧍 1v1</button>
                 </div>
-            </div>
-            <div class="modal-score-row">
-                <div>
-                    <div class="modal-score-label">SCORE A</div>
-                    <input class="modal-score-input" type="number" id="editScoreA" min="0" max="99" placeholder="0" />
+                <div class="elo-leaderboard" id="eloLeaderboard">
+                    <div class="no-history">Loading…</div>
                 </div>
-                <div class="modal-vs">–</div>
-                <div>
-                    <div class="modal-score-label">SCORE B</div>
-                    <input class="modal-score-input" type="number" id="editScoreB" min="0" max="99" placeholder="0" />
-                </div>
-            </div>
-            <div class="modal-datetime-row">
-                <div class="modal-datetime-label">📅 Date & Time</div>
-                <input class="modal-datetime-input" type="datetime-local" id="editDateTime" />
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn-cancel" onclick="closeModal('editModal')">Cancel</button>
-                <button class="modal-btn-save" id="editSaveBtn" onclick="saveEdit()">💾 Save Changes</button>
             </div>
         </div>
-    </div>
 
-    <!-- ══════════════════════ PLAYER STATS MODAL ════════════════════════════ -->
-    <div class="modal-overlay" id="playerModal" style="display:none;" onclick="handleModalOverlayClick(event,'playerModal')">
-        <div class="player-modal">
-            <div class="player-modal-header">
-                <div class="player-modal-name-group">
-                    <div class="player-modal-name" id="pmName">PLAYER</div>
-                    <div class="player-modal-elo" id="pmEloDisplay">ELO —</div>
+        <!-- EDIT MODAL -->
+        <div class="modal-overlay" id="editModal" style="display:none;" onclick="handleModalOverlayClick(event,'editModal')">
+            <div class="modal">
+                <div class="modal-title">✏️ Edit Match</div>
+                <div class="modal-teams">
+                    <div>
+                        <div class="modal-team-label team-a">⚡ Team A</div>
+                        <input class="modal-name-input" id="editA1" type="text" placeholder="Player 1" />
+                        <span id="editA2Row"><input class="modal-name-input" id="editA2" type="text" placeholder="Player 2" /></span>
+                    </div>
+                    <div class="modal-vs-col"><span class="modal-vs">VS</span></div>
+                    <div>
+                        <div class="modal-team-label team-b">🌊 Team B</div>
+                        <input class="modal-name-input" id="editB1" type="text" placeholder="Player 1" />
+                        <span id="editB2Row"><input class="modal-name-input" id="editB2" type="text" placeholder="Player 2" /></span>
+                    </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeModal('playerModal')">✕</button>
+                <div class="modal-score-row">
+                    <div>
+                        <div class="modal-score-label">SCORE A</div>
+                        <input class="modal-score-input" type="number" id="editScoreA" min="0" max="99" placeholder="0" />
+                    </div>
+                    <div class="modal-vs">–</div>
+                    <div>
+                        <div class="modal-score-label">SCORE B</div>
+                        <input class="modal-score-input" type="number" id="editScoreB" min="0" max="99" placeholder="0" />
+                    </div>
+                </div>
+                <div class="modal-datetime-row">
+                    <div class="modal-datetime-label">📅 Date & Time</div>
+                    <input class="modal-datetime-input" type="datetime-local" id="editDateTime" />
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+                    <button class="modal-btn-save" id="editSaveBtn" onclick="saveEdit()">💾 Save Changes</button>
+                </div>
             </div>
-            <div class="player-stats-grid" id="pmStatsGrid"></div>
-            <div class="player-winrate-section">
-                <div class="player-winrate-label">
-                    <span>Win Rate</span>
-                    <span id="pmWinratePct">0%</span>
-                </div>
-                <div class="player-winrate-bar">
-                    <div class="player-winrate-fill" id="pmWinrateFill" style="width:0%"></div>
-                </div>
-            </div>
-            <div class="player-elo-section">
-                <div class="player-elo-section-title">
-                    <span>2v2 Elo History</span>
-                    <span id="pmEloPeak" style="font-size:0.7rem;letter-spacing:0.1em;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400;"></span>
-                </div>
-                <div class="elo-spark" id="pmEloSpark"></div>
-            </div>
-            <div class="player-matches-title">Match History</div>
-            <div id="pmMatchList"></div>
         </div>
-    </div>
 
-    <!-- ════════════════════════════ SCRIPTS ════════════════════════════════ -->
+        <!-- PLAYER MODAL -->
+        <div class="modal-overlay" id="playerModal" style="display:none;" onclick="handleModalOverlayClick(event,'playerModal')">
+            <div class="player-modal">
+                <div class="player-modal-header">
+                    <div class="player-modal-name-group">
+                        <div class="player-modal-name" id="pmName">PLAYER</div>
+                        <div class="player-modal-elo" id="pmEloDisplay">ELO —</div>
+                    </div>
+                    <button class="modal-close-btn" onclick="closeModal('playerModal')">✕</button>
+                </div>
+                <div class="player-stats-grid" id="pmStatsGrid"></div>
+                <div class="player-winrate-section">
+                    <div class="player-winrate-label">
+                        <span>Win Rate</span><span id="pmWinratePct">0%</span>
+                    </div>
+                    <div class="player-winrate-bar">
+                        <div class="player-winrate-fill" id="pmWinrateFill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="player-elo-section">
+                    <div class="player-elo-section-title">
+                        <span>2v2 Elo History</span>
+                        <span id="pmEloPeak"></span>
+                    </div>
+                    <div class="elo-spark" id="pmEloSpark"></div>
+                </div>
+                <div class="player-matches-title">Match History</div>
+                <div id="pmMatchList"></div>
+            </div>
+        </div>
+
+    </div><!-- end mainApp -->
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/state.js"></script>
     <script src="js/elo.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/club.js"></script>
     <script src="js/sync.js"></script>
     <script src="js/teams.js"></script>
     <script src="js/history.js"></script>
     <script src="js/elo-tab.js"></script>
     <script src="js/modals.js"></script>
-
-    <script>
-        loadFromServer();
-    </script>
-
 </body>
 </html>
