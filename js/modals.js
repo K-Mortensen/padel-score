@@ -72,7 +72,7 @@ async function saveEdit() {
     updatePlayerEloBadges();
     closeModal('editModal');
 
-    try { await saveToServer(); }
+    try { await updateMatchOnServer(appData.matches[idx]); }
     catch { setSyncStatus('error', 'Sync failed after edit'); }
 
     btn.disabled = false;

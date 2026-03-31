@@ -1,3 +1,13 @@
+// ─── SUPABASE CONFIG ──────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://dxcztfstbznkxskcjezr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4Y3p0ZnN0Ynpua3hza2NqZXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzQ2ODksImV4cCI6MjA5MDU1MDY4OX0.lD3vr-ssxI1kNXZiCoAD-TmYlvwy5zbK0itG7bdrSJ4';
+
+const HEADERS = {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+};
+
 // ─── THEME TOGGLE ─────────────────────────────────────────────────────────
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
@@ -12,7 +22,6 @@ function toggleTheme() {
     try { localStorage.setItem('padel-theme', newTheme); } catch { }
 }
 
-// Apply saved theme immediately on load
 (function () {
     try {
         const saved = localStorage.getItem('padel-theme');
@@ -28,17 +37,29 @@ function setSyncStatus(state, msg) {
     sub.textContent = msg;
 }
 
+// ─── LOAD FROM SUPABASE ───────────────────────────────────────────────────
 async function loadFromServer(silent = false) {
     setSyncStatus('syncing', 'Loading…');
     document.getElementById('syncRefreshBtn').disabled = true;
     try {
-        const res = await fetch(API_URL + '?t=' + Date.now());
+        const res = await fetch(
+            SUPABASE_URL + '/rest/v1/matches?select=*&order=date.desc',
+            { headers: HEADERS }
+        );
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        let data;
-        try { data = JSON.parse(text); } catch { data = { matches: [] }; }
-        if (!Array.isArray(data.matches)) data = { matches: [] };
-        appData = data;
+        const rows = await res.json();
+
+        // Map Supabase rows → app match format
+        appData.matches = rows.map(r => ({
+            id: r.id,
+            date: r.date,
+            format: r.format,
+            teamA: r.team_a,
+            teamB: r.team_b,
+            scoreA: r.score_a,
+            scoreB: r.score_b,
+        }));
+
         invalidateEloCache();
         renderHistory();
         renderEloTab();
@@ -53,15 +74,57 @@ async function loadFromServer(silent = false) {
     document.getElementById('syncRefreshBtn').disabled = false;
 }
 
+// ─── SAVE MATCH TO SUPABASE ───────────────────────────────────────────────
 async function saveToServer() {
     setSyncStatus('syncing', 'Saving…');
-    await fetch(API_URL, {
+
+    // Get the most recently added match (first in array)
+    const m = appData.matches[0];
+
+    const res = await fetch(SUPABASE_URL + '/rest/v1/matches', {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(appData),
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+            id: m.id,
+            date: m.date,
+            format: m.format,
+            team_a: m.teamA,
+            team_b: m.teamB,
+            score_a: m.scoreA,
+            score_b: m.scoreB,
+        }),
     });
-    await new Promise(r => setTimeout(r, 2000));
+
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+    }
+
+    await loadFromServer(true);
+}
+
+// ─── UPDATE MATCH (for edit modal) ────────────────────────────────────────
+async function updateMatchOnServer(match) {
+    setSyncStatus('syncing', 'Saving…');
+
+    const res = await fetch(SUPABASE_URL + '/rest/v1/matches?id=eq.' + match.id, {
+        method: 'PATCH',
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+            date: match.date,
+            format: match.format,
+            team_a: match.teamA,
+            team_b: match.teamB,
+            score_a: match.scoreA,
+            score_b: match.scoreB,
+        }),
+    });
+
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+    }
+
     await loadFromServer(true);
 }
 
@@ -71,16 +134,12 @@ function exportData() {
     const elo1v1 = getElo1v1Ratings();
     const exportObj = {
         ...appData,
-        eloRatings: Object.fromEntries(
-            Object.entries(eloData).map(([k, v]) => [k, v.rating])
-        ),
-        eloRatings1v1: Object.fromEntries(
-            Object.entries(elo1v1).map(([k, v]) => [k, v.rating])
-        ),
+        eloRatings: Object.fromEntries(Object.entries(eloData).map(([k, v]) => [k, v.rating])),
+        eloRatings1v1: Object.fromEntries(Object.entries(elo1v1).map(([k, v]) => [k, v.rating])),
     };
     const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'padel-score-data.json'; a.click();
+    a.href = url; a.download = 'padel-firematch-data.json'; a.click();
     URL.revokeObjectURL(url);
 }
