@@ -23,9 +23,9 @@ async function signOut() {
 async function createOrUpdateProfile(user) {
     await supabaseClient.from('profiles').upsert({
         id: user.id,
-        display_name: user.user_metadata.full_name || user.email.split('@')[0],
+        display_name: user.user_metadata?.full_name || user.email.split('@')[0],
         email: user.email,
-        avatar_url: user.user_metadata.avatar_url || null,
+        avatar_url: user.user_metadata?.avatar_url || null,
     }, { onConflict: 'id', ignoreDuplicates: true });
 }
 
@@ -51,7 +51,7 @@ function showMainApp() {
         const nameEl = document.getElementById('profileName');
         const avatarEl = document.getElementById('profileAvatar');
         const clubEl = document.getElementById('profileClub');
-        if (nameEl) nameEl.textContent = currentUser.display_name;
+        if (nameEl) nameEl.textContent = currentUser.display_name || currentUser.email;
         if (avatarEl && currentUser.avatar_url) {
             avatarEl.src = currentUser.avatar_url;
             avatarEl.style.display = 'block';
@@ -62,17 +62,16 @@ function showMainApp() {
     // Auto-fill player 1
     const p1 = document.getElementById('p1');
     if (p1 && !p1.value && currentUser) {
-        p1.value = currentUser.display_name;
+        p1.value = currentUser.display_name || currentUser.email.split('@')[0];
         onPlayerInput();
     }
 }
 
-// ─── AUTH LISTENER ────────────────────────────────────────────────────────
+// ─── AUTH STATE CHANGE ────────────────────────────────────────────────────
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (session?.user) {
+    if (event === 'SIGNED_IN' && session?.user) {
         await createOrUpdateProfile(session.user);
 
-        // Retry profile fetch up to 3 times
         let profile = null;
         for (let i = 0; i < 3; i++) {
             const { data } = await supabaseClient
@@ -82,8 +81,31 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         }
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;
+        console.log('Auth state change, user:', currentUser);
+        await loadUserClub();
+    } else if (event === 'SIGNED_OUT') {
+        showLoginScreen();
+    }
+});
+
+// ─── CHECK SESSION ON PAGE LOAD ───────────────────────────────────────────
+(async function initAuth() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.user) {
+        await createOrUpdateProfile(session.user);
+
+        let profile = null;
+        for (let i = 0; i < 3; i++) {
+            const { data } = await supabaseClient
+                .from('profiles').select('*').eq('id', session.user.id).single();
+            if (data) { profile = data; break; }
+            await new Promise(r => setTimeout(r, 500));
+        }
+
+        currentUser = profile ? { ...session.user, ...profile } : session.user;
+        console.log('Session restored, user:', currentUser);
         await loadUserClub();
     } else {
         showLoginScreen();
     }
-});
+})();
