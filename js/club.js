@@ -88,6 +88,12 @@ async function joinClub() {
     loadFromServer();
 }
 
+// ─── SKIP CLUB ────────────────────────────────────────────────────────────
+function skipClub() {
+    showMainApp();
+    setSyncStatus('', 'No club · Add one in Settings');
+}
+
 // ─── COPY INVITE CODE ─────────────────────────────────────────────────────
 async function copyInviteCode() {
     if (!currentClub) return;

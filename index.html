@@ -207,6 +207,75 @@
             align-items: center;
             width: 100%;
         }
+
+        .club-btn-skip {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px dashed var(--border) !important;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+            .club-btn-skip:hover {
+                border-color: var(--text-muted) !important;
+                color: var(--text);
+            }
+
+        .settings-modal {
+            min-width: 300px;
+            max-width: 460px;
+            width: 100%;
+        }
+
+        .settings-section {
+            margin-bottom: 24px;
+        }
+
+        .settings-label {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+            .settings-row .modal-name-input {
+                flex: 1;
+            }
+
+        .settings-club-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .settings-club-code {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .settings-no-club {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .settings-divider {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -223,6 +292,17 @@
         </div>
     </div>
 
+    <!-- ── USERNAME SETUP SCREEN ── -->
+    <div class="fullscreen-overlay" id="usernameScreen" style="display:none;">
+        <div class="auth-card">
+            <div class="auth-title">WELCOME</div>
+            <div class="auth-sub">Choose your username</div>
+            <input class="club-input" id="usernameInput" type="text" placeholder="Username (e.g. FireServe99)" maxlength="24" autocomplete="off"
+                   onkeydown="if(event.key==='Enter')submitUsername()" />
+            <button class="club-btn club-btn-primary" id="usernameSubmitBtn" onclick="submitUsername()">Get Started →</button>
+        </div>
+    </div>
+
     <!-- ── CLUB SCREEN ── -->
     <div class="fullscreen-overlay" id="clubScreen">
         <div class="auth-card">
@@ -236,6 +316,9 @@
 
             <input class="club-input" id="joinClubCode" type="text" placeholder="Enter invite code" style="text-transform:uppercase;letter-spacing:0.2em;" />
             <button class="club-btn club-btn-secondary" id="joinClubBtn" onclick="joinClub()">🔗 Join Club</button>
+
+            <div class="club-divider">or</div>
+            <button class="club-btn club-btn-skip" onclick="skipClub()">Continue without a club →</button>
         </div>
     </div>
 
@@ -250,7 +333,8 @@
                 <span id="profileClub">—</span>
             </div>
             <div class="profile-actions">
-                <button class="profile-btn" onclick="copyInviteCode()" title="Copy invite code">📋 Invite</button>
+                <button id="copyCodeBtn" class="profile-btn" onclick="copyInviteCode()" title="Copy invite code">📋 Invite</button>
+                <button class="profile-btn" onclick="openSettingsModal()" title="Settings">⚙ Settings</button>
                 <button class="profile-btn" onclick="signOut()">Sign out</button>
             </div>
         </div>
@@ -519,6 +603,31 @@
             </div>
         </div>
 
+        <!-- SETTINGS MODAL -->
+        <div class="modal-overlay" id="settingsModal" style="display:none;" onclick="handleModalOverlayClick(event,'settingsModal')">
+            <div class="modal settings-modal">
+                <div class="modal-title">⚙ Settings</div>
+
+                <div class="settings-section">
+                    <div class="settings-label">Username</div>
+                    <div class="settings-row">
+                        <input class="modal-name-input" id="settingsUsernameInput" type="text" placeholder="Username" maxlength="24"
+                               onkeydown="if(event.key==='Enter')saveUsernameSettings()" />
+                        <button class="modal-btn-save" id="settingsUsernameSaveBtn" onclick="saveUsernameSettings()">Save</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-label">Club</div>
+                    <div id="settingsClubContent"></div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn-cancel" onclick="closeModal('settingsModal')">Close</button>
+                </div>
+            </div>
+        </div>
+
     </div><!-- end mainApp -->
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -531,5 +640,6 @@
     <script src="js/history.js"></script>
     <script src="js/elo-tab.js"></script>
     <script src="js/modals.js"></script>
+    <script src="js/settings.js"></script>
 </body>
 </html>

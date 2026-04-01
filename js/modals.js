@@ -65,13 +65,17 @@ async function saveEdit() {
     btn.textContent = 'Saving…';
 
     const idx = appData.matches.findIndex(m => m.id === editingMatchId);
-    if (idx !== -1) {
-        const newDate = dtVal ? new Date(dtVal).toISOString() : appData.matches[idx].date;
-        const newTeamA = is1v1 ? [a1] : [a1, a2];
-        const newTeamB = is1v1 ? [b1] : [b1, b2];
-        appData.matches[idx] = { ...appData.matches[idx], teamA: newTeamA, teamB: newTeamB, scoreA: sA, scoreB: sB, date: newDate };
-        invalidateEloCache();
+    if (idx === -1) {
+        btn.disabled = false;
+        btn.textContent = '💾 Save Changes';
+        return;
     }
+
+    const newDate = dtVal ? new Date(dtVal).toISOString() : appData.matches[idx].date;
+    const newTeamA = is1v1 ? [a1] : [a1, a2];
+    const newTeamB = is1v1 ? [b1] : [b1, b2];
+    appData.matches[idx] = { ...appData.matches[idx], teamA: newTeamA, teamB: newTeamB, scoreA: sA, scoreB: sB, date: newDate };
+    invalidateEloCache();
 
     renderHistory();
     renderEloTab();
@@ -180,7 +184,8 @@ function openPlayerModal(playerName, preferredFmt) {
 // ─── ELO SPARKLINE ────────────────────────────────────────────────────────
 function renderEloSparkline(history, containerId) {
     const container = document.getElementById(containerId);
-    if (!container || history.length < 2) {
+    if (!container) return;
+    if (history.length < 2) {
         container.innerHTML = '<div style="text-align:center;font-size:0.7rem;color:var(--text-faint);padding:20px 0;letter-spacing:0.1em;">Not enough data yet</div>';
         return;
     }

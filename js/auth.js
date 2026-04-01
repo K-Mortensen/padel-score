@@ -32,18 +32,28 @@ async function createOrUpdateProfile(user) {
 // ─── SCREEN SWITCHING ─────────────────────────────────────────────────────
 function showLoginScreen() {
     document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('usernameScreen').style.display = 'none';
+    document.getElementById('clubScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'none';
+}
+
+function showUsernameScreen() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('usernameScreen').style.display = 'flex';
     document.getElementById('clubScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'none';
 }
 
 function showClubScreen() {
     document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'flex';
     document.getElementById('mainApp').style.display = 'none';
 }
 
 function showMainApp() {
     document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'flex';
 
@@ -51,20 +61,48 @@ function showMainApp() {
         const nameEl = document.getElementById('profileName');
         const avatarEl = document.getElementById('profileAvatar');
         const clubEl = document.getElementById('profileClub');
-        if (nameEl) nameEl.textContent = currentUser.display_name || currentUser.email;
+        const inviteBtn = document.getElementById('copyCodeBtn');
+        if (nameEl) nameEl.textContent = currentUser.username || currentUser.display_name || currentUser.email;
         if (avatarEl && currentUser.avatar_url) {
             avatarEl.src = currentUser.avatar_url;
             avatarEl.style.display = 'block';
         }
-        if (clubEl && currentClub) clubEl.textContent = currentClub.name;
+        if (clubEl) clubEl.textContent = currentClub ? currentClub.name : 'No club';
+        if (inviteBtn) inviteBtn.style.display = currentClub ? '' : 'none';
     }
 
     // Auto-fill player 1
     const p1 = document.getElementById('p1');
     if (p1 && !p1.value && currentUser) {
-        p1.value = currentUser.display_name || currentUser.email.split('@')[0];
+        p1.value = currentUser.username || currentUser.display_name || currentUser.email.split('@')[0];
         onPlayerInput();
     }
+}
+
+// ─── USERNAME SETUP ───────────────────────────────────────────────────────
+async function submitUsername() {
+    const input = document.getElementById('usernameInput');
+    const username = input.value.trim();
+    if (!username) { alert('Please enter a username.'); return; }
+    if (username.length < 2) { alert('Username must be at least 2 characters.'); return; }
+
+    const btn = document.getElementById('usernameSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const { error } = await supabaseClient.from('profiles')
+        .update({ username })
+        .eq('id', currentUser.id);
+
+    if (error) {
+        alert(error.code === '23505' ? 'That username is already taken.' : 'Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Get Started →';
+        return;
+    }
+
+    currentUser.username = username;
+    await loadUserClub();
 }
 
 // ─── AUTH STATE CHANGE ────────────────────────────────────────────────────
@@ -82,7 +120,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;
         console.log('Auth state change, user:', currentUser);
-        await loadUserClub();
+        if (!currentUser.username) {
+            showUsernameScreen();
+        } else {
+            await loadUserClub();
+        }
     } else if (event === 'SIGNED_OUT') {
         showLoginScreen();
     }
@@ -104,7 +146,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;
         console.log('Session restored, user:', currentUser);
-        await loadUserClub();
+        if (!currentUser.username) {
+            showUsernameScreen();
+        } else {
+            await loadUserClub();
+        }
     } else {
         showLoginScreen();
     }
