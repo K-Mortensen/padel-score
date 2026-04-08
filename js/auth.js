@@ -67,7 +67,7 @@ function showMainApp() {
             avatarEl.src = currentUser.avatar_url;
             avatarEl.style.display = 'block';
         }
-        if (clubEl) clubEl.textContent = currentClub ? currentClub.name : 'No club';
+        if (clubEl) clubEl.textContent = currentClub ? currentClub.name : 'No club · Add one in Settings';
         if (inviteBtn) inviteBtn.style.display = currentClub ? '' : 'none';
     }
 
@@ -102,12 +102,20 @@ async function submitUsername() {
     }
 
     currentUser.username = username;
-    await loadUserClub();
+    // First-time user: show club screen for onboarding
+    await loadUserClub(true);
 }
 
 // ─── AUTH STATE CHANGE ────────────────────────────────────────────────────
+// Guard flag: initAuth() sets this to true when it handles an existing session,
+// so onAuthStateChange skips the redundant SIGNED_IN event on page load.
+let authHandled = false;
+
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
+        // Skip if initAuth() already handled this session on page load
+        if (authHandled) { authHandled = false; return; }
+
         await createOrUpdateProfile(session.user);
 
         let profile = null;
@@ -146,6 +154,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;
         console.log('Session restored, user:', currentUser);
+        authHandled = true; // signal to onAuthStateChange that we handled this
         if (!currentUser.username) {
             showUsernameScreen();
         } else {

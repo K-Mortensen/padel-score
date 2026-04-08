@@ -60,6 +60,7 @@ async function loadFromServer(silent = false) {
 // ─── SAVE ─────────────────────────────────────────────────────────────────
 async function saveToServer() {
     if (!currentClub || !currentUser) throw new Error('Not authenticated');
+    if (!hasPermission('add_matches')) throw new Error('No permission to add matches');
     setSyncStatus('syncing', 'Saving…');
     const m = appData.matches[0];
     const { error } = await supabaseClient.from('matches').insert({
@@ -81,10 +82,23 @@ async function updateMatchOnServer(match) {
             team_a: match.teamA, team_b: match.teamB,
             score_a: match.scoreA, score_b: match.scoreB,
         })
-        .eq('id', match.id)
-        .eq('owner_id', currentUser.id);
+        .eq('id', match.id);
     if (error) throw error;
     await loadFromServer(true);
+}
+
+// ─── DELETE ───────────────────────────────────────────────────────────────
+async function deleteMatchOnServer(matchId) {
+    setSyncStatus('syncing', 'Deleting…');
+    const { error } = await supabaseClient.from('matches').delete().eq('id', matchId);
+    if (error) throw error;
+    appData.matches = appData.matches.filter(m => m.id !== matchId);
+    invalidateEloCache();
+    renderHistory();
+    renderEloTab();
+    updatePlayerEloBadges();
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setSyncStatus('ok', 'Synced ' + now);
 }
 
 // ─── EXPORT ───────────────────────────────────────────────────────────────
