@@ -14,9 +14,8 @@ function openEditModal(id) {
     const match = appData.matches.find(m => m.id === id);
     if (!match) return;
 
-    // Only owner can edit
-    if (currentUser && match.ownerId && match.ownerId !== currentUser.id) {
-        alert('You can only edit matches you created.');
+    if (!hasPermission('modify_matches')) {
+        alert('You do not have permission to edit matches.');
         return;
     }
 

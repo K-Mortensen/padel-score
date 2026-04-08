@@ -1,5 +1,9 @@
 // ─── LOAD CLUB ────────────────────────────────────────────────────────────
-async function loadUserClub() {
+// isOnboarding=true: called from submitUsername() on first login.
+//   → show club screen if no club found (new user needs to set one up).
+// isOnboarding=false (default): called for returning users on page load.
+//   → always show main app; club can be configured via Settings.
+async function loadUserClub(isOnboarding = false) {
     const { data } = await supabaseClient
         .from('club_members')
         .select('club_id, clubs(*)')
@@ -9,10 +13,14 @@ async function loadUserClub() {
 
     if (data?.clubs) {
         currentClub = data.clubs;
-        showMainApp();
-        loadFromServer();
-    } else {
+        await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
+    }
+
+    if (!currentClub && isOnboarding) {
         showClubScreen();
+    } else {
+        showMainApp();
+        if (currentClub) loadFromServer();
     }
 }
 
@@ -48,6 +56,8 @@ async function createClub() {
     });
 
     currentClub = club;
+    currentUserRole = null; // owner bypasses role checks via hasPermission()
+    clubRoles = [];
     showMainApp();
     loadFromServer();
 }
@@ -84,6 +94,7 @@ async function joinClub() {
     });
 
     currentClub = club;
+    await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     showMainApp();
     loadFromServer();
 }
