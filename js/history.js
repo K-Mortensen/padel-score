@@ -25,6 +25,10 @@ function renderHistory() {
 
 function renderStats(matches) {
     const grid = document.getElementById('statsGrid');
+    if (!hasPermission('view_scores')) {
+        grid.innerHTML = '<div class="no-history" style="grid-column:1/-1">You do not have permission to view scores.</div>';
+        return;
+    }
     if (!matches.length) {
         grid.innerHTML = '<div class="no-history" style="grid-column:1/-1">No matches yet. Play and save a game!</div>';
         return;
@@ -67,17 +71,24 @@ function renderStats(matches) {
 
 function renderMatches(matches) {
     const list = document.getElementById('matchList');
+    if (!hasPermission('view_scores')) {
+        list.innerHTML = '<div class="no-history">You do not have permission to view match history.</div>';
+        return;
+    }
     if (!matches.length) {
         list.innerHTML = '<div class="no-history">No matches recorded yet.</div>';
         return;
     }
+    const canEdit = hasPermission('modify_matches');
+    const canDelete = hasPermission('delete_matches');
+
     list.innerHTML = matches.map(m => {
         const wonA = m.scoreA > m.scoreB;
         const wonB = m.scoreB > m.scoreA;
         const is1v1 = (m.format || '2v2') === '1v1';
         const date = new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         const badge = is1v1 ? '<span style="font-size:0.6rem;background:rgba(242,201,76,0.15);color:var(--accent);border:1px solid rgba(242,201,76,0.3);border-radius:4px;padding:1px 6px;letter-spacing:0.1em;">1v1</span>' : '';
-        const canEdit = !m.ownerId || (currentUser && m.ownerId === currentUser.id);
+        const matchIdEsc = esc(String(m.id));
         return `<div class="match-item">
       <div class="match-team">
         <div class="match-team-names${wonA ? ' winner' : ''}">${m.teamA.map(esc).join(' & ')}</div>
@@ -87,7 +98,16 @@ function renderMatches(matches) {
       <div class="match-team match-item-right">
         <div class="match-team-names${wonB ? ' winner' : ''}">${m.teamB.map(esc).join(' & ')}</div>
       </div>
-      ${canEdit ? `<button class="btn-edit-match" onclick="openEditModal('${esc(String(m.id))}')" title="Edit match">✏️</button>` : '<div></div>'}
+      <div class="match-actions">
+        ${canEdit ? `<button class="btn-edit-match" onclick="openEditModal('${matchIdEsc}')" title="Edit match">✏️</button>` : ''}
+        ${canDelete ? `<button class="btn-delete-match" onclick="confirmDeleteMatch('${matchIdEsc}')" title="Delete match">🗑</button>` : ''}
+      </div>
     </div>`;
     }).join('');
+}
+
+function confirmDeleteMatch(id) {
+    if (confirm('Delete this match? This cannot be undone.')) {
+        deleteMatchOnServer(id).catch(() => setSyncStatus('error', 'Delete failed'));
+    }
 }

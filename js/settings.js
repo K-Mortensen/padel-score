@@ -14,9 +14,21 @@ function _renderSettingsClub() {
     if (!clubContent) return;
 
     if (currentClub) {
+        const isOwner = currentUser?.id === currentClub.owner_id;
         clubContent.innerHTML = `
             <div class="settings-club-name">${esc(currentClub.name)}</div>
-            <div class="settings-club-code">Invite code: <strong>${esc(currentClub.invite_code)}</strong></div>`;
+            <div class="settings-club-code">Invite code: <strong>${esc(currentClub.invite_code)}</strong></div>
+            ${isOwner ? `
+            <div class="settings-owner-section">
+                <div class="settings-label" style="margin-top:12px;">Club Management</div>
+                <div class="settings-row" style="margin-bottom:8px;">
+                    <input class="modal-name-input" id="settingsClubNameInput"
+                           value="${esc(currentClub.name)}" placeholder="Club name"
+                           onkeydown="if(event.key==='Enter')saveClubName()" />
+                    <button class="modal-btn-save" onclick="saveClubName()">Rename</button>
+                </div>
+                <button class="modal-btn-save" style="width:100%;" onclick="openRolesPanel()">Manage Roles &amp; Members</button>
+            </div>` : ''}`;
     } else {
         clubContent.innerHTML = `
             <div class="settings-no-club">You're not in a club yet.</div>
@@ -59,6 +71,25 @@ async function saveUsernameSettings() {
     if (nameEl) nameEl.textContent = username;
 }
 
+// ─── RENAME CLUB ──────────────────────────────────────────────────────────
+async function saveClubName() {
+    const input = document.getElementById('settingsClubNameInput');
+    const name = input?.value.trim();
+    if (!name) { alert('Club name cannot be empty.'); return; }
+    if (!hasPermission('rename_club')) { alert('You do not have permission to rename this club.'); return; }
+
+    const { error } = await supabaseClient.from('clubs')
+        .update({ name })
+        .eq('id', currentClub.id);
+
+    if (error) { alert('Error: ' + error.message); return; }
+
+    currentClub.name = name;
+    const clubEl = document.getElementById('profileClub');
+    if (clubEl) clubEl.textContent = name;
+    _renderSettingsClub();
+}
+
 // ─── CREATE CLUB FROM SETTINGS ────────────────────────────────────────────
 async function createClubFromSettings() {
     const nameInput = document.getElementById('settingsNewClubName');
@@ -75,6 +106,8 @@ async function createClubFromSettings() {
     });
 
     currentClub = club;
+    currentUserRole = null;
+    clubRoles = [];
     closeModal('settingsModal');
     showMainApp();
     loadFromServer();
@@ -96,6 +129,7 @@ async function joinClubFromSettings() {
     });
 
     currentClub = club;
+    await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     closeModal('settingsModal');
     showMainApp();
     loadFromServer();

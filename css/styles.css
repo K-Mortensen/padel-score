@@ -167,6 +167,72 @@ body {
         transform: rotate(20deg) scale(1.05);
     }
 
+/* ── PROFILE BAR ── */
+.profile-bar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 12px 6px 8px;
+    z-index: 100;
+}
+
+#profileAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: none;
+    object-fit: cover;
+}
+
+.profile-text {
+    display: flex;
+    flex-direction: column;
+}
+
+#profileName {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+}
+
+#profileClub {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--clay);
+}
+
+.profile-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.profile-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.1em;
+}
+
+    .profile-btn:hover {
+        background: var(--clay);
+        color: #fff;
+        border-color: var(--clay);
+    }
+
 /* ── HEADER ── */
 h1 {
     font-family: 'Bebas Neue', sans-serif;
@@ -2105,6 +2171,28 @@ input[type="text"] {
     }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+    body {
+        padding-top: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-bar {
+        padding: 4px 8px 4px 6px;
+        gap: 6px;
+    }
+
+    .profile-btn {
+        padding: 2px 6px;
+        font-size: 0.62rem;
+    }
+
+    #profileName {
+        font-size: 0.78rem;
+    }
+}
+
 @media (max-width: 420px) {
     .player-stats-grid {
         grid-template-columns: repeat(2, 1fr);

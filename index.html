@@ -136,71 +136,6 @@
                 color: var(--dark);
             }
 
-        .profile-bar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--bg-card);
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: 6px 12px 6px 8px;
-            z-index: 100;
-        }
-
-        #profileAvatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: none;
-            object-fit: cover;
-        }
-
-        .profile-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        #profileName {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
-            color: var(--text);
-        }
-
-        #profileClub {
-            font-size: 0.62rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--clay);
-        }
-
-        .profile-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .profile-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 0.1em;
-        }
-
-            .profile-btn:hover {
-                background: var(--clay);
-                color: #fff;
-                border-color: var(--clay);
-            }
-
         #mainApp {
             display: none;
             flex-direction: column;
@@ -276,6 +211,132 @@
             font-size: 0.75rem;
             margin: 10px 0;
         }
+
+        /* ── Match action buttons ── */
+        .match-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 64px;
+        }
+
+        .btn-delete-match {
+            background: rgba(235, 87, 87, 0.12);
+            border: 1px solid rgba(235, 87, 87, 0.3);
+            color: #eb5757;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: background 0.15s;
+        }
+        .btn-delete-match:hover { background: rgba(235, 87, 87, 0.25); }
+
+        /* ── Roles panel ── */
+        .roles-panel { display: flex; flex-direction: column; }
+
+        .role-back-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0;
+            text-align: left;
+            letter-spacing: 0.05em;
+        }
+
+        .roles-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+
+        .role-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .role-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+        .role-perms { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+        .perm-badge {
+            background: rgba(242, 201, 76, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(242, 201, 76, 0.3);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            letter-spacing: 0.05em;
+        }
+        .role-item-actions { display: flex; gap: 6px; }
+        .role-action-btn {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            cursor: pointer;
+        }
+        .role-action-delete {
+            border-color: rgba(235, 87, 87, 0.4);
+            color: #eb5757;
+            background: rgba(235, 87, 87, 0.08);
+        }
+
+        /* ── Role form ── */
+        .role-form {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .perm-checkboxes { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+        .perm-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .perm-checkbox-row input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+
+        /* ── Members list ── */
+        .members-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+        .member-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+        .member-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
+        .owner-badge {
+            font-size: 0.65rem;
+            background: rgba(242, 201, 76, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(242, 201, 76, 0.3);
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 4px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .member-role-select {
+            font-size: 0.8rem;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            cursor: pointer;
+            max-width: 140px;
+        }
+
+        .settings-owner-section { margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -635,6 +696,7 @@
     <script src="js/elo.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/club.js"></script>
+    <script src="js/roles.js"></script>
     <script src="js/sync.js"></script>
     <script src="js/teams.js"></script>
     <script src="js/history.js"></script>
