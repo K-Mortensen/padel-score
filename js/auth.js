@@ -30,7 +30,15 @@ async function createOrUpdateProfile(user) {
 }
 
 // ─── SCREEN SWITCHING ─────────────────────────────────────────────────────
+function hideLoadingScreen() {
+    const el = document.getElementById('loadingScreen');
+    if (!el || el.style.display === 'none') return;
+    el.classList.add('fade-out');
+    setTimeout(() => { el.style.display = 'none'; el.classList.remove('fade-out'); }, 200);
+}
+
 function showLoginScreen() {
+    hideLoadingScreen();
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'none';
@@ -38,6 +46,7 @@ function showLoginScreen() {
 }
 
 function showUsernameScreen() {
+    hideLoadingScreen();
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('usernameScreen').style.display = 'flex';
     document.getElementById('clubScreen').style.display = 'none';
@@ -45,6 +54,7 @@ function showUsernameScreen() {
 }
 
 function showClubScreen() {
+    hideLoadingScreen();
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'flex';
@@ -52,6 +62,7 @@ function showClubScreen() {
 }
 
 function showMainApp() {
+    hideLoadingScreen();
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'none';
