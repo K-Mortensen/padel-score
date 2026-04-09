@@ -5,6 +5,7 @@ function switchTab(tab) {
     document.getElementById('tab-' + tab).classList.add('active');
     if (tab === 'history') renderHistory();
     if (tab === 'elo') renderEloTab();
+    if (tab === 'club') renderClubTab();
 }
 
 // ─── MATCH FORMAT (1v1 vs 2v2) ────────────────────────────────────────────

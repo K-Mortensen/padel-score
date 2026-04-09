@@ -39,12 +39,23 @@ async function loadCurrentUserRole() {
 
 async function loadClubMembers() {
     if (!currentClub) return [];
-    const { data, error } = await supabaseClient
+
+    // Step 1: members + their role info
+    const { data: members, error } = await supabaseClient
         .from('club_members')
-        .select('user_id, role_id, profiles(username, display_name, avatar_url), club_roles(id, name)')
+        .select('user_id, role_id, club_roles(id, name)')
         .eq('club_id', currentClub.id);
     if (error) { console.error('loadClubMembers error:', error); return []; }
-    return data || [];
+    if (!members?.length) return [];
+
+    // Step 2: profiles fetched separately (works even if profiles has restrictive RLS)
+    const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, username, display_name, avatar_url')
+        .in('id', members.map(m => m.user_id));
+
+    const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+    return members.map(m => ({ ...m, profiles: profileMap[m.user_id] || null }));
 }
 
 // ─── CRUD ─────────────────────────────────────────────────────────────────

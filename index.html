@@ -338,6 +338,83 @@
 
         .settings-owner-section { margin-top: 4px; }
 
+        /* ── Club tab ── */
+        .club-tab-inner { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 4px; }
+        .club-tab-header { margin-bottom: 16px; }
+        .club-tab-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+        }
+        .club-tab-sub {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .cmember-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+        .cmember-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .cmember-initials {
+            background: rgba(242,201,76,0.1);
+            border: 1.5px solid rgba(242,201,76,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+        }
+        .cmember-info { flex: 1; min-width: 0; }
+        .cmember-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmember-role {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .cmember-role-owner { color: var(--accent); }
+        .cmember-stats { display: flex; gap: 14px; flex-shrink: 0; }
+        .cmember-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+        .cmember-stat-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            color: var(--text);
+            line-height: 1;
+        }
+        .cmember-stat-lbl {
+            font-size: 0.58rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .cmember-unranked { font-size: 0.6rem; color: var(--text-muted); vertical-align: super; }
+
         /* ── Loading screen ── */
         #loadingScreen {
             z-index: 600;
@@ -462,6 +539,7 @@
             <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
             <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
             <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
+            <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club</button>
         </div>
 
         <!-- PLAY TAB -->
@@ -633,6 +711,17 @@
                 <div class="elo-leaderboard" id="eloLeaderboard">
                     <div class="no-history">Loading…</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- CLUB TAB -->
+        <div class="tab-content" id="tab-club">
+            <div class="club-tab-inner">
+                <div class="club-tab-header">
+                    <div class="club-tab-title" id="clubTabName">—</div>
+                    <div class="club-tab-sub">Members &amp; Rankings</div>
+                </div>
+                <div id="clubMembersList"><div class="no-history">Loading…</div></div>
             </div>
         </div>
 
