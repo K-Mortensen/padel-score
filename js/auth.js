@@ -85,6 +85,8 @@ function showMainApp() {
         }
         if (clubEl) clubEl.textContent = currentClub ? currentClub.name : 'No club · Add one in Settings';
         if (inviteBtn) inviteBtn.style.display = currentClub ? '' : 'none';
+        const clubTabBtn = document.getElementById('clubTabBtn');
+        if (clubTabBtn) clubTabBtn.style.display = currentClub ? '' : 'none';
     }
 
     // Auto-fill player 1

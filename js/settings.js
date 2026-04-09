@@ -107,7 +107,7 @@ async function createClubFromSettings() {
 
     currentClub = club;
     currentUserRole = null;
-    clubRoles = [];
+    await createDefaultRoles(club.id);
     closeModal('settingsModal');
     showMainApp();
     loadFromServer();
