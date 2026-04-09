@@ -13,6 +13,12 @@
 
 ALTER TABLE club_roles ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies so this script is safe to re-run
+DROP POLICY IF EXISTS club_roles_select_member ON club_roles;
+DROP POLICY IF EXISTS club_roles_insert_owner  ON club_roles;
+DROP POLICY IF EXISTS club_roles_update_owner  ON club_roles;
+DROP POLICY IF EXISTS club_roles_delete_owner  ON club_roles;
+
 -- ── SELECT ────────────────────────────────────────────────────────────────────
 CREATE POLICY club_roles_select_member
     ON club_roles
