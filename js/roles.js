@@ -1,5 +1,6 @@
 // ─── ROLES & PERMISSIONS ──────────────────────────────────────────────────
-// Permissions: delete_matches, modify_matches, add_matches, view_scores, rename_club
+// Permissions: delete_matches, modify_matches, add_matches, view_scores,
+//              rename_club, manage_roles
 // Club owner always has all permissions regardless of role.
 // Members with no role assigned can add_matches only (default).
 
@@ -107,6 +108,7 @@ const PERM_LABELS = {
     delete_matches: 'Delete matches',
     view_scores:    'View scores',
     rename_club:    'Rename club',
+    manage_roles:   'Manage roles & members',
 };
 const ALL_PERMS = Object.keys(PERM_LABELS);
 

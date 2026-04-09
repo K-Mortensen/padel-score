@@ -26,10 +26,10 @@ async function loadUserClub(isOnboarding = false) {
 
 // ─── DEFAULT ROLES ────────────────────────────────────────────────────────
 const DEFAULT_ROLES = [
-    { name: 'Admin',     permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true  } },
-    { name: 'Moderator', permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false } },
-    { name: 'Member',    permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false } },
-    { name: 'Newcomer',  permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false } },
+    { name: 'Admin',     permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true,  manage_roles: true  } },
+    { name: 'Moderator', permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false, manage_roles: false } },
+    { name: 'Member',    permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false, manage_roles: false } },
+    { name: 'Newcomer',  permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false, manage_roles: false } },
 ];
 
 async function createDefaultRoles(clubId) {
@@ -105,6 +105,7 @@ async function joinClub() {
 
     await supabaseClient.from('club_members').insert({
         club_id: club.id, user_id: currentUser.id,
+        role_id: club.default_role_id || null,
     });
 
     currentClub = club;

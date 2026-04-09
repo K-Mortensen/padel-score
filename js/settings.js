@@ -15,19 +15,31 @@ function _renderSettingsClub() {
 
     if (currentClub) {
         const isOwner = currentUser?.id === currentClub.owner_id;
+        const canManageRoles = isOwner || hasPermission('manage_roles');
+        const defaultRoleOptions = `<option value="">— No default role —</option>` +
+            clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+
         clubContent.innerHTML = `
             <div class="settings-club-name">${esc(currentClub.name)}</div>
             <div class="settings-club-code">Invite code: <strong>${esc(currentClub.invite_code)}</strong></div>
+            <button class="modal-btn-save" style="width:100%;margin-top:10px;" onclick="showInviteQR()">📱 Show QR Code</button>
+            ${canManageRoles ? `
+                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openRolesPanel()">Manage Roles &amp; Members</button>
+            ` : ''}
             ${isOwner ? `
             <div class="settings-owner-section">
-                <div class="settings-label" style="margin-top:12px;">Club Management</div>
+                <div class="settings-label" style="margin-top:14px;">Club Management</div>
                 <div class="settings-row" style="margin-bottom:8px;">
                     <input class="modal-name-input" id="settingsClubNameInput"
                            value="${esc(currentClub.name)}" placeholder="Club name"
                            onkeydown="if(event.key==='Enter')saveClubName()" />
                     <button class="modal-btn-save" onclick="saveClubName()">Rename</button>
                 </div>
-                <button class="modal-btn-save" style="width:100%;" onclick="openRolesPanel()">Manage Roles &amp; Members</button>
+                <div class="settings-label">Default role for new members</div>
+                <select class="member-role-select" style="width:100%;margin-top:4px;" id="defaultRoleSelect"
+                        onchange="saveDefaultRole(this.value)">
+                    ${defaultRoleOptions}
+                </select>
             </div>` : ''}`;
     } else {
         clubContent.innerHTML = `
@@ -41,6 +53,32 @@ function _renderSettingsClub() {
                    onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
             <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>`;
     }
+}
+
+// ─── DEFAULT ROLE ─────────────────────────────────────────────────────────
+async function saveDefaultRole(roleId) {
+    const { error } = await supabaseClient.from('clubs')
+        .update({ default_role_id: roleId || null })
+        .eq('id', currentClub.id);
+    if (error) { alert('Error saving default role: ' + error.message); return; }
+    currentClub.default_role_id = roleId || null;
+}
+
+// ─── INVITE QR CODE ───────────────────────────────────────────────────────
+function showInviteQR() {
+    if (!currentClub) return;
+    const inviteUrl = `${window.location.origin}${window.location.pathname}?invite=${encodeURIComponent(currentClub.invite_code)}`;
+    const canvas = document.getElementById('qrCanvas');
+    const codeEl = document.getElementById('qrInviteCode');
+    if (codeEl) codeEl.textContent = currentClub.invite_code;
+    if (canvas && typeof QRCode !== 'undefined') {
+        QRCode.toCanvas(canvas, inviteUrl, {
+            width: 220, margin: 2,
+            color: { dark: '#111111', light: '#ffffff' },
+        }, err => { if (err) console.error('QR error:', err); });
+    }
+    document.getElementById('qrModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 }
 
 // ─── SAVE USERNAME ────────────────────────────────────────────────────────
@@ -126,6 +164,7 @@ async function joinClubFromSettings() {
 
     await supabaseClient.from('club_members').insert({
         club_id: club.id, user_id: currentUser.id,
+        role_id: club.default_role_id || null,
     });
 
     currentClub = club;
