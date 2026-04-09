@@ -30,6 +30,11 @@ async function createOrUpdateProfile(user) {
 }
 
 // ─── SCREEN SWITCHING ─────────────────────────────────────────────────────
+function setLoadingText(text) {
+    const el = document.getElementById('loadingStatus');
+    if (el) el.textContent = text;
+}
+
 function hideLoadingScreen() {
     const el = document.getElementById('loadingScreen');
     if (!el || el.style.display === 'none') return;
@@ -127,8 +132,10 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         // Skip if initAuth() already handled this session on page load
         if (authHandled) { authHandled = false; return; }
 
+        setLoadingText('Signing in…');
         await createOrUpdateProfile(session.user);
 
+        setLoadingText('Loading profile…');
         let profile = null;
         for (let i = 0; i < 3; i++) {
             const { data } = await supabaseClient
@@ -142,6 +149,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (!currentUser.username) {
             showUsernameScreen();
         } else {
+            setLoadingText('Loading club…');
             await loadUserClub();
         }
     } else if (event === 'SIGNED_OUT') {
@@ -151,10 +159,13 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
 // ─── CHECK SESSION ON PAGE LOAD ───────────────────────────────────────────
 (async function initAuth() {
+    setLoadingText('Checking session…');
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session?.user) {
+        setLoadingText('Verifying account…');
         await createOrUpdateProfile(session.user);
 
+        setLoadingText('Loading profile…');
         let profile = null;
         for (let i = 0; i < 3; i++) {
             const { data } = await supabaseClient
@@ -169,6 +180,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (!currentUser.username) {
             showUsernameScreen();
         } else {
+            setLoadingText('Loading club…');
             await loadUserClub();
         }
     } else {
