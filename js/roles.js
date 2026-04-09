@@ -161,6 +161,10 @@ function _renderRolesPanel() {
         </div>`;
     }).join('');
 
+    const isOwner = currentUser?.id === currentClub?.owner_id;
+    const defaultRoleOptionsHTML = `<option value="">— No default role —</option>` +
+        clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub?.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+
     content.innerHTML = `
         <div class="roles-panel">
             <button class="role-back-btn" onclick="_renderSettingsClub()">← Back</button>
@@ -173,6 +177,12 @@ function _renderRolesPanel() {
 
             <div class="settings-label" style="margin-top:16px;">Members</div>
             <div class="members-list">${membersHTML}</div>
+
+            ${isOwner ? `
+            <div class="settings-label" style="margin-top:16px;">Default role for new members</div>
+            <select class="member-role-select" style="width:100%;margin-top:4px;" onchange="saveDefaultRole(this.value)">
+                ${defaultRoleOptionsHTML}
+            </select>` : ''}
         </div>`;
 }
 
