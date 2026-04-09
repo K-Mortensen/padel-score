@@ -123,38 +123,10 @@ async function submitUsername() {
 }
 
 // ─── AUTH STATE CHANGE ────────────────────────────────────────────────────
-// Guard flag: initAuth() sets this to true when it handles an existing session,
-// so onAuthStateChange skips the redundant SIGNED_IN event on page load.
-let authHandled = false;
-
-supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session?.user) {
-        // Skip if initAuth() already handled this session on page load
-        if (authHandled) { authHandled = false; return; }
-
-        setLoadingText('Signing in…');
-        await createOrUpdateProfile(session.user);
-
-        setLoadingText('Loading profile…');
-        let profile = null;
-        for (let i = 0; i < 3; i++) {
-            const { data } = await supabaseClient
-                .from('profiles').select('*').eq('id', session.user.id).single();
-            if (data) { profile = data; break; }
-            await new Promise(r => setTimeout(r, 500));
-        }
-
-        currentUser = profile ? { ...session.user, ...profile } : session.user;
-        console.log('Auth state change, user:', currentUser);
-        if (!currentUser.username) {
-            showUsernameScreen();
-        } else {
-            setLoadingText('Loading club…');
-            await loadUserClub();
-        }
-    } else if (event === 'SIGNED_OUT') {
-        showLoginScreen();
-    }
+// Only handle sign-out here. All sign-in flows use redirect OAuth so the page
+// always reloads — initAuth() below handles every session case on page load.
+supabaseClient.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') showLoginScreen();
 });
 
 // ─── CHECK SESSION ON PAGE LOAD ───────────────────────────────────────────
@@ -175,8 +147,6 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         }
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;
-        console.log('Session restored, user:', currentUser);
-        authHandled = true; // signal to onAuthStateChange that we handled this
         if (!currentUser.username) {
             showUsernameScreen();
         } else {
