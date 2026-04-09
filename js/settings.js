@@ -16,8 +16,6 @@ function _renderSettingsClub() {
     if (currentClub) {
         const isOwner = currentUser?.id === currentClub.owner_id;
         const canManageRoles = isOwner || hasPermission('manage_roles');
-        const defaultRoleOptions = `<option value="">— No default role —</option>` +
-            clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
 
         clubContent.innerHTML = `
             <div class="settings-club-name">${esc(currentClub.name)}</div>
@@ -35,11 +33,6 @@ function _renderSettingsClub() {
                            onkeydown="if(event.key==='Enter')saveClubName()" />
                     <button class="modal-btn-save" onclick="saveClubName()">Rename</button>
                 </div>
-                <div class="settings-label">Default role for new members</div>
-                <select class="member-role-select" style="width:100%;margin-top:4px;" id="defaultRoleSelect"
-                        onchange="saveDefaultRole(this.value)">
-                    ${defaultRoleOptions}
-                </select>
             </div>` : ''}`;
     } else {
         clubContent.innerHTML = `
@@ -68,17 +61,23 @@ async function saveDefaultRole(roleId) {
 function showInviteQR() {
     if (!currentClub) return;
     const inviteUrl = `${window.location.origin}${window.location.pathname}?invite=${encodeURIComponent(currentClub.invite_code)}`;
-    const canvas = document.getElementById('qrCanvas');
     const codeEl = document.getElementById('qrInviteCode');
     if (codeEl) codeEl.textContent = currentClub.invite_code;
-    if (canvas && typeof QRCode !== 'undefined') {
-        QRCode.toCanvas(canvas, inviteUrl, {
-            width: 220, margin: 2,
-            color: { dark: '#111111', light: '#ffffff' },
-        }, err => { if (err) console.error('QR error:', err); });
-    }
+
+    // Show modal first so the img element has real dimensions
     document.getElementById('qrModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    const img = document.getElementById('qrImg');
+    if (img && typeof QRCode !== 'undefined') {
+        QRCode.toDataURL(inviteUrl, {
+            width: 220, margin: 2,
+            color: { dark: '#111111', light: '#ffffff' },
+        }, (err, dataUrl) => {
+            if (err) { console.error('QR error:', err); return; }
+            img.src = dataUrl;
+        });
+    }
 }
 
 // ─── SAVE USERNAME ────────────────────────────────────────────────────────

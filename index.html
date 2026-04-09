@@ -421,10 +421,11 @@
             background: #fff;
             border-radius: 12px;
             padding: 12px;
-            display: inline-block;
-            margin: 16px auto 12px;
+            display: flex;
+            justify-content: center;
+            margin: 16px 0 12px;
         }
-        .qr-wrapper canvas { display: block; }
+        .qr-wrapper img { display: block; }
         .qr-code-label {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.5rem;
@@ -851,7 +852,7 @@
         <div class="modal qr-modal">
             <div class="modal-title">📱 Club Invite</div>
             <div class="qr-wrapper">
-                <canvas id="qrCanvas"></canvas>
+                <img id="qrImg" alt="QR Code" width="220" height="220" />
             </div>
             <div class="qr-code-label" id="qrInviteCode"></div>
             <div class="qr-hint">Scan to join · or share the invite code above</div>
