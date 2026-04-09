@@ -1,3 +1,23 @@
+// ─── PENDING INVITE (from QR scan or shared link) ─────────────────────────
+// Capture ?invite=CODE from URL, persist in sessionStorage so it survives the
+// Google OAuth redirect (which navigates away and back without the param).
+{
+    const _inv = new URLSearchParams(window.location.search).get('invite');
+    if (_inv) {
+        try { sessionStorage.setItem('padel-invite', _inv.toUpperCase()); } catch {}
+        const _u = new URL(window.location.href);
+        _u.searchParams.delete('invite');
+        window.history.replaceState({}, '', _u);
+    }
+}
+function _popPendingInvite() {
+    try {
+        const code = sessionStorage.getItem('padel-invite') || '';
+        if (code) sessionStorage.removeItem('padel-invite');
+        return code;
+    } catch { return ''; }
+}
+
 // ─── SIGN IN ──────────────────────────────────────────────────────────────
 async function signInWithGoogle() {
     const btn = document.getElementById('googleSignInBtn');
@@ -64,6 +84,12 @@ function showClubScreen() {
     document.getElementById('usernameScreen').style.display = 'none';
     document.getElementById('clubScreen').style.display = 'flex';
     document.getElementById('mainApp').style.display = 'none';
+    // Auto-fill invite code if user arrived via QR scan or shared link
+    const invite = _popPendingInvite();
+    if (invite) {
+        const input = document.getElementById('joinClubCode');
+        if (input) input.value = invite;
+    }
 }
 
 function showMainApp() {

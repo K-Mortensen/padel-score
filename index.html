@@ -415,6 +415,30 @@
         }
         .cmember-unranked { font-size: 0.6rem; color: var(--text-muted); vertical-align: super; }
 
+        /* ── QR code modal ── */
+        .qr-modal { max-width: 300px; text-align: center; }
+        .qr-wrapper {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            display: inline-block;
+            margin: 16px auto 12px;
+        }
+        .qr-wrapper canvas { display: block; }
+        .qr-code-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .qr-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
         /* ── Loading screen ── */
         #loadingScreen {
             z-index: 600;
@@ -821,8 +845,25 @@
         </div>
 
     </div><!-- end mainApp -->
+
+    <!-- ── QR CODE MODAL ── -->
+    <div class="modal-overlay" id="qrModal" style="display:none;" onclick="handleModalOverlayClick(event,'qrModal')">
+        <div class="modal qr-modal">
+            <div class="modal-title">📱 Club Invite</div>
+            <div class="qr-wrapper">
+                <canvas id="qrCanvas"></canvas>
+            </div>
+            <div class="qr-code-label" id="qrInviteCode"></div>
+            <div class="qr-hint">Scan to join · or share the invite code above</div>
+            <div class="modal-buttons">
+                <button class="modal-btn-cancel" onclick="closeModal('qrModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="js/state.js"></script>
     <script src="js/elo.js"></script>
     <script src="js/auth.js"></script>
