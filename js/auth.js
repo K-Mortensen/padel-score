@@ -36,7 +36,11 @@ async function signOut() {
     await supabaseClient.auth.signOut();
     currentUser = null;
     currentClub = null;
+    userClubs = [];
+    currentUserRole = null;
+    clubRoles = [];
     appData = { matches: [] };
+    localStorage.removeItem('padel-club-id');
     showLoginScreen();
 }
 
@@ -147,7 +151,7 @@ async function submitUsername() {
 
     currentUser.username = username;
     // First-time user: show club screen for onboarding
-    await loadUserClub(true);
+    await loadUserClubs(true);
 }
 
 // ─── AUTH STATE CHANGE ────────────────────────────────────────────────────
@@ -179,7 +183,7 @@ supabaseClient.auth.onAuthStateChange((event) => {
             showUsernameScreen();
         } else {
             setLoadingText('Loading club…');
-            await loadUserClub();
+            await loadUserClubs();
         }
     } else {
         showLoginScreen();

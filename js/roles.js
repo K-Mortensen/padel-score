@@ -109,6 +109,7 @@ const PERM_LABELS = {
     view_scores:    'View scores',
     rename_club:    'Rename club',
     manage_roles:   'Manage roles & members',
+    kick_members:   'Kick members',
 };
 const ALL_PERMS = Object.keys(PERM_LABELS);
 
@@ -147,17 +148,22 @@ function _renderRolesPanel() {
         }).join('')
         : '<div style="color:var(--text-faint);font-size:0.8rem;padding:8px 0;">No roles yet.</div>';
 
+    const canKick = currentUser?.id === currentClub?.owner_id || hasPermission('kick_members');
     const membersHTML = _rolesPanelMembers.map(m => {
-        const name = esc(m.profiles?.username || m.profiles?.display_name || m.user_id);
+        const rawName = m.profiles?.username || m.profiles?.display_name || m.user_id;
+        const name = esc(rawName);
         const roleOptions = `<option value="">— No role —</option>` +
             clubRoles.map(r => `<option value="${esc(r.id)}" ${m.role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
         const isOwner = m.user_id === currentClub?.owner_id;
+        const isSelf  = m.user_id === currentUser?.id;
+        const showKick = canKick && !isOwner && !isSelf;
         return `<div class="member-item">
             <span class="member-name">${name}${isOwner ? ' <span class="owner-badge">Owner</span>' : ''}</span>
             ${isOwner
                 ? '<span style="font-size:0.75rem;color:var(--text-faint);">All permissions</span>'
                 : `<select class="member-role-select" onchange="applyMemberRole('${esc(m.user_id)}',this.value)">${roleOptions}</select>`
             }
+            ${showKick ? `<button class="role-action-btn role-action-delete" onclick="kickMember('${esc(m.user_id)}','${esc(rawName)}')">Kick</button>` : ''}
         </div>`;
     }).join('');
 
@@ -258,4 +264,16 @@ async function applyMemberRole(userId, roleId) {
     } catch (e) {
         alert('Error assigning role: ' + e.message);
     }
+}
+
+async function kickMember(userId, name) {
+    if (!confirm(`Remove ${name} from the club?`)) return;
+    const { error } = await supabaseClient
+        .from('club_members')
+        .delete()
+        .eq('club_id', currentClub.id)
+        .eq('user_id', userId);
+    if (error) { alert('Error kicking member: ' + error.message); return; }
+    _rolesPanelMembers = _rolesPanelMembers.filter(m => m.user_id !== userId);
+    _renderRolesPanel();
 }
