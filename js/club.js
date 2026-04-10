@@ -364,6 +364,7 @@ function _renderBrowseClubs(query) {
     const memberIds = new Set(userClubs.map(m => m.club_id));
 
     listEl.innerHTML = filtered.map(c => {
+        const isCurrent = c.id === currentClub?.id;
         const isMember = memberIds.has(c.id);
         const isOwner = c.owner_id === currentUser?.id;
         const visLabel = c.visibility === 'public' ? 'Public'
@@ -374,7 +375,9 @@ function _renderBrowseClubs(query) {
                        : 'browse-vis-private';
 
         let actionBtn = '';
-        if (isMember || isOwner) {
+        if (isCurrent) {
+            actionBtn = `<span class="switch-club-current">Current</span>`;
+        } else if (isMember || isOwner) {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="switchClub('${esc(c.id)}');closeModal('clubModal')">Switch →</button>`;
         } else if (c.visibility === 'public') {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="_joinClubById('${esc(c.id)}')">Join</button>`;
