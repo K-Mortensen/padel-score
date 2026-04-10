@@ -939,17 +939,14 @@
         </div>
 
         <!-- SETTINGS MODAL -->
-        <div class="modal-overlay" id="settingsModal" style="display:none;" onclick="handleModalOverlayClick(event,'settingsModal')">
+        <div class="modal-overlay" id="settingsModal" style="display:none;" onclick="if(event.target===this)closeSettingsModal()">
             <div class="modal settings-modal">
                 <div class="modal-title">⚙ Settings</div>
 
                 <div class="settings-section">
                     <div class="settings-label">Username</div>
-                    <div class="settings-row">
-                        <input class="modal-name-input" id="settingsUsernameInput" type="text" placeholder="Username" maxlength="24"
-                               onkeydown="if(event.key==='Enter')saveUsernameSettings()" />
-                        <button class="modal-btn-save" id="settingsUsernameSaveBtn" onclick="saveUsernameSettings()">Save</button>
-                    </div>
+                    <input class="modal-name-input" id="settingsUsernameInput" type="text" placeholder="Username" maxlength="24"
+                           style="width:100%;" />
                 </div>
 
                 <div class="settings-section">
@@ -958,7 +955,7 @@
                 </div>
 
                 <div class="modal-buttons">
-                    <button class="modal-btn-cancel" onclick="closeModal('settingsModal')">Close</button>
+                    <button class="modal-btn-cancel" onclick="closeSettingsModal()">Close</button>
                 </div>
             </div>
         </div>

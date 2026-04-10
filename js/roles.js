@@ -113,18 +113,13 @@ const PERM_LABELS = {
 };
 const ALL_PERMS = Object.keys(PERM_LABELS);
 
+// ── Roles-only panel ────────────────────────────────────────────────────────
 async function openRolesPanel() {
     const content = document.getElementById('settingsClubContent');
     if (!content) return;
     content.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">Loading…</div>';
-
-    await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
+    await loadClubRoles();
     _renderRolesPanel();
-}
-
-let _rolesPanelMembers = [];
-async function _loadRolesPanelMembers() {
-    _rolesPanelMembers = await loadClubMembers();
 }
 
 function _renderRolesPanel() {
@@ -148,29 +143,6 @@ function _renderRolesPanel() {
         }).join('')
         : '<div style="color:var(--text-faint);font-size:0.8rem;padding:8px 0;">No roles yet.</div>';
 
-    const canKick = currentUser?.id === currentClub?.owner_id || hasPermission('kick_members');
-    const membersHTML = _rolesPanelMembers.map(m => {
-        const rawName = m.profiles?.username || m.profiles?.display_name || m.user_id;
-        const name = esc(rawName);
-        const roleOptions = `<option value="">— No role —</option>` +
-            clubRoles.map(r => `<option value="${esc(r.id)}" ${m.role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
-        const isOwner = m.user_id === currentClub?.owner_id;
-        const isSelf  = m.user_id === currentUser?.id;
-        const showKick = canKick && !isOwner && !isSelf;
-        return `<div class="member-item">
-            <span class="member-name">${name}${isOwner ? ' <span class="owner-badge">Owner</span>' : ''}</span>
-            ${isOwner
-                ? '<span style="font-size:0.75rem;color:var(--text-faint);">All permissions</span>'
-                : `<select class="member-role-select" onchange="applyMemberRole('${esc(m.user_id)}',this.value)">${roleOptions}</select>`
-            }
-            ${showKick ? `<button class="role-action-btn role-action-delete" onclick="kickMember('${esc(m.user_id)}','${esc(rawName)}')">Kick</button>` : ''}
-        </div>`;
-    }).join('');
-
-    const isOwner = currentUser?.id === currentClub?.owner_id;
-    const defaultRoleOptionsHTML = `<option value="">— No default role —</option>` +
-        clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub?.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
-
     content.innerHTML = `
         <div class="roles-panel">
             <button class="role-back-btn" onclick="_renderSettingsClub()">← Back</button>
@@ -180,8 +152,57 @@ function _renderRolesPanel() {
             <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openAddRoleForm()">+ Add Role</button>
 
             <div id="roleFormContainer"></div>
+        </div>`;
+}
 
-            <div class="settings-label" style="margin-top:16px;">Members</div>
+// ── Members-only panel ───────────────────────────────────────────────────────
+let _rolesPanelMembers = [];
+async function _loadRolesPanelMembers() {
+    _rolesPanelMembers = await loadClubMembers();
+}
+
+async function openMembersPanel() {
+    const content = document.getElementById('settingsClubContent');
+    if (!content) return;
+    content.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">Loading…</div>';
+    await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
+    _renderMembersPanel();
+}
+
+function _renderMembersPanel() {
+    const content = document.getElementById('settingsClubContent');
+    if (!content) return;
+
+    const canKick = currentUser?.id === currentClub?.owner_id || hasPermission('kick_members');
+    const membersHTML = _rolesPanelMembers.length
+        ? _rolesPanelMembers.map(m => {
+            const rawName = m.profiles?.username || m.profiles?.display_name || m.user_id;
+            const name = esc(rawName);
+            const roleOptions = `<option value="">— No role —</option>` +
+                clubRoles.map(r => `<option value="${esc(r.id)}" ${m.role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+            const isOwner = m.user_id === currentClub?.owner_id;
+            const isSelf  = m.user_id === currentUser?.id;
+            const showKick = canKick && !isOwner && !isSelf;
+            return `<div class="member-item">
+                <span class="member-name">${name}${isOwner ? ' <span class="owner-badge">Owner</span>' : ''}</span>
+                ${isOwner
+                    ? '<span style="font-size:0.75rem;color:var(--text-faint);">All permissions</span>'
+                    : `<select class="member-role-select" onchange="applyMemberRole('${esc(m.user_id)}',this.value)">${roleOptions}</select>`
+                }
+                ${showKick ? `<button class="role-action-btn role-action-delete" onclick="kickMember('${esc(m.user_id)}','${esc(rawName)}')">Kick</button>` : ''}
+            </div>`;
+        }).join('')
+        : '<div style="color:var(--text-faint);font-size:0.8rem;padding:8px 0;">No members found.</div>';
+
+    const isOwner = currentUser?.id === currentClub?.owner_id;
+    const defaultRoleOptionsHTML = `<option value="">— No default role —</option>` +
+        clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub?.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+
+    content.innerHTML = `
+        <div class="roles-panel">
+            <button class="role-back-btn" onclick="_renderSettingsClub()">← Back</button>
+
+            <div class="settings-label" style="margin-top:12px;">Members</div>
             <div class="members-list">${membersHTML}</div>
 
             ${isOwner ? `
@@ -275,5 +296,5 @@ async function kickMember(userId, name) {
         .eq('user_id', userId);
     if (error) { alert('Error kicking member: ' + error.message); return; }
     _rolesPanelMembers = _rolesPanelMembers.filter(m => m.user_id !== userId);
-    _renderRolesPanel();
+    _renderMembersPanel();
 }

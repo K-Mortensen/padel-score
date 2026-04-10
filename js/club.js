@@ -45,6 +45,7 @@ async function switchClub(clubId) {
     await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     showMainApp();
     loadFromServer();
+    renderClubTab();
     closeProfileMenu();
 }
 
