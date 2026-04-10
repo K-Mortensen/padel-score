@@ -716,7 +716,7 @@
 
         <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
 
-        <h1>PADEL FIREMATCH</h1>
+        <h1 id="appTitle">PADEL FIREMATCH</h1>
         <p class="subtitle">Track · Play · Win</p>
 
         <div class="sync-bar">
@@ -1042,6 +1042,10 @@
                         <button class="club-manage-tab" id="cmManageTab-members" onclick="switchManageTab('members')">Members</button>
                     </div>
                     <div id="clubManageContent"></div>
+                    <div id="clubManageDanger" style="display:none;margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
+                        <button class="modal-btn-save" style="width:100%;margin-bottom:8px;" onclick="openTransferOwnershipModal()">Transfer Ownership</button>
+                        <button class="modal-btn-cancel settings-danger-btn" style="width:100%;" onclick="deleteClub()">Delete Club</button>
+                    </div>
                 </div>
 
                 <div class="modal-buttons" style="margin-top:14px;">
@@ -1066,24 +1070,8 @@
 
     </div><!-- end mainApp -->
 
-    <!-- ── QR CODE MODAL ── -->
-    <div class="modal-overlay" id="qrModal" style="display:none;" onclick="handleModalOverlayClick(event,'qrModal')">
-        <div class="modal qr-modal">
-            <div class="modal-title">📱 Club Invite</div>
-            <div class="qr-wrapper">
-                <img id="qrImg" alt="QR Code" width="220" height="220" />
-            </div>
-            <div class="qr-code-label" id="qrInviteCode"></div>
-            <div class="qr-hint">Scan to join · or share the invite code above</div>
-            <div class="modal-buttons">
-                <button class="modal-btn-cancel" onclick="closeModal('qrModal')">Close</button>
-            </div>
-        </div>
-    </div>
-
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="js/state.js"></script>
     <script src="js/elo.js"></script>
     <script src="js/auth.js"></script>

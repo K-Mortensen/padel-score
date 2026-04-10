@@ -134,7 +134,7 @@ async function deleteClub() {
         appData = { matches: [] };
         showMainApp();
     }
-    closeModal('settingsModal');
+    closeModal('clubModal');
 }
 
 // ─── DEFAULT ROLES ────────────────────────────────────────────────────────────
@@ -306,7 +306,13 @@ async function switchClubModalTab(tab) {
     });
     if (tab === 'switch')  _renderClubModalSwitch();
     if (tab === 'browse')  await _initClubModalBrowse();
-    if (tab === 'manage')  await switchManageTab('roles');
+    if (tab === 'manage') {
+        const manageTabBtn = document.getElementById('cmTab-manage');
+        if (manageTabBtn) manageTabBtn.textContent = currentClub?.name || 'Manage';
+        const dangerEl = document.getElementById('clubManageDanger');
+        if (dangerEl) dangerEl.style.display = currentUser?.id === currentClub?.owner_id ? '' : 'none';
+        await switchManageTab('roles');
+    }
 }
 
 // ── Switch tab ───────────────────────────────────────────────────────────────

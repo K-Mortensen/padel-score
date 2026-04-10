@@ -53,23 +53,6 @@ async function _settingsAutoSave() {
         if (nameEl) nameEl.textContent = newUsername;
     }
 
-    // 2. Club name — save if changed and user has permission
-    const clubNameInput = document.getElementById('settingsClubNameInput');
-    const newClubName = clubNameInput?.value?.trim();
-    if (newClubName && currentClub && newClubName !== currentClub.name) {
-        if (!hasPermission('rename_club')) return; // silently skip — no permission
-        const { error } = await supabaseClient.from('clubs')
-            .update({ name: newClubName }).eq('id', currentClub.id);
-        if (error) { alert('Error renaming club: ' + error.message); return; }
-        currentClub.name = newClubName;
-        userClubs = userClubs.map(m =>
-            m.club_id === currentClub.id
-                ? { ...m, clubs: { ...m.clubs, name: newClubName } }
-                : m
-        );
-        const clubEl = document.getElementById('profileClub');
-        if (clubEl) clubEl.textContent = newClubName;
-    }
 }
 
 function _renderSettingsClub() {
@@ -78,28 +61,14 @@ function _renderSettingsClub() {
 
     if (currentClub) {
         const isOwner = currentUser?.id === currentClub.owner_id;
-        const canManageRoles = isOwner || hasPermission('manage_roles');
 
         clubContent.innerHTML = `
             <div class="settings-club-name">${esc(currentClub.name)}</div>
             <div class="settings-club-code">Invite code: <strong>${esc(currentClub.invite_code)}</strong></div>
-            <button class="modal-btn-save" style="width:100%;margin-top:10px;" onclick="showInviteQR()">📱 Show QR Code</button>
-            ${canManageRoles ? `
-                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openRolesPanel()">Manage Roles</button>
-                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openMembersPanel()">Members</button>
-            ` : ''}
-            ${isOwner ? `
-            <div class="settings-owner-section">
-                <div class="settings-label" style="margin-top:14px;">Club name</div>
-                <input class="modal-name-input" id="settingsClubNameInput"
-                       value="${esc(currentClub.name)}" placeholder="Club name"
-                       style="width:100%;margin-top:4px;" />
-                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openTransferOwnershipModal()">Transfer Ownership</button>
-                <button class="modal-btn-cancel settings-danger-btn" style="width:100%;margin-top:8px;" onclick="deleteClub()">Delete Club</button>
-            </div>` : `
+            ${!isOwner ? `
             <div style="margin-top:12px;">
                 <button class="modal-btn-cancel settings-danger-btn" style="width:100%;" onclick="leaveClub()">Leave Club</button>
-            </div>`}
+            </div>` : ''}
 
             <div style="margin-top:14px;">
                 <button class="modal-btn-cancel" style="width:100%;" onclick="toggleSettingsAddClub()">+ Add / Join another club</button>
@@ -161,29 +130,6 @@ async function saveDefaultRole(roleId) {
     // Confirm the selection in the UI without a full re-render
     const sel = document.querySelector('.roles-panel select[onchange*="saveDefaultRole"]');
     if (sel) sel.value = currentClub.default_role_id || '';
-}
-
-// ─── INVITE QR CODE ───────────────────────────────────────────────────────
-function showInviteQR() {
-    if (!currentClub) return;
-    const inviteUrl = `${window.location.origin}${window.location.pathname}?invite=${encodeURIComponent(currentClub.invite_code)}`;
-    const codeEl = document.getElementById('qrInviteCode');
-    if (codeEl) codeEl.textContent = currentClub.invite_code;
-
-    // Show modal first so the img element has real dimensions
-    document.getElementById('qrModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-
-    const img = document.getElementById('qrImg');
-    if (img && typeof QRCode !== 'undefined') {
-        QRCode.toDataURL(inviteUrl, {
-            width: 220, margin: 2,
-            color: { dark: '#111111', light: '#ffffff' },
-        }, (err, dataUrl) => {
-            if (err) { console.error('QR error:', err); return; }
-            img.src = dataUrl;
-        });
-    }
 }
 
 // ─── CREATE CLUB FROM SETTINGS ────────────────────────────────────────────
