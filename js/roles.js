@@ -115,8 +115,8 @@ const ALL_PERMS = Object.keys(PERM_LABELS);
 
 // Context vars — set by callers before rendering so panels know where to
 // render and what to do on "← Back". Defaults to the Settings modal context.
-let _panelTarget  = 'settingsClubContent';
-let _rolesBackFn  = () => _renderSettingsClub();
+var _panelTarget  = 'settingsClubContent';
+var _rolesBackFn  = () => _renderSettingsClub();
 
 // ── Roles-only panel ────────────────────────────────────────────────────────
 async function openRolesPanel() {
