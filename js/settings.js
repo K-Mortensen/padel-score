@@ -55,7 +55,7 @@ async function _settingsAutoSave() {
 
     // 2. Club name — save if changed and user has permission
     const clubNameInput = document.getElementById('settingsClubNameInput');
-    const newClubName = clubNameInput?.value.trim();
+    const newClubName = clubNameInput?.value?.trim();
     if (newClubName && currentClub && newClubName !== currentClub.name) {
         if (!hasPermission('rename_club')) return; // silently skip — no permission
         const { error } = await supabaseClient.from('clubs')
