@@ -101,7 +101,7 @@ async function assignMemberRole(userId, roleId) {
     if (error) throw error;
 }
 
-// ─── ROLES PANEL (rendered inside settings modal) ─────────────────────────
+// ─── ROLES PANEL (rendered inside settings modal or club modal) ───────────
 const PERM_LABELS = {
     add_matches:    'Add matches',
     modify_matches: 'Modify matches',
@@ -113,9 +113,16 @@ const PERM_LABELS = {
 };
 const ALL_PERMS = Object.keys(PERM_LABELS);
 
+// Context vars — set by callers before rendering so panels know where to
+// render and what to do on "← Back". Defaults to the Settings modal context.
+let _panelTarget  = 'settingsClubContent';
+let _rolesBackFn  = () => _renderSettingsClub();
+
 // ── Roles-only panel ────────────────────────────────────────────────────────
 async function openRolesPanel() {
-    const content = document.getElementById('settingsClubContent');
+    _panelTarget = 'settingsClubContent';
+    _rolesBackFn = () => _renderSettingsClub();
+    const content = document.getElementById(_panelTarget);
     if (!content) return;
     content.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">Loading…</div>';
     await loadClubRoles();
@@ -123,7 +130,7 @@ async function openRolesPanel() {
 }
 
 function _renderRolesPanel() {
-    const content = document.getElementById('settingsClubContent');
+    const content = document.getElementById(_panelTarget);
     if (!content) return;
 
     const rolesHTML = clubRoles.length
@@ -145,7 +152,7 @@ function _renderRolesPanel() {
 
     content.innerHTML = `
         <div class="roles-panel">
-            <button class="role-back-btn" onclick="_renderSettingsClub()">← Back</button>
+            ${_rolesBackFn ? `<button class="role-back-btn" onclick="_rolesBackFn()">← Back</button>` : ''}
 
             <div class="settings-label" style="margin-top:12px;">Roles</div>
             <div class="roles-list">${rolesHTML}</div>
@@ -162,7 +169,9 @@ async function _loadRolesPanelMembers() {
 }
 
 async function openMembersPanel() {
-    const content = document.getElementById('settingsClubContent');
+    _panelTarget = 'settingsClubContent';
+    _rolesBackFn = () => _renderSettingsClub();
+    const content = document.getElementById(_panelTarget);
     if (!content) return;
     content.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">Loading…</div>';
     await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
@@ -170,7 +179,7 @@ async function openMembersPanel() {
 }
 
 function _renderMembersPanel() {
-    const content = document.getElementById('settingsClubContent');
+    const content = document.getElementById(_panelTarget);
     if (!content) return;
 
     const canKick = currentUser?.id === currentClub?.owner_id || hasPermission('kick_members');
@@ -200,7 +209,7 @@ function _renderMembersPanel() {
 
     content.innerHTML = `
         <div class="roles-panel">
-            <button class="role-back-btn" onclick="_renderSettingsClub()">← Back</button>
+            ${_rolesBackFn ? `<button class="role-back-btn" onclick="_rolesBackFn()">← Back</button>` : ''}
 
             <div class="settings-label" style="margin-top:12px;">Members</div>
             <div class="members-list">${membersHTML}</div>

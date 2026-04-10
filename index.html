@@ -544,6 +544,59 @@
         .transfer-member-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
         .transfer-member-btn { padding: 5px 12px; font-size: 0.8rem; white-space: nowrap; }
 
+        /* ── Club modal tabs ── */
+        .club-modal { max-width: 460px; width: 100%; }
+        .club-modal-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 14px;
+        }
+        .club-modal-tab {
+            flex: 1;
+            padding: 7px 4px;
+            font-size: 0.82rem;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s;
+        }
+        .club-modal-tab.active {
+            background: var(--bg-card);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .club-modal-pane { min-height: 60px; }
+        .club-manage-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .club-manage-tab {
+            padding: 5px 16px;
+            font-size: 0.82rem;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.15s;
+        }
+        .club-manage-tab.active {
+            background: rgba(242,201,76,0.12);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
         /* ── Danger button in settings ── */
         .settings-danger-btn {
             border-color: rgba(235,87,87,0.4) !important;
@@ -654,8 +707,7 @@
                 <button class="profile-btn profile-menu-btn" onclick="toggleProfileMenu()" title="Menu">⚙ ▾</button>
                 <div class="profile-menu" id="profileMenu" style="display:none;">
                     <div class="profile-menu-item" onclick="openSettingsModal();closeProfileMenu()">⚙ Settings</div>
-                    <div class="profile-menu-item" onclick="openSwitchClubModal();closeProfileMenu()">🔄 Switch Club</div>
-                    <div class="profile-menu-item" onclick="openBrowseClubs();closeProfileMenu()">🏟 Browse Clubs</div>
+                    <div class="profile-menu-item" onclick="openClubModal('switch');closeProfileMenu()">🏟 Club</div>
                     <div class="profile-menu-divider"></div>
                     <div class="profile-menu-item profile-menu-signout" onclick="signOut()">Sign out</div>
                 </div>
@@ -960,27 +1012,40 @@
             </div>
         </div>
 
-        <!-- BROWSE CLUBS MODAL -->
-        <div class="modal-overlay" id="browseClubsModal" style="display:none;" onclick="handleModalOverlayClick(event,'browseClubsModal')">
-            <div class="modal browse-clubs-modal">
-                <div class="modal-title">🏟 Browse Clubs</div>
-                <input class="browse-clubs-search" id="browseClubsSearch" type="text" placeholder="Search clubs…" />
-                <div class="browse-clubs-list" id="browseClubsList">
-                    <div style="text-align:center;color:var(--text-muted);padding:20px 0;">Loading…</div>
+        <!-- CLUB MODAL (Switch / Browse / Manage) -->
+        <div class="modal-overlay" id="clubModal" style="display:none;" onclick="if(event.target===this)closeModal('clubModal')">
+            <div class="modal club-modal">
+                <div class="modal-title">🏟 Club</div>
+                <div class="club-modal-tabs">
+                    <button class="club-modal-tab active" id="cmTab-switch" onclick="switchClubModalTab('switch')">Switch</button>
+                    <button class="club-modal-tab" id="cmTab-browse" onclick="switchClubModalTab('browse')">Browse</button>
+                    <button class="club-modal-tab" id="cmTab-manage" onclick="switchClubModalTab('manage')">Manage</button>
                 </div>
-                <div class="modal-buttons" style="margin-top:14px;">
-                    <button class="modal-btn-cancel" onclick="closeModal('browseClubsModal')">Close</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- SWITCH CLUB MODAL -->
-        <div class="modal-overlay" id="switchClubModal" style="display:none;" onclick="handleModalOverlayClick(event,'switchClubModal')">
-            <div class="modal" style="max-width:380px;width:100%;">
-                <div class="modal-title">🔄 Switch Club</div>
-                <div class="switch-club-list" id="switchClubList"></div>
+                <!-- Switch tab -->
+                <div class="club-modal-pane" id="cmPane-switch">
+                    <div class="switch-club-list" id="clubModalSwitchList"></div>
+                </div>
+
+                <!-- Browse tab -->
+                <div class="club-modal-pane" id="cmPane-browse" style="display:none;">
+                    <input class="browse-clubs-search" id="clubModalBrowseSearch" type="text" placeholder="Search clubs…" />
+                    <div class="browse-clubs-list" id="clubModalBrowseList">
+                        <div style="text-align:center;color:var(--text-muted);padding:20px 0;">Loading…</div>
+                    </div>
+                </div>
+
+                <!-- Manage tab -->
+                <div class="club-modal-pane" id="cmPane-manage" style="display:none;">
+                    <div class="club-manage-tabs">
+                        <button class="club-manage-tab" id="cmManageTab-roles" onclick="switchManageTab('roles')">Roles</button>
+                        <button class="club-manage-tab" id="cmManageTab-members" onclick="switchManageTab('members')">Members</button>
+                    </div>
+                    <div id="clubManageContent"></div>
+                </div>
+
                 <div class="modal-buttons" style="margin-top:14px;">
-                    <button class="modal-btn-cancel" onclick="closeModal('switchClubModal')">Close</button>
+                    <button class="modal-btn-cancel" onclick="closeModal('clubModal')">Close</button>
                 </div>
             </div>
         </div>
