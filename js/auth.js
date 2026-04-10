@@ -117,6 +117,8 @@ function showMainApp() {
         if (inviteBtn) inviteBtn.style.display = currentClub ? '' : 'none';
         const clubTabBtn = document.getElementById('clubTabBtn');
         if (clubTabBtn) clubTabBtn.style.display = currentClub ? '' : 'none';
+        const titleEl = document.getElementById('appTitle');
+        if (titleEl) titleEl.textContent = currentClub ? currentClub.name : 'PADEL FIREMATCH';
     }
 
     // Auto-fill player 1
