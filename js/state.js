@@ -21,6 +21,7 @@ let isSaving = false;
 let editingMatchId = null;
 let currentUser = null;
 let currentClub = null;
+let userClubs = [];   // all club memberships: [{ club_id, clubs: {...} }]
 
 // ─── HTML ESCAPE HELPER ───────────────────────────────────────────────────
 function esc(s) {

@@ -1,3 +1,22 @@
+// ─── PROFILE DROPDOWN ─────────────────────────────────────────────────────
+function toggleProfileMenu() {
+    const m = document.getElementById('profileMenu');
+    if (!m) return;
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+
+function closeProfileMenu() {
+    const m = document.getElementById('profileMenu');
+    if (m) m.style.display = 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#profileMenu') && !e.target.closest('.profile-menu-btn')) {
+        closeProfileMenu();
+    }
+});
+
 // ─── SETTINGS MODAL ───────────────────────────────────────────────────────
 function openSettingsModal() {
     const usernameInput = document.getElementById('settingsUsernameInput');
@@ -33,12 +52,22 @@ function _renderSettingsClub() {
                            onkeydown="if(event.key==='Enter')saveClubName()" />
                     <button class="modal-btn-save" onclick="saveClubName()">Rename</button>
                 </div>
-            </div>` : ''}`;
+                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openTransferOwnershipModal()">Transfer Ownership</button>
+                <button class="modal-btn-cancel settings-danger-btn" style="width:100%;margin-top:8px;" onclick="deleteClub()">Delete Club</button>
+            </div>` : `
+            <div style="margin-top:12px;">
+                <button class="modal-btn-cancel settings-danger-btn" style="width:100%;" onclick="leaveClub()">Leave Club</button>
+            </div>`}`;
     } else {
         clubContent.innerHTML = `
             <div class="settings-no-club">You're not in a club yet.</div>
             <input class="modal-name-input" id="settingsNewClubName" type="text" placeholder="Club name"
                    style="margin-bottom:8px;width:100%;" onkeydown="if(event.key==='Enter')createClubFromSettings()" />
+            <select class="member-role-select" id="settingsNewClubVisibility" style="width:100%;margin-bottom:8px;">
+                <option value="public_invite">Invite-only — visible, needs code to join</option>
+                <option value="public">Public — visible, anyone can join</option>
+                <option value="private">Private — hidden, needs code to join</option>
+            </select>
             <button class="modal-btn-save" style="width:100%;margin-bottom:12px;" onclick="createClubFromSettings()">🏟 Create Club</button>
             <div class="settings-divider">— or join existing —</div>
             <input class="modal-name-input" id="settingsJoinCode" type="text" placeholder="Invite code"
@@ -50,11 +79,22 @@ function _renderSettingsClub() {
 
 // ─── DEFAULT ROLE ─────────────────────────────────────────────────────────
 async function saveDefaultRole(roleId) {
-    const { error } = await supabaseClient.from('clubs')
+    const { data, error } = await supabaseClient.from('clubs')
         .update({ default_role_id: roleId || null })
-        .eq('id', currentClub.id);
+        .eq('id', currentClub.id)
+        .select()
+        .single();
     if (error) { alert('Error saving default role: ' + error.message); return; }
-    currentClub.default_role_id = roleId || null;
+    currentClub.default_role_id = data.default_role_id;
+    // Update userClubs cache so switching back to this club keeps the value
+    userClubs = userClubs.map(m =>
+        m.club_id === currentClub.id
+            ? { ...m, clubs: { ...m.clubs, default_role_id: data.default_role_id } }
+            : m
+    );
+    // Confirm the selection in the UI without a full re-render
+    const sel = document.querySelector('.roles-panel select[onchange*="saveDefaultRole"]');
+    if (sel) sel.value = currentClub.default_role_id || '';
 }
 
 // ─── INVITE QR CODE ───────────────────────────────────────────────────────
@@ -133,8 +173,11 @@ async function createClubFromSettings() {
     const name = nameInput?.value.trim();
     if (!name) { alert('Please enter a club name.'); return; }
 
+    const visibilityInput = document.getElementById('settingsNewClubVisibility');
+    const visibility = visibilityInput?.value || 'public_invite';
+
     const { data: club, error } = await supabaseClient
-        .from('clubs').insert({ name, owner_id: currentUser.id }).select().single();
+        .from('clubs').insert({ name, owner_id: currentUser.id, visibility }).select().single();
 
     if (error) { alert('Error: ' + error.message); return; }
 
@@ -144,6 +187,8 @@ async function createClubFromSettings() {
 
     currentClub = club;
     currentUserRole = null;
+    userClubs = [...userClubs, { club_id: club.id, clubs: club }];
+    localStorage.setItem('padel-club-id', club.id);
     await createDefaultRoles(club.id);
     closeModal('settingsModal');
     showMainApp();
@@ -156,10 +201,19 @@ async function joinClubFromSettings() {
     const code = codeInput?.value.trim().toUpperCase();
     if (!code) { alert('Please enter an invite code.'); return; }
 
-    const { data: club, error } = await supabaseClient
-        .from('clubs').select('*').eq('invite_code', code).single();
+    // Use SECURITY DEFINER RPC so private clubs can be found by invite code
+    const { data: clubs, error } = await supabaseClient
+        .rpc('get_club_by_invite_code', { code });
 
+    const club = clubs?.[0];
     if (error || !club) { alert('Club not found. Check the invite code.'); return; }
+
+    // Already a member? Just switch.
+    if (userClubs.some(m => m.club_id === club.id)) {
+        closeModal('settingsModal');
+        await switchClub(club.id);
+        return;
+    }
 
     await supabaseClient.from('club_members').insert({
         club_id: club.id, user_id: currentUser.id,
@@ -167,6 +221,8 @@ async function joinClubFromSettings() {
     });
 
     currentClub = club;
+    userClubs = [...userClubs, { club_id: club.id, clubs: club }];
+    localStorage.setItem('padel-club-id', club.id);
     await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     closeModal('settingsModal');
     showMainApp();
