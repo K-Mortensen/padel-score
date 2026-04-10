@@ -45,6 +45,7 @@ async function switchClub(clubId) {
     await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     showMainApp();
     loadFromServer();
+    renderClubTab();
     closeProfileMenu();
 }
 
@@ -287,18 +288,56 @@ async function loadVisibleClubs() {
     return clubs.map(c => ({ ...c, memberCount: countMap[c.id] || 0 }));
 }
 
-// ─── OPEN BROWSE CLUBS MODAL ──────────────────────────────────────────────────
-async function openBrowseClubs() {
-    const modal = document.getElementById('browseClubsModal');
+// ─── CLUB MODAL (Switch / Browse / Manage) ────────────────────────────────────
+async function openClubModal(tab = 'switch') {
+    const modal = document.getElementById('clubModal');
     if (!modal) return;
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    await switchClubModalTab(tab);
+}
 
-    const listEl = document.getElementById('browseClubsList');
-    if (listEl) listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px 0;">Loading…</div>';
+async function switchClubModalTab(tab) {
+    ['switch', 'browse', 'manage'].forEach(t => {
+        const pane = document.getElementById(`cmPane-${t}`);
+        const btn  = document.getElementById(`cmTab-${t}`);
+        if (pane) pane.style.display = t === tab ? '' : 'none';
+        if (btn)  btn.classList.toggle('active', t === tab);
+    });
+    if (tab === 'switch')  _renderClubModalSwitch();
+    if (tab === 'browse')  await _initClubModalBrowse();
+    if (tab === 'manage')  await switchManageTab('roles');
+}
 
-    const searchInput = document.getElementById('browseClubsSearch');
+// ── Switch tab ───────────────────────────────────────────────────────────────
+function _renderClubModalSwitch() {
+    const listEl = document.getElementById('clubModalSwitchList');
+    if (!listEl) return;
+    if (!userClubs.length) {
+        listEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">You are not in any clubs.</div>';
+        return;
+    }
+    listEl.innerHTML = userClubs.map(m => {
+        const club = m.clubs;
+        const isCurrent = club.id === currentClub?.id;
+        return `<div class="switch-club-item${isCurrent ? ' switch-club-active' : ''}">
+            <span class="switch-club-name">${esc(club.name)}</span>
+            ${isCurrent
+                ? '<span class="switch-club-current">Current</span>'
+                : `<button class="modal-btn-save switch-club-btn" onclick="switchClub('${esc(club.id)}');closeModal('clubModal')">Switch</button>`
+            }
+        </div>`;
+    }).join('');
+}
+
+// ── Browse tab ───────────────────────────────────────────────────────────────
+let _browseClubsData = [];
+
+async function _initClubModalBrowse() {
+    const searchInput = document.getElementById('clubModalBrowseSearch');
+    const listEl = document.getElementById('clubModalBrowseList');
     if (searchInput) searchInput.value = '';
+    if (listEl) listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px 0;">Loading…</div>';
 
     const clubs = await loadVisibleClubs();
     _browseClubsData = clubs;
@@ -309,10 +348,8 @@ async function openBrowseClubs() {
     }
 }
 
-let _browseClubsData = [];
-
 function _renderBrowseClubs(query) {
-    const listEl = document.getElementById('browseClubsList');
+    const listEl = document.getElementById('clubModalBrowseList');
     if (!listEl) return;
 
     const filtered = query
@@ -338,7 +375,7 @@ function _renderBrowseClubs(query) {
 
         let actionBtn = '';
         if (isMember || isOwner) {
-            actionBtn = `<button class="modal-btn-save browse-club-action" onclick="switchClub('${esc(c.id)}');closeModal('browseClubsModal')">Switch →</button>`;
+            actionBtn = `<button class="modal-btn-save browse-club-action" onclick="switchClub('${esc(c.id)}');closeModal('clubModal')">Switch →</button>`;
         } else if (c.visibility === 'public') {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="_joinClubById('${esc(c.id)}')">Join</button>`;
         } else {
@@ -370,7 +407,7 @@ async function _joinClubById(clubId) {
     if (error) { alert('Error joining club: ' + error.message); return; }
 
     userClubs = [...userClubs, { club_id: club.id, clubs: club }];
-    closeModal('browseClubsModal');
+    closeModal('clubModal');
     await switchClub(club.id);
 }
 
@@ -385,33 +422,32 @@ async function _joinClubByCode(clubId, expectedCode) {
     await _joinClubById(clubId);
 }
 
-// ─── OPEN SWITCH CLUB MODAL ───────────────────────────────────────────────────
-function openSwitchClubModal() {
-    const modal = document.getElementById('switchClubModal');
-    if (!modal) return;
+// ── Manage tab ───────────────────────────────────────────────────────────────
+async function switchManageTab(tab) {
+    ['roles', 'members'].forEach(t => {
+        const btn = document.getElementById(`cmManageTab-${t}`);
+        if (btn) btn.classList.toggle('active', t === tab);
+    });
+    const content = document.getElementById('clubManageContent');
+    if (!content) return;
+    content.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">Loading…</div>';
 
-    const listEl = document.getElementById('switchClubList');
-    if (listEl) {
-        if (!userClubs.length) {
-            listEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">You are not in any clubs.</div>';
-        } else {
-            listEl.innerHTML = userClubs.map(m => {
-                const club = m.clubs;
-                const isCurrent = club.id === currentClub?.id;
-                return `<div class="switch-club-item${isCurrent ? ' switch-club-active' : ''}">
-                    <span class="switch-club-name">${esc(club.name)}</span>
-                    ${isCurrent
-                        ? '<span class="switch-club-current">Current</span>'
-                        : `<button class="modal-btn-save switch-club-btn" onclick="switchClub('${esc(club.id)}');closeModal('switchClubModal')">Switch</button>`
-                    }
-                </div>`;
-            }).join('');
-        }
+    // Point panel renders at the Club modal container, no back button
+    _panelTarget = 'clubManageContent';
+    _rolesBackFn = null;
+
+    if (tab === 'roles') {
+        await loadClubRoles();
+        _renderRolesPanel();
+    } else {
+        await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
+        _renderMembersPanel();
     }
-
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
 }
+
+// Backward-compat: dropdown used to call these directly
+function openSwitchClubModal() { openClubModal('switch'); }
+function openBrowseClubs()     { openClubModal('browse'); }
 
 // ─── OPEN TRANSFER OWNERSHIP MODAL ───────────────────────────────────────────
 async function openTransferOwnershipModal() {

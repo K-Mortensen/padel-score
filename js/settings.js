@@ -28,6 +28,50 @@ function openSettingsModal() {
     document.body.style.overflow = 'hidden';
 }
 
+// Auto-save and close the settings modal.
+// Called by the Close button and overlay click — NOT by programmatic closes
+// after create/join/delete actions (those use closeModal directly).
+async function closeSettingsModal() {
+    await _settingsAutoSave();
+    closeModal('settingsModal');
+}
+
+async function _settingsAutoSave() {
+    // 1. Username — save if changed
+    const usernameInput = document.getElementById('settingsUsernameInput');
+    const newUsername = usernameInput?.value.trim();
+    if (newUsername && newUsername !== (currentUser?.username || '')) {
+        if (newUsername.length < 2) { alert('Username must be at least 2 characters.'); return; }
+        const { error } = await supabaseClient.from('profiles')
+            .update({ username: newUsername }).eq('id', currentUser.id);
+        if (error) {
+            alert(error.code === '23505' ? 'That username is already taken.' : 'Error: ' + error.message);
+            return;
+        }
+        currentUser.username = newUsername;
+        const nameEl = document.getElementById('profileName');
+        if (nameEl) nameEl.textContent = newUsername;
+    }
+
+    // 2. Club name — save if changed and user has permission
+    const clubNameInput = document.getElementById('settingsClubNameInput');
+    const newClubName = clubNameInput?.value.trim();
+    if (newClubName && currentClub && newClubName !== currentClub.name) {
+        if (!hasPermission('rename_club')) return; // silently skip — no permission
+        const { error } = await supabaseClient.from('clubs')
+            .update({ name: newClubName }).eq('id', currentClub.id);
+        if (error) { alert('Error renaming club: ' + error.message); return; }
+        currentClub.name = newClubName;
+        userClubs = userClubs.map(m =>
+            m.club_id === currentClub.id
+                ? { ...m, clubs: { ...m.clubs, name: newClubName } }
+                : m
+        );
+        const clubEl = document.getElementById('profileClub');
+        if (clubEl) clubEl.textContent = newClubName;
+    }
+}
+
 function _renderSettingsClub() {
     const clubContent = document.getElementById('settingsClubContent');
     if (!clubContent) return;
@@ -41,23 +85,40 @@ function _renderSettingsClub() {
             <div class="settings-club-code">Invite code: <strong>${esc(currentClub.invite_code)}</strong></div>
             <button class="modal-btn-save" style="width:100%;margin-top:10px;" onclick="showInviteQR()">📱 Show QR Code</button>
             ${canManageRoles ? `
-                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openRolesPanel()">Manage Roles &amp; Members</button>
+                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openRolesPanel()">Manage Roles</button>
+                <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openMembersPanel()">Members</button>
             ` : ''}
             ${isOwner ? `
             <div class="settings-owner-section">
-                <div class="settings-label" style="margin-top:14px;">Club Management</div>
-                <div class="settings-row" style="margin-bottom:8px;">
-                    <input class="modal-name-input" id="settingsClubNameInput"
-                           value="${esc(currentClub.name)}" placeholder="Club name"
-                           onkeydown="if(event.key==='Enter')saveClubName()" />
-                    <button class="modal-btn-save" onclick="saveClubName()">Rename</button>
-                </div>
+                <div class="settings-label" style="margin-top:14px;">Club name</div>
+                <input class="modal-name-input" id="settingsClubNameInput"
+                       value="${esc(currentClub.name)}" placeholder="Club name"
+                       style="width:100%;margin-top:4px;" />
                 <button class="modal-btn-save" style="width:100%;margin-top:8px;" onclick="openTransferOwnershipModal()">Transfer Ownership</button>
                 <button class="modal-btn-cancel settings-danger-btn" style="width:100%;margin-top:8px;" onclick="deleteClub()">Delete Club</button>
             </div>` : `
             <div style="margin-top:12px;">
                 <button class="modal-btn-cancel settings-danger-btn" style="width:100%;" onclick="leaveClub()">Leave Club</button>
-            </div>`}`;
+            </div>`}
+
+            <div style="margin-top:14px;">
+                <button class="modal-btn-cancel" style="width:100%;" onclick="toggleSettingsAddClub()">+ Add / Join another club</button>
+                <div id="settingsAddClubSection" style="display:none;margin-top:10px;">
+                    <input class="modal-name-input" id="settingsNewClubName" type="text" placeholder="New club name"
+                           style="margin-bottom:8px;width:100%;" onkeydown="if(event.key==='Enter')createClubFromSettings()" />
+                    <select class="member-role-select" id="settingsNewClubVisibility" style="width:100%;margin-bottom:8px;">
+                        <option value="public_invite">Invite-only — visible, needs code to join</option>
+                        <option value="public">Public — visible, anyone can join</option>
+                        <option value="private">Private — hidden, needs code to join</option>
+                    </select>
+                    <button class="modal-btn-save" style="width:100%;margin-bottom:12px;" onclick="createClubFromSettings()">🏟 Create Club</button>
+                    <div class="settings-divider">— or join existing —</div>
+                    <input class="modal-name-input" id="settingsJoinCode" type="text" placeholder="Invite code"
+                           style="text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;width:100%;"
+                           onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
+                    <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>
+                </div>
+            </div>`;
     } else {
         clubContent.innerHTML = `
             <div class="settings-no-club">You're not in a club yet.</div>
@@ -75,6 +136,11 @@ function _renderSettingsClub() {
                    onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
             <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>`;
     }
+}
+
+function toggleSettingsAddClub() {
+    const el = document.getElementById('settingsAddClubSection');
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 // ─── DEFAULT ROLE ─────────────────────────────────────────────────────────
@@ -118,53 +184,6 @@ function showInviteQR() {
             img.src = dataUrl;
         });
     }
-}
-
-// ─── SAVE USERNAME ────────────────────────────────────────────────────────
-async function saveUsernameSettings() {
-    const input = document.getElementById('settingsUsernameInput');
-    const username = input.value.trim();
-    if (!username) { alert('Username cannot be empty.'); return; }
-    if (username.length < 2) { alert('Username must be at least 2 characters.'); return; }
-
-    const btn = document.getElementById('settingsUsernameSaveBtn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-
-    const { error } = await supabaseClient.from('profiles')
-        .update({ username })
-        .eq('id', currentUser.id);
-
-    btn.disabled = false;
-    btn.textContent = 'Save';
-
-    if (error) {
-        alert(error.code === '23505' ? 'That username is already taken.' : 'Error: ' + error.message);
-        return;
-    }
-
-    currentUser.username = username;
-    const nameEl = document.getElementById('profileName');
-    if (nameEl) nameEl.textContent = username;
-}
-
-// ─── RENAME CLUB ──────────────────────────────────────────────────────────
-async function saveClubName() {
-    const input = document.getElementById('settingsClubNameInput');
-    const name = input?.value.trim();
-    if (!name) { alert('Club name cannot be empty.'); return; }
-    if (!hasPermission('rename_club')) { alert('You do not have permission to rename this club.'); return; }
-
-    const { error } = await supabaseClient.from('clubs')
-        .update({ name })
-        .eq('id', currentClub.id);
-
-    if (error) { alert('Error: ' + error.message); return; }
-
-    currentClub.name = name;
-    const clubEl = document.getElementById('profileClub');
-    if (clubEl) clubEl.textContent = name;
-    _renderSettingsClub();
 }
 
 // ─── CREATE CLUB FROM SETTINGS ────────────────────────────────────────────
