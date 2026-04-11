@@ -48,9 +48,16 @@ async function _settingsAutoSave() {
             alert(error.code === '23505' ? 'That username is already taken.' : 'Error: ' + error.message);
             return;
         }
+        const oldDisplayName = currentUser.username || currentUser.display_name || currentUser.email?.split('@')[0];
         currentUser.username = newUsername;
         const nameEl = document.getElementById('profileName');
         if (nameEl) nameEl.textContent = newUsername;
+        // Update player 1 input if it was auto-filled with the old username
+        const p1 = document.getElementById('p1');
+        if (p1 && p1.value === oldDisplayName) {
+            p1.value = newUsername;
+            onPlayerInput();
+        }
     }
 
 }
@@ -68,26 +75,7 @@ function _renderSettingsClub() {
             ${!isOwner ? `
             <div style="margin-top:12px;">
                 <button class="modal-btn-cancel settings-danger-btn" style="width:100%;" onclick="leaveClub()">Leave Club</button>
-            </div>` : ''}
-
-            <div style="margin-top:14px;">
-                <button class="modal-btn-cancel" style="width:100%;" onclick="toggleSettingsAddClub()">+ Add / Join another club</button>
-                <div id="settingsAddClubSection" style="display:none;margin-top:10px;">
-                    <input class="modal-name-input" id="settingsNewClubName" type="text" placeholder="New club name"
-                           style="margin-bottom:8px;width:100%;" onkeydown="if(event.key==='Enter')createClubFromSettings()" />
-                    <select class="member-role-select" id="settingsNewClubVisibility" style="width:100%;margin-bottom:8px;">
-                        <option value="public_invite">Invite-only — visible, needs code to join</option>
-                        <option value="public">Public — visible, anyone can join</option>
-                        <option value="private">Private — hidden, needs code to join</option>
-                    </select>
-                    <button class="modal-btn-save" style="width:100%;margin-bottom:12px;" onclick="createClubFromSettings()">🏟 Create Club</button>
-                    <div class="settings-divider">— or join existing —</div>
-                    <input class="modal-name-input" id="settingsJoinCode" type="text" placeholder="Invite code"
-                           style="text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;width:100%;"
-                           onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
-                    <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>
-                </div>
-            </div>`;
+            </div>` : ''}`;
     } else {
         clubContent.innerHTML = `
             <div class="settings-no-club">You're not in a club yet.</div>
@@ -105,11 +93,6 @@ function _renderSettingsClub() {
                    onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
             <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>`;
     }
-}
-
-function toggleSettingsAddClub() {
-    const el = document.getElementById('settingsAddClubSection');
-    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 // ─── DEFAULT ROLE ─────────────────────────────────────────────────────────
@@ -155,7 +138,7 @@ async function createClubFromSettings() {
     userClubs = [...userClubs, { club_id: club.id, clubs: club }];
     localStorage.setItem('padel-club-id', club.id);
     await createDefaultRoles(club.id);
-    closeModal('settingsModal');
+    closeModal('clubModal');
     showMainApp();
     loadFromServer();
 }
@@ -175,7 +158,7 @@ async function joinClubFromSettings() {
 
     // Already a member? Just switch.
     if (userClubs.some(m => m.club_id === club.id)) {
-        closeModal('settingsModal');
+        closeModal('clubModal');
         await switchClub(club.id);
         return;
     }
@@ -189,7 +172,7 @@ async function joinClubFromSettings() {
     userClubs = [...userClubs, { club_id: club.id, clubs: club }];
     localStorage.setItem('padel-club-id', club.id);
     await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
-    closeModal('settingsModal');
+    closeModal('clubModal');
     showMainApp();
     loadFromServer();
 }
