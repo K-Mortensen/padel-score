@@ -307,8 +307,8 @@ async function switchClubModalTab(tab) {
     if (tab === 'switch')  _renderClubModalSwitch();
     if (tab === 'browse')  await _initClubModalBrowse();
     if (tab === 'manage') {
-        const manageTabBtn = document.getElementById('cmTab-manage');
-        if (manageTabBtn) manageTabBtn.textContent = currentClub?.name || 'Manage';
+        const manageTitle = document.getElementById('clubManageTitle');
+        if (manageTitle) manageTitle.textContent = currentClub?.name || '';
         const dangerEl = document.getElementById('clubManageDanger');
         if (dangerEl) dangerEl.style.display = currentUser?.id === currentClub?.owner_id ? '' : 'none';
         await switchManageTab('roles');
@@ -452,6 +452,11 @@ async function switchManageTab(tab) {
         await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
         _renderMembersPanel();
     }
+}
+
+function toggleClubAddSection() {
+    const el = document.getElementById('clubAddSection');
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 // Backward-compat: dropdown used to call these directly

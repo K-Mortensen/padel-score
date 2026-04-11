@@ -1025,6 +1025,24 @@
                 <!-- Switch tab -->
                 <div class="club-modal-pane" id="cmPane-switch">
                     <div class="switch-club-list" id="clubModalSwitchList"></div>
+                    <div style="margin-top:12px;">
+                        <button class="modal-btn-cancel" style="width:100%;" onclick="toggleClubAddSection()">+ Create / Join another club</button>
+                        <div id="clubAddSection" style="display:none;margin-top:10px;">
+                            <input class="modal-name-input" id="settingsNewClubName" type="text" placeholder="New club name"
+                                   style="margin-bottom:8px;width:100%;" onkeydown="if(event.key==='Enter')createClubFromSettings()" />
+                            <select class="member-role-select" id="settingsNewClubVisibility" style="width:100%;margin-bottom:8px;">
+                                <option value="public_invite">Invite-only — visible, needs code to join</option>
+                                <option value="public">Public — visible, anyone can join</option>
+                                <option value="private">Private — hidden, needs code to join</option>
+                            </select>
+                            <button class="modal-btn-save" style="width:100%;margin-bottom:12px;" onclick="createClubFromSettings()">🏟 Create Club</button>
+                            <div class="settings-divider">— or join existing —</div>
+                            <input class="modal-name-input" id="settingsJoinCode" type="text" placeholder="Invite code"
+                                   style="text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;width:100%;"
+                                   onkeydown="if(event.key==='Enter')joinClubFromSettings()" />
+                            <button class="modal-btn-save" style="width:100%;" onclick="joinClubFromSettings()">🔗 Join Club</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Browse tab -->
@@ -1037,6 +1055,7 @@
 
                 <!-- Manage tab -->
                 <div class="club-modal-pane" id="cmPane-manage" style="display:none;">
+                    <div id="clubManageTitle" class="settings-club-name" style="margin-bottom:8px;"></div>
                     <div class="club-manage-tabs">
                         <button class="club-manage-tab" id="cmManageTab-roles" onclick="switchManageTab('roles')">Roles</button>
                         <button class="club-manage-tab" id="cmManageTab-members" onclick="switchManageTab('members')">Members</button>
