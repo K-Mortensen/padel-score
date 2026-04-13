@@ -27,3 +27,10 @@ let userClubs = [];   // all club memberships: [{ club_id, clubs: {...} }]
 function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+
+// ─── DATE FORMAT HELPER ───────────────────────────────────────────────────
+function formatDate(isoString, includeTime = false) {
+    const opts = { day: 'numeric', month: 'short', year: 'numeric' };
+    if (includeTime) { opts.hour = '2-digit'; opts.minute = '2-digit'; }
+    return new Date(isoString).toLocaleDateString('en-GB', opts);
+}

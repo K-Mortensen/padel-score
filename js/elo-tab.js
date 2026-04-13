@@ -1,8 +1,9 @@
 // ─── ELO TAB ──────────────────────────────────────────────────────────────
-let eloTabView = '2v2'; // '2v2' or '1v1'
+let activeEloFormat = '2v2'; // '2v2' or '1v1'
+const RECENT_FORM_LIMIT = 5;
 
 function setEloTabView(view) {
-    eloTabView = view;
+    activeEloFormat = view;
     document.getElementById('eloView2v2').classList.toggle('active', view === '2v2');
     document.getElementById('eloView1v1').classList.toggle('active', view === '1v1');
     renderEloTab();
@@ -27,10 +28,10 @@ function computePlayerStats(fmt) {
         process(m.teamB, m.scoreB, m.scoreA);
     });
 
-    // Sort recent matches newest-first and keep only 5
+    // Sort recent matches newest-first and keep only the most recent
     Object.values(stats).forEach(s => {
         s.recent.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-        s.recent = s.recent.slice(0, 5);
+        s.recent = s.recent.slice(0, RECENT_FORM_LIMIT);
     });
 
     return stats;
@@ -38,22 +39,22 @@ function computePlayerStats(fmt) {
 
 function renderEloTab() {
     const container = document.getElementById('eloLeaderboard');
-    const eloData = eloTabView === '1v1' ? getElo1v1Ratings() : getEloRatings('2v2');
+    const eloData = activeEloFormat === '1v1' ? getElo1v1Ratings() : getEloRatings('2v2');
 
     // Update subtitle
     const desc = document.getElementById('eloHeaderDesc');
     if (desc) {
-        desc.textContent = eloTabView === '1v1'
+        desc.textContent = activeEloFormat === '1v1'
             ? 'Solo 1v1 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status · Click a player for details'
             : 'Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status · Click a player for details';
     }
 
     if (!Object.keys(eloData).length) {
-        container.innerHTML = `<div class="no-history">No ${eloTabView} matches yet. Play some games to build rankings!</div>`;
+        container.innerHTML = `<div class="no-history">No ${activeEloFormat} matches yet. Play some games to build rankings!</div>`;
         return;
     }
 
-    const playerStats = computePlayerStats(eloTabView);
+    const playerStats = computePlayerStats(activeEloFormat);
 
     const sorted = Object.entries(eloData).sort((a, b) => b[1].rating - a[1].rating);
     const ranked = sorted.filter(([, d]) => d.gamesPlayed >= ELO_MIN_GAMES_RANKED);
@@ -75,10 +76,10 @@ function renderEloTab() {
 }
 
 function buildEloRow(name, data, rank, isProvisional, stats) {
-    const fmt = eloTabView;
-    const s = stats || { w: 0, l: 0, d: 0, recent: [] };
+    const format = activeEloFormat;
+    const playerStats = stats || { w: 0, l: 0, d: 0, recent: [] };
 
-    const formDots = s.recent.map(r => {
+    const formDots = playerStats.recent.map(r => {
         if (r.res === 'w') return '<span class="form-dot w" title="Win"></span>';
         if (r.res === 'l') return '<span class="form-dot l" title="Loss"></span>';
         return '<span class="form-dot d" title="Draw"></span>';
@@ -94,15 +95,15 @@ function buildEloRow(name, data, rank, isProvisional, stats) {
     const rankDisplay = rank ?? '?';
 
     return `
-    <div class="elo-row ${rankClass}${provClass}" onclick="openPlayerModal('${esc(name)}','${fmt}')" style="animation-delay:${(rank || 10) * 0.05}s">
+    <div class="elo-row ${rankClass}${provClass}" onclick="openPlayerModal('${esc(name)}','${format}')" style="animation-delay:${(rank || 10) * 0.05}s">
       <div class="elo-rank">${rankDisplay}</div>
       <div class="elo-player-info">
         <div class="elo-player-name">${esc(name)}</div>
         <div class="elo-player-meta">
           <span class="elo-meta-chip">${data.gamesPlayed}P</span>
-          <span class="elo-meta-chip win">${s.w}W</span>
-          <span class="elo-meta-chip loss">${s.l}L</span>
-          ${s.d > 0 ? `<span class="elo-meta-chip">${s.d}D</span>` : ''}
+          <span class="elo-meta-chip win">${playerStats.w}W</span>
+          <span class="elo-meta-chip loss">${playerStats.l}L</span>
+          ${playerStats.d > 0 ? `<span class="elo-meta-chip">${playerStats.d}D</span>` : ''}
           ${isProvisional ? `<span class="elo-meta-chip prov">Provisional</span>` : ''}
         </div>
         <div class="elo-form">${formDots}</div>

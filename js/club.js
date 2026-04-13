@@ -32,6 +32,14 @@ async function loadUserClubs(isOnboarding = false) {
     if (currentClub) loadFromServer();
 }
 
+// ─── RESET CLUB STATE ─────────────────────────────────────────────────────────
+function resetClubState() {
+    currentClub = null;
+    currentUserRole = null;
+    clubRoles = [];
+    localStorage.removeItem('padel-club-id');
+}
+
 // ─── SWITCH ACTIVE CLUB ───────────────────────────────────────────────────────
 async function switchClub(clubId) {
     const membership = userClubs.find(m => m.club_id === clubId);
@@ -68,10 +76,7 @@ async function leaveClub() {
 
     const leftId = currentClub.id;
     userClubs = userClubs.filter(m => m.club_id !== leftId);
-    currentClub = null;
-    currentUserRole = null;
-    clubRoles = [];
-    localStorage.removeItem('padel-club-id');
+    resetClubState();
 
     if (userClubs.length) {
         await switchClub(userClubs[0].club_id);
@@ -123,10 +128,7 @@ async function deleteClub() {
 
     const deletedId = currentClub.id;
     userClubs = userClubs.filter(m => m.club_id !== deletedId);
-    currentClub = null;
-    currentUserRole = null;
-    clubRoles = [];
-    localStorage.removeItem('padel-club-id');
+    resetClubState();
 
     if (userClubs.length) {
         await switchClub(userClubs[0].club_id);
@@ -194,6 +196,28 @@ async function createClub() {
     loadFromServer();
 }
 
+// ─── SHARED JOIN-BY-CODE LOGIC ────────────────────────────────────────────────
+// Resolves invite code → inserts member → updates shared state.
+// Returns { club, alreadyMember: bool } on success, throws with a user-facing
+// message on failure. The caller is responsible for UI feedback.
+async function _resolveJoinByCode(code) {
+    const { data: clubs, error } = await supabaseClient
+        .rpc('get_club_by_invite_code', { code });
+    const club = clubs?.[0];
+    if (error || !club) throw new Error('Club not found. Check the invite code.');
+    if (userClubs.some(m => m.club_id === club.id)) return { club, alreadyMember: true };
+
+    await supabaseClient.from('club_members').insert({
+        club_id: club.id, user_id: currentUser.id,
+        role_id: club.default_role_id || null,
+    });
+    currentClub = club;
+    userClubs = [...userClubs, { club_id: club.id, clubs: club }];
+    localStorage.setItem('padel-club-id', club.id);
+    await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
+    return { club, alreadyMember: false };
+}
+
 // ─── JOIN CLUB (onboarding screen) ───────────────────────────────────────────
 async function joinClub() {
     // Guard: make sure user is loaded
@@ -212,35 +236,19 @@ async function joinClub() {
     const btn = document.getElementById('joinClubBtn');
     btn.disabled = true; btn.textContent = 'Joining…';
 
-    // Use SECURITY DEFINER RPC so private clubs can be found by invite code
-    const { data: clubs, error } = await supabaseClient
-        .rpc('get_club_by_invite_code', { code });
-
-    const club = clubs?.[0];
-    if (error || !club) {
-        alert('Club not found. Check the invite code.');
+    try {
+        const { club, alreadyMember } = await _resolveJoinByCode(code);
+        if (alreadyMember) {
+            await switchClub(club.id);
+            btn.disabled = false; btn.textContent = '🔗 Join Club';
+            return;
+        }
+        showMainApp();
+        loadFromServer();
+    } catch (e) {
+        alert(e.message);
         btn.disabled = false; btn.textContent = '🔗 Join Club';
-        return;
     }
-
-    // Check if already a member
-    if (userClubs.some(m => m.club_id === club.id)) {
-        await switchClub(club.id);
-        btn.disabled = false; btn.textContent = '🔗 Join Club';
-        return;
-    }
-
-    await supabaseClient.from('club_members').insert({
-        club_id: club.id, user_id: currentUser.id,
-        role_id: club.default_role_id || null,
-    });
-
-    currentClub = club;
-    userClubs = [...userClubs, { club_id: club.id, clubs: club }];
-    localStorage.setItem('padel-club-id', club.id);
-    await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
-    showMainApp();
-    loadFromServer();
 }
 
 // ─── SKIP CLUB ────────────────────────────────────────────────────────────────
@@ -506,28 +514,30 @@ async function renderClubTab() {
         container.innerHTML = '<div class="no-history">Join or create a club to see members.</div>';
         return;
     }
-
     container.innerHTML = '<div class="no-history">Loading…</div>';
-
     const members = await loadClubMembers();
-    const stats2v2 = computePlayerStats('2v2');
-    const elo2v2   = getEloRatings('2v2');
-
     if (!members.length) {
         container.innerHTML = '<div class="no-history">No members found.</div>';
         return;
     }
+    _renderClubMembers(members);
+}
+
+function _renderClubMembers(members) {
+    const stats2v2 = computePlayerStats('2v2');
+    const elo2v2   = getEloRatings('2v2');
 
     // Sort: owner first, then by 2v2 Elo descending
     const sorted = [...members].sort((a, b) => {
-        const aOwner = a.user_id === currentClub.owner_id;
-        const bOwner = b.user_id === currentClub.owner_id;
-        if (aOwner !== bOwner) return aOwner ? -1 : 1;
-        const aName = a.profiles?.username || a.profiles?.display_name || '';
-        const bName = b.profiles?.username || b.profiles?.display_name || '';
-        return (elo2v2[bName]?.rating ?? ELO_DEFAULT) - (elo2v2[aName]?.rating ?? ELO_DEFAULT);
+        const isOwnerA = a.user_id === currentClub.owner_id;
+        const isOwnerB = b.user_id === currentClub.owner_id;
+        if (isOwnerA !== isOwnerB) return isOwnerA ? -1 : 1;
+        const nameA = a.profiles?.username || a.profiles?.display_name || '';
+        const nameB = b.profiles?.username || b.profiles?.display_name || '';
+        return (elo2v2[nameB]?.rating ?? ELO_DEFAULT) - (elo2v2[nameA]?.rating ?? ELO_DEFAULT);
     });
 
+    const container = document.getElementById('clubMembersList');
     const clubNameEl = document.getElementById('clubTabName');
     if (clubNameEl) clubNameEl.textContent = currentClub.name;
 
@@ -537,9 +547,9 @@ async function renderClubTab() {
         const isOwner  = m.user_id === currentClub.owner_id;
         const roleName = isOwner ? 'Owner' : (m.club_roles?.name || 'No role');
 
-        const s      = stats2v2[name] || { w: 0, l: 0, d: 0 };
-        const played = s.w + s.l + s.d;
-        const wr     = played ? Math.round((s.w / played) * 100) : 0;
+        const playerStats = stats2v2[name] || { w: 0, l: 0, d: 0 };
+        const played = playerStats.w + playerStats.l + playerStats.d;
+        const wr     = played ? Math.round((playerStats.w / played) * 100) : 0;
         const eloVal = elo2v2[name]?.rating ?? ELO_DEFAULT;
         const eloUnranked = !elo2v2[name]?.ranked;
 

@@ -230,8 +230,8 @@ function renderCourt(tA, tB) {
 // ─── ELO PREVIEW ──────────────────────────────────────────────────────────
 function updateEloPreview() {
     if (!currentTeamA.length) return;
-    const sA = parseInt(document.getElementById('scoreA').value);
-    const sB = parseInt(document.getElementById('scoreB').value);
+    const sA = parseInt(document.getElementById('scoreA').value, 10);
+    const sB = parseInt(document.getElementById('scoreB').value, 10);
     if (isNaN(sA) || isNaN(sB)) return;
 
     const fmt = matchFormat || '2v2';
@@ -253,8 +253,8 @@ function updateEloPreview() {
 // ─── SAVE MATCH ───────────────────────────────────────────────────────────
 async function saveMatch() {
     if (isSaving) return;
-    const sA = parseInt(document.getElementById('scoreA').value);
-    const sB = parseInt(document.getElementById('scoreB').value);
+    const sA = parseInt(document.getElementById('scoreA').value, 10);
+    const sB = parseInt(document.getElementById('scoreB').value, 10);
     if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', '#e07070'); return; }
     if (sA < 0 || sB < 0 || sA > 99 || sB > 99) { showSaveMsg('Scores must be between 0 and 99.', '#e07070'); return; }
     if (!currentTeamA.length) { showSaveMsg('Generate teams first!', '#e07070'); return; }

@@ -149,30 +149,17 @@ async function joinClubFromSettings() {
     const code = codeInput?.value.trim().toUpperCase();
     if (!code) { alert('Please enter an invite code.'); return; }
 
-    // Use SECURITY DEFINER RPC so private clubs can be found by invite code
-    const { data: clubs, error } = await supabaseClient
-        .rpc('get_club_by_invite_code', { code });
-
-    const club = clubs?.[0];
-    if (error || !club) { alert('Club not found. Check the invite code.'); return; }
-
-    // Already a member? Just switch.
-    if (userClubs.some(m => m.club_id === club.id)) {
+    try {
+        const { club, alreadyMember } = await _resolveJoinByCode(code);
+        if (alreadyMember) {
+            closeModal('clubModal');
+            await switchClub(club.id);
+            return;
+        }
         closeModal('clubModal');
-        await switchClub(club.id);
-        return;
+        showMainApp();
+        loadFromServer();
+    } catch (e) {
+        alert(e.message);
     }
-
-    await supabaseClient.from('club_members').insert({
-        club_id: club.id, user_id: currentUser.id,
-        role_id: club.default_role_id || null,
-    });
-
-    currentClub = club;
-    userClubs = [...userClubs, { club_id: club.id, clubs: club }];
-    localStorage.setItem('padel-club-id', club.id);
-    await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
-    closeModal('clubModal');
-    showMainApp();
-    loadFromServer();
 }

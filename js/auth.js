@@ -18,13 +18,17 @@ function _popPendingInvite() {
     } catch { return ''; }
 }
 
+// ─── CONSTANTS ────────────────────────────────────────────────────────────
+const PROFILE_LOAD_MAX_RETRIES = 3;
+const PROFILE_LOAD_RETRY_DELAY_MS = 500;
+
 // ─── SIGN IN ──────────────────────────────────────────────────────────────
 async function signInWithGoogle() {
     const btn = document.getElementById('googleSignInBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: 'https://k-mortensen.github.io/padel-score/' }
+        options: { redirectTo: window.location.origin + window.location.pathname }
     });
     if (error) {
         alert('Login failed: ' + error.message);
@@ -66,28 +70,27 @@ function hideLoadingScreen() {
     setTimeout(() => { el.style.display = 'none'; el.classList.remove('fade-out'); }, 200);
 }
 
+const _APP_SCREENS = ['loginScreen', 'usernameScreen', 'clubScreen', 'mainApp'];
+function switchScreen(activeId) {
+    _APP_SCREENS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = id === activeId ? 'flex' : 'none';
+    });
+}
+
 function showLoginScreen() {
     hideLoadingScreen();
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('usernameScreen').style.display = 'none';
-    document.getElementById('clubScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'none';
+    switchScreen('loginScreen');
 }
 
 function showUsernameScreen() {
     hideLoadingScreen();
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('usernameScreen').style.display = 'flex';
-    document.getElementById('clubScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'none';
+    switchScreen('usernameScreen');
 }
 
 function showClubScreen() {
     hideLoadingScreen();
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('usernameScreen').style.display = 'none';
-    document.getElementById('clubScreen').style.display = 'flex';
-    document.getElementById('mainApp').style.display = 'none';
+    switchScreen('clubScreen');
     // Auto-fill invite code if user arrived via QR scan or shared link
     const invite = _popPendingInvite();
     if (invite) {
@@ -98,10 +101,7 @@ function showClubScreen() {
 
 function showMainApp() {
     hideLoadingScreen();
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('usernameScreen').style.display = 'none';
-    document.getElementById('clubScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
+    switchScreen('mainApp');
 
     if (currentUser) {
         const nameEl = document.getElementById('profileName');
@@ -173,11 +173,11 @@ supabaseClient.auth.onAuthStateChange((event) => {
 
         setLoadingText('Loading profile…');
         let profile = null;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < PROFILE_LOAD_MAX_RETRIES; i++) {
             const { data } = await supabaseClient
                 .from('profiles').select('*').eq('id', session.user.id).single();
             if (data) { profile = data; break; }
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, PROFILE_LOAD_RETRY_DELAY_MS));
         }
 
         currentUser = profile ? { ...session.user, ...profile } : session.user;

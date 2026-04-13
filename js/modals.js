@@ -52,8 +52,8 @@ async function saveEdit() {
     const a2 = is1v1 ? '' : document.getElementById('editA2').value.trim().toUpperCase();
     const b1 = document.getElementById('editB1').value.trim().toUpperCase();
     const b2 = is1v1 ? '' : document.getElementById('editB2').value.trim().toUpperCase();
-    const sA = parseInt(document.getElementById('editScoreA').value);
-    const sB = parseInt(document.getElementById('editScoreB').value);
+    const sA = parseInt(document.getElementById('editScoreA').value, 10);
+    const sB = parseInt(document.getElementById('editScoreB').value, 10);
     const dtVal = document.getElementById('editDateTime').value;
 
     if (!a1 || (!is1v1 && !a2) || !b1 || (!is1v1 && !b2)) { alert('Please fill in all player names.'); return; }
@@ -89,7 +89,7 @@ async function saveEdit() {
 }
 
 // ─── PLAYER STATS MODAL ───────────────────────────────────────────────────
-function openPlayerModal(playerName, preferredFmt) {
+function _computePlayerModalData(playerName) {
     const fmt2v2Data = getEloRatings('2v2')[playerName];
     const fmt1v1Data = getElo1v1Ratings()[playerName];
     const currentRating2v2 = fmt2v2Data?.rating ?? ELO_DEFAULT;
@@ -103,17 +103,23 @@ function openPlayerModal(playerName, preferredFmt) {
     let wins = 0, losses = 0, draws = 0, gf = 0, ga = 0;
     matches.forEach(m => {
         const inA = m.teamA.includes(playerName);
-        const ps = inA ? m.scoreA : m.scoreB;
-        const os = inA ? m.scoreB : m.scoreA;
-        gf += ps; ga += os;
-        if (ps > os) wins++;
-        else if (ps < os) losses++;
+        const playerScore = inA ? m.scoreA : m.scoreB;
+        const opponentScore = inA ? m.scoreB : m.scoreA;
+        gf += playerScore; ga += opponentScore;
+        if (playerScore > opponentScore) wins++;
+        else if (playerScore < opponentScore) losses++;
         else draws++;
     });
 
     const played = wins + draws + losses;
     const wr = played ? Math.round((wins / played) * 100) : 0;
     const peak = Math.max(...eloHistory.map(h => h.rating));
+
+    return { fmt2v2Data, fmt1v1Data, currentRating2v2, currentRating1v1, eloHistory, matches, wins, losses, draws, gf, ga, played, wr, peak };
+}
+
+function openPlayerModal(playerName, preferredFmt) {
+    const { fmt2v2Data, fmt1v1Data, currentRating2v2, currentRating1v1, eloHistory, matches, wins, losses, draws, played, wr, peak } = _computePlayerModalData(playerName);
 
     document.getElementById('pmName').textContent = playerName;
 
@@ -147,7 +153,7 @@ function openPlayerModal(playerName, preferredFmt) {
             const opT = inA ? m.teamB : m.teamA;
             const res = ps > os ? 'win' : ps < os ? 'loss' : 'draw';
             const resLabel = ps > os ? 'WIN' : ps < os ? 'LOSS' : 'DRAW';
-            const date = new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const date = formatDate(m.date);
 
             // Use correct elo history for format
             const histForFmt = is1v1
