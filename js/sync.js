@@ -47,6 +47,7 @@ async function loadFromServer(silent = false) {
         renderHistory();
         renderEloTab();
         updatePlayerEloBadges();
+        loadMemberPicker();
         const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         setSyncStatus('ok', 'Synced ' + now);
     } catch (e) {

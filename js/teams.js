@@ -1,3 +1,5 @@
+let _clubMembersForPicker = [];
+
 // ─── TABS ─────────────────────────────────────────────────────────────────
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -42,6 +44,7 @@ function setFormat(format) {
     currentTeamB = [];
     document.getElementById('courtWrapper').style.display = 'none';
     updatePlayerEloBadges();
+    renderMemberPicker();
 }
 
 // ─── TEAM MODE ────────────────────────────────────────────────────────────
@@ -58,6 +61,7 @@ function setMode(mode, skipBuildPickers) {
 function onPlayerInput() {
     updatePlayerEloBadges();
     if (teamMode === 'manual') buildPickers();
+    renderMemberPicker();
 }
 
 function updatePlayerEloBadges() {
@@ -296,4 +300,45 @@ function showSaveMsg(msg, color) {
     el.style.opacity = '1';
     clearTimeout(el._t);
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 3500);
+}
+
+// ─── MEMBER PICKER ────────────────────────────────────────────────────────
+async function loadMemberPicker() {
+    const panel = document.getElementById('memberPickerPanel');
+    if (!currentClub || !panel) return;
+    _clubMembersForPicker = await loadClubMembers();
+    panel.style.display = '';
+    renderMemberPicker();
+}
+
+function renderMemberPicker() {
+    const list = document.getElementById('memberPickerList');
+    if (!list) return;
+    const search = (document.getElementById('memberPickerSearch')?.value || '').trim().toUpperCase();
+    const ids = matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
+    const currentNames = ids.map(id => document.getElementById(id)?.value.trim().toUpperCase()).filter(Boolean);
+
+    const chips = _clubMembersForPicker
+        .map(m => (m.profiles?.username || m.profiles?.display_name || '').toUpperCase())
+        .filter(name => name && (!search || name.includes(search)));
+
+    list.innerHTML = chips.map(name => {
+        const sel = currentNames.includes(name);
+        return `<button class="member-chip${sel ? ' selected' : ''}" onclick="selectMemberForInput('${esc(name)}')">${esc(name)}</button>`;
+    }).join('');
+}
+
+function filterMemberPicker() { renderMemberPicker(); }
+
+function selectMemberForInput(name) {
+    const ids = matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
+    for (const id of ids) {
+        const input = document.getElementById(id);
+        if (input && !input.value.trim()) {
+            input.value = name;
+            onPlayerInput();
+            return;
+        }
+    }
+    // All slots already filled — no-op
 }

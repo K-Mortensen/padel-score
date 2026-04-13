@@ -767,6 +767,15 @@
                 </div>
                 <p class="error" id="error"></p>
             </div>
+            <!-- Member picker: click a club member to fill the next empty player slot -->
+            <div class="member-picker-panel" id="memberPickerPanel" style="display:none;">
+                <div class="member-picker-header">
+                    <span class="member-picker-label">CLUB MEMBERS</span>
+                    <input type="text" class="member-picker-search" id="memberPickerSearch"
+                           placeholder="Search…" oninput="filterMemberPicker()" autocomplete="off" />
+                </div>
+                <div class="member-picker-list" id="memberPickerList"></div>
+            </div>
             <div class="team-mode-row">
                 <button class="mode-btn active" id="modeRandom" onclick="setMode('random')">🔀 Random Teams</button>
                 <button class="mode-btn" id="modeManual" onclick="setMode('manual')">✏️ Pick Teams</button>

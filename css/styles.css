@@ -2210,3 +2210,75 @@ input[type="text"] {
         font-size: 0.78rem;
     }
 }
+
+/* ── MEMBER PICKER ── */
+.member-picker-panel {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.member-picker-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.member-picker-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.member-picker-search {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    font-family: inherit;
+}
+
+.member-picker-search:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.member-picker-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.member-chip {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.member-chip:hover {
+    background: rgba(242,201,76,0.12);
+    border-color: var(--accent);
+}
+
+.member-chip.selected {
+    background: rgba(242,201,76,0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+}
