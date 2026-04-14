@@ -127,6 +127,8 @@ function showMainApp() {
         p1.value = currentUser.username || currentUser.display_name || currentUser.email.split('@')[0];
         onPlayerInput();
     }
+
+    loadMemberPicker();
 }
 
 // ─── USERNAME SETUP ───────────────────────────────────────────────────────

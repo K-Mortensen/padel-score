@@ -42,19 +42,33 @@ async function _settingsAutoSave() {
     const newUsername = usernameInput?.value.trim();
     if (newUsername && newUsername !== (currentUser?.username || '')) {
         if (newUsername.length < 2) { alert('Username must be at least 2 characters.'); return; }
-        const { error } = await supabaseClient.from('profiles')
-            .update({ username: newUsername }).eq('id', currentUser.id);
+
+        const oldUsername = currentUser.username;
+
+        // Atomically update the profile username AND rename the player in all
+        // historical matches so ELO history stays continuous.
+        const { error } = await supabaseClient.rpc('update_username_and_matches', {
+            new_username: newUsername,
+        });
         if (error) {
             alert(error.code === '23505' ? 'That username is already taken.' : 'Error: ' + error.message);
             return;
         }
-        const oldDisplayName = currentUser.username || currentUser.display_name || currentUser.email?.split('@')[0];
+
+        // Patch in-memory matches so ELO recomputes without a full reload
+        appData.matches.forEach(m => {
+            m.teamA = m.teamA.map(n => n === oldUsername ? newUsername : n);
+            m.teamB = m.teamB.map(n => n === oldUsername ? newUsername : n);
+        });
+        invalidateEloCache();
+
         currentUser.username = newUsername;
         const nameEl = document.getElementById('profileName');
         if (nameEl) nameEl.textContent = newUsername;
+
         // Update player 1 input if it was auto-filled with the old username
         const p1 = document.getElementById('p1');
-        if (p1 && p1.value === oldDisplayName) {
+        if (p1 && p1.value === oldUsername) {
             p1.value = newUsername;
             onPlayerInput();
         }
