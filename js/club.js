@@ -29,7 +29,10 @@ async function loadUserClubs(isOnboarding = false) {
         await Promise.all([loadCurrentUserRole(), loadClubRoles()]);
     }
     showMainApp();
-    if (currentClub) loadFromServer();
+    if (currentClub) {
+        loadFromServer();
+        _refreshPendingRequestsBadge();
+    }
 }
 
 // ─── RESET CLUB STATE ─────────────────────────────────────────────────────────
@@ -55,6 +58,7 @@ async function switchClub(clubId) {
     loadFromServer();
     renderClubTab();
     closeProfileMenu();
+    _refreshPendingRequestsBadge();
 }
 
 // ─── LEAVE CLUB ───────────────────────────────────────────────────────────────
@@ -277,7 +281,7 @@ async function loadVisibleClubs() {
     // RLS returns: public + public_invite clubs + user's own (private) clubs
     const { data: clubs } = await supabaseClient
         .from('clubs')
-        .select('id, name, visibility, owner_id, invite_code')
+        .select('id, name, visibility, owner_id, invite_code, default_role_id')
         .order('name');
 
     if (!clubs?.length) return [];
@@ -319,7 +323,7 @@ async function switchClubModalTab(tab) {
         if (manageTitle) manageTitle.textContent = currentClub?.name || '';
         const dangerEl = document.getElementById('clubManageDanger');
         if (dangerEl) dangerEl.style.display = currentUser?.id === currentClub?.owner_id ? '' : 'none';
-        await _initManageRequestsTab();
+        await _refreshPendingRequestsBadge();
         await switchManageTab('roles');
     }
 }
@@ -490,16 +494,24 @@ async function switchManageTab(tab) {
     }
 }
 
-// Show/hide the Requests tab and badge based on user permissions + pending count
-async function _initManageRequestsTab() {
+// Refresh all pending-requests badges (profile menu, Club tab, Manage tab, inner tab).
+// Called on app load, after approve/decline, and when the manage pane opens.
+async function _refreshPendingRequestsBadge() {
     const canApprove = currentClub && (
         currentClub.owner_id === currentUser?.id ||
         hasPermission('approve_requests')
     );
-    const tabBtn = document.getElementById('cmManageTab-requests');
-    if (!tabBtn) return;
-    if (!canApprove) { tabBtn.style.display = 'none'; return; }
-    tabBtn.style.display = '';
+
+    // Inner "Requests" manage sub-tab visibility
+    const innerTabBtn = document.getElementById('cmManageTab-requests');
+    if (innerTabBtn) innerTabBtn.style.display = canApprove ? '' : 'none';
+
+    if (!canApprove) {
+        // Hide all badges when user has no permission
+        ['cmRequestsBadge', 'menuRequestsBadge', 'clubTabRequestsBadge', 'manageTabRequestsBadge']
+            .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+        return;
+    }
 
     const { count } = await supabaseClient
         .from('club_membership_requests')
@@ -507,15 +519,19 @@ async function _initManageRequestsTab() {
         .eq('club_id', currentClub.id)
         .eq('status', 'pending');
 
-    const badge = document.getElementById('cmRequestsBadge');
-    if (badge) {
-        if (count > 0) {
-            badge.textContent = count;
-            badge.style.display = '';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
+    const pendingCount = count || 0;
+
+    ['cmRequestsBadge', 'menuRequestsBadge', 'clubTabRequestsBadge', 'manageTabRequestsBadge']
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (pendingCount > 0) {
+                el.textContent = pendingCount;
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
 }
 
 // Render the pending membership requests panel
@@ -558,7 +574,7 @@ async function _renderRequestsPanel() {
                 <span style="font-size:0.75rem;color:var(--text-faint);margin-left:6px;">${date}</span>
             </div>
             <div class="request-actions">
-                <button class="role-action-btn" onclick="_approveRequest('${esc(r.id)}','${esc(r.user_id)}')">Approve</button>
+                <button class="role-action-btn" onclick="_approveRequest('${esc(r.id)}')">Approve</button>
                 <button class="role-action-btn role-action-delete" onclick="_declineRequest('${esc(r.id)}')">Decline</button>
             </div>
         </div>`;
@@ -570,21 +586,12 @@ async function _renderRequestsPanel() {
     </div>`;
 }
 
-// Approve a membership request — adds the user to the club
-async function _approveRequest(requestId, userId) {
-    const { error: memberError } = await supabaseClient
-        .from('club_members')
-        .insert({ club_id: currentClub.id, user_id: userId, role_id: currentClub.default_role_id || null });
-    if (memberError && memberError.code !== '23505') { // ignore duplicate
-        alert('Error approving request: ' + memberError.message);
-        return;
-    }
-    const { error } = await supabaseClient
-        .from('club_membership_requests')
-        .update({ status: 'approved' })
-        .eq('id', requestId);
-    if (error) { alert('Error updating request: ' + error.message); return; }
-    await _initManageRequestsTab();
+// Approve a membership request — uses SECURITY DEFINER RPC so the approver
+// can add the requester to club_members (INSERT policy only allows self-joins).
+async function _approveRequest(requestId) {
+    const { error } = await supabaseClient.rpc('approve_club_membership_request', { p_request_id: requestId });
+    if (error) { alert('Error approving request: ' + error.message); return; }
+    await _refreshPendingRequestsBadge();
     await _renderRequestsPanel();
 }
 
@@ -595,7 +602,7 @@ async function _declineRequest(requestId) {
         .update({ status: 'rejected' })
         .eq('id', requestId);
     if (error) { alert('Error declining request: ' + error.message); return; }
-    await _initManageRequestsTab();
+    await _refreshPendingRequestsBadge();
     await _renderRequestsPanel();
 }
 

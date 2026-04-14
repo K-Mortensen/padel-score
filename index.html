@@ -731,7 +731,7 @@
                 <button class="profile-btn profile-menu-btn" onclick="toggleProfileMenu()" title="Menu">⚙ ▾</button>
                 <div class="profile-menu" id="profileMenu" style="display:none;">
                     <div class="profile-menu-item" onclick="openSettingsModal();closeProfileMenu()">⚙ Settings</div>
-                    <div class="profile-menu-item" onclick="openClubModal('switch');closeProfileMenu()">🏟 Club</div>
+                    <div class="profile-menu-item" onclick="openClubModal('switch');closeProfileMenu()">🏟 Club <span id="menuRequestsBadge" class="requests-badge" style="display:none;"></span></div>
                     <div class="profile-menu-divider"></div>
                     <div class="profile-menu-item profile-menu-signout" onclick="signOut()">Sign out</div>
                 </div>
@@ -758,7 +758,7 @@
             <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
             <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
             <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
-            <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club</button>
+            <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club <span id="clubTabRequestsBadge" class="requests-badge" style="display:none;"></span></button>
         </div>
 
         <!-- PLAY TAB -->
@@ -1052,7 +1052,7 @@
                 <div class="club-modal-tabs">
                     <button class="club-modal-tab active" id="cmTab-switch" onclick="switchClubModalTab('switch')">Switch</button>
                     <button class="club-modal-tab" id="cmTab-browse" onclick="switchClubModalTab('browse')">Browse</button>
-                    <button class="club-modal-tab" id="cmTab-manage" onclick="switchClubModalTab('manage')">Manage</button>
+                    <button class="club-modal-tab" id="cmTab-manage" onclick="switchClubModalTab('manage')">Manage <span id="manageTabRequestsBadge" class="requests-badge" style="display:none;"></span></button>
                 </div>
 
                 <!-- Switch tab -->
