@@ -256,7 +256,17 @@
             border-radius: 10px;
             padding: 10px 12px;
         }
-        .role-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+        .role-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .role-priority-badge {
+            font-size: 0.62rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: rgba(180,180,180,0.12);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
         .role-perms { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
         .perm-badge {
             background: rgba(242, 201, 76, 0.15);
@@ -728,7 +738,7 @@
             </div>
             <div class="profile-actions" style="position:relative;">
                 <button id="copyCodeBtn" class="profile-btn" onclick="copyInviteCode()" title="Copy invite code">📋 Invite</button>
-                <button class="profile-btn profile-menu-btn" onclick="toggleProfileMenu()" title="Menu">⚙ ▾</button>
+                <button class="profile-btn profile-menu-btn" onclick="toggleProfileMenu()" title="Menu">⚙ ▾ <span id="profileBtnBadge" class="requests-badge" style="display:none;"></span></button>
                 <div class="profile-menu" id="profileMenu" style="display:none;">
                     <div class="profile-menu-item" onclick="openSettingsModal();closeProfileMenu()">⚙ Settings</div>
                     <div class="profile-menu-item" onclick="openClubModal('switch');closeProfileMenu()">🏟 Club <span id="menuRequestsBadge" class="requests-badge" style="display:none;"></span></div>
@@ -758,7 +768,7 @@
             <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
             <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
             <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
-            <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club <span id="clubTabRequestsBadge" class="requests-badge" style="display:none;"></span></button>
+            <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club</button>
         </div>
 
         <!-- PLAY TAB -->
@@ -771,22 +781,22 @@
             <div class="input-section">
                 <div class="input-row" id="inputRow1">
                     <span class="player-num">1</span>
-                    <input type="text" id="p1" placeholder="Player one" oninput="onPlayerInput()" />
+                    <input type="text" id="p1" placeholder="Player one" autocomplete="off" oninput="onPlayerInput()" />
                     <span class="input-elo-badge provisional" id="elo-p1">—</span>
                 </div>
                 <div class="input-row" id="inputRow2">
                     <span class="player-num">2</span>
-                    <input type="text" id="p2" placeholder="Player two" oninput="onPlayerInput()" />
+                    <input type="text" id="p2" placeholder="Player two" autocomplete="off" oninput="onPlayerInput()" />
                     <span class="input-elo-badge provisional" id="elo-p2">—</span>
                 </div>
                 <div class="input-row" id="inputRow3">
                     <span class="player-num">3</span>
-                    <input type="text" id="p3" placeholder="Player three" oninput="onPlayerInput()" />
+                    <input type="text" id="p3" placeholder="Player three" autocomplete="off" oninput="onPlayerInput()" />
                     <span class="input-elo-badge provisional" id="elo-p3">—</span>
                 </div>
                 <div class="input-row" id="inputRow4">
                     <span class="player-num">4</span>
-                    <input type="text" id="p4" placeholder="Player four" oninput="onPlayerInput()" />
+                    <input type="text" id="p4" placeholder="Player four" autocomplete="off" oninput="onPlayerInput()" />
                     <span class="input-elo-badge provisional" id="elo-p4">—</span>
                 </div>
                 <p class="error" id="error"></p>

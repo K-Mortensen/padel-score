@@ -145,14 +145,14 @@ async function deleteClub() {
 
 // ─── DEFAULT ROLES ────────────────────────────────────────────────────────────
 const DEFAULT_ROLES = [
-    { name: 'Admin',     permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true,  manage_roles: true,  kick_members: true,  approve_requests: true  } },
-    { name: 'Moderator', permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false, manage_roles: false, kick_members: true,  approve_requests: true  } },
-    { name: 'Member',    permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
-    { name: 'Newcomer',  permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
+    { name: 'Admin',     priority: 10, permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true,  manage_roles: true,  kick_members: true,  approve_requests: true  } },
+    { name: 'Moderator', priority: 20, permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false, manage_roles: false, kick_members: true,  approve_requests: true  } },
+    { name: 'Member',    priority: 30, permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
+    { name: 'Newcomer',  priority: 40, permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
 ];
 
 async function createDefaultRoles(clubId) {
-    const rows = DEFAULT_ROLES.map(r => ({ club_id: clubId, name: r.name, permissions: r.permissions }));
+    const rows = DEFAULT_ROLES.map(r => ({ club_id: clubId, name: r.name, priority: r.priority, permissions: r.permissions }));
     const { data, error } = await supabaseClient.from('club_roles').insert(rows).select();
     if (!error && data) clubRoles = data;
 }
@@ -508,7 +508,7 @@ async function _refreshPendingRequestsBadge() {
 
     if (!canApprove) {
         // Hide all badges when user has no permission
-        ['cmRequestsBadge', 'menuRequestsBadge', 'clubTabRequestsBadge', 'manageTabRequestsBadge']
+        ['cmRequestsBadge', 'menuRequestsBadge', 'profileBtnBadge', 'manageTabRequestsBadge']
             .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
         return;
     }
@@ -521,7 +521,7 @@ async function _refreshPendingRequestsBadge() {
 
     const pendingCount = count || 0;
 
-    ['cmRequestsBadge', 'menuRequestsBadge', 'clubTabRequestsBadge', 'manageTabRequestsBadge']
+    ['cmRequestsBadge', 'menuRequestsBadge', 'profileBtnBadge', 'manageTabRequestsBadge']
         .forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;

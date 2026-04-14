@@ -60,10 +60,10 @@ async function loadClubMembers() {
 }
 
 // ─── CRUD ─────────────────────────────────────────────────────────────────
-async function createRole(name, permissions) {
+async function createRole(name, permissions, priority) {
     const { data, error } = await supabaseClient
         .from('club_roles')
-        .insert({ club_id: currentClub.id, name, permissions })
+        .insert({ club_id: currentClub.id, name, permissions, priority })
         .select()
         .single();
     if (error) throw error;
@@ -71,15 +71,15 @@ async function createRole(name, permissions) {
     return data;
 }
 
-async function updateRole(roleId, name, permissions) {
+async function updateRole(roleId, name, permissions, priority) {
     const { error } = await supabaseClient
         .from('club_roles')
-        .update({ name, permissions })
+        .update({ name, permissions, priority })
         .eq('id', roleId)
         .eq('club_id', currentClub.id);
     if (error) throw error;
     const idx = clubRoles.findIndex(r => r.id === roleId);
-    if (idx !== -1) clubRoles[idx] = { ...clubRoles[idx], name, permissions };
+    if (idx !== -1) clubRoles[idx] = { ...clubRoles[idx], name, permissions, priority };
 }
 
 async function deleteRole(roleId) {
@@ -108,7 +108,7 @@ const PERM_LABELS = {
     delete_matches:   'Delete matches',
     view_scores:      'View scores',
     rename_club:      'Rename club',
-    manage_roles:     'Manage roles & members',
+    manage_roles:     'Manage roles',
     kick_members:     'Kick members',
     approve_requests: 'Approve membership requests',
 };
@@ -134,18 +134,30 @@ function _renderRolesPanel() {
     const content = document.getElementById(_panelTarget);
     if (!content) return;
 
+    const isOwner = currentClub?.owner_id === currentUser?.id;
+    // Owner priority = 0 (can manage everything); no role = can manage nothing (priority Infinity)
+    const myPriority = isOwner ? 0 : (currentUserRole?.priority ?? Infinity);
+
     const rolesHTML = clubRoles.length
         ? clubRoles.map(r => {
             const permBadges = ALL_PERMS
                 .filter(p => r.permissions?.[p])
                 .map(p => `<span class="perm-badge">${PERM_LABELS[p]}</span>`)
                 .join('');
+            // Can only edit/delete roles with strictly higher priority number (lower authority)
+            const canManage = r.priority > myPriority;
             return `<div class="role-item">
-                <div class="role-item-name">${esc(r.name)}</div>
+                <div class="role-item-name">
+                    ${esc(r.name)}
+                    <span class="role-priority-badge">P${r.priority ?? 99}</span>
+                </div>
                 <div class="role-perms">${permBadges || '<span style="color:var(--text-faint);font-size:0.75rem;">No permissions</span>'}</div>
                 <div class="role-item-actions">
-                    <button class="role-action-btn" onclick="openEditRoleForm('${esc(r.id)}')">Edit</button>
-                    <button class="role-action-btn role-action-delete" onclick="confirmDeleteRole('${esc(r.id)}','${esc(r.name)}')">Delete</button>
+                    ${canManage
+                        ? `<button class="role-action-btn" onclick="openEditRoleForm('${esc(r.id)}')">Edit</button>
+                           <button class="role-action-btn role-action-delete" onclick="confirmDeleteRole('${esc(r.id)}','${esc(r.name)}')">Delete</button>`
+                        : `<span style="font-size:0.72rem;color:var(--text-faint);">—</span>`
+                    }
                 </div>
             </div>`;
         }).join('')
@@ -183,22 +195,41 @@ function _renderMembersPanel() {
     const content = document.getElementById(_panelTarget);
     if (!content) return;
 
-    const canKick = currentUser?.id === currentClub?.owner_id || hasPermission('kick_members');
+    const isOwner = currentUser?.id === currentClub?.owner_id;
+    const myPriority = isOwner ? 0 : (currentUserRole?.priority ?? Infinity);
+    const canKick = isOwner || hasPermission('kick_members');
     const membersHTML = _rolesPanelMembers.length
         ? _rolesPanelMembers.map(m => {
             const rawName = m.profiles?.username || m.profiles?.display_name || m.user_id;
             const name = esc(rawName);
+            // Only show roles with strictly higher priority number (lower authority) than own
+            const assignableRoles = clubRoles.filter(r => r.priority > myPriority);
             const roleOptions = `<option value="">— No role —</option>` +
-                clubRoles.map(r => `<option value="${esc(r.id)}" ${m.role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+                assignableRoles.map(r => `<option value="${esc(r.id)}" ${m.role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
             const isOwner = m.user_id === currentClub?.owner_id;
             const isSelf  = m.user_id === currentUser?.id;
             const showKick = canKick && !isOwner && !isSelf;
-            return `<div class="member-item">
-                <span class="member-name">${name}${isOwner ? ' <span class="owner-badge">Owner</span>' : ''}</span>
-                ${isOwner
-                    ? '<span style="font-size:0.75rem;color:var(--text-faint);">All permissions</span>'
-                    : `<select class="member-role-select" onchange="applyMemberRole('${esc(m.user_id)}',this.value)">${roleOptions}</select>`
+            const displayName = `${name}${isOwner ? ' <span class="owner-badge">Owner</span>' : ''}${isSelf ? ' <span style="font-size:0.72rem;color:var(--text-muted);">(you)</span>' : ''}`;
+            let roleControl;
+            if (isOwner) {
+                roleControl = '<span style="font-size:0.75rem;color:var(--text-faint);">All permissions</span>';
+            } else if (isSelf) {
+                const roleName = m.club_roles?.name || '— No role —';
+                roleControl = `<span style="font-size:0.8rem;color:var(--text-muted);">${esc(roleName)}</span>`;
+            } else {
+                // Check if this member's current role is at or above our priority (can't touch them)
+                const memberRolePriority = m.club_roles?.priority ?? Infinity;
+                const outranked = memberRolePriority <= myPriority;
+                if (outranked) {
+                    const roleName = m.club_roles?.name || '— No role —';
+                    roleControl = `<span style="font-size:0.8rem;color:var(--text-muted);">${esc(roleName)}</span>`;
+                } else {
+                    roleControl = `<select class="member-role-select" onchange="applyMemberRole('${esc(m.user_id)}',this.value)">${roleOptions}</select>`;
                 }
+            }
+            return `<div class="member-item">
+                <span class="member-name">${displayName}</span>
+                ${roleControl}
                 ${showKick ? `<button class="role-action-btn role-action-delete" onclick="kickMember('${esc(m.user_id)}','${esc(rawName)}')">Kick</button>` : ''}
             </div>`;
         }).join('')
@@ -235,6 +266,12 @@ function openEditRoleForm(roleId) {
 function _renderRoleForm(role) {
     const container = document.getElementById('roleFormContainer');
     if (!container) return;
+
+    const isOwner = currentClub?.owner_id === currentUser?.id;
+    const myPriority = isOwner ? 0 : (currentUserRole?.priority ?? Infinity);
+    // New role default priority: just below own level so it's manageable
+    const defaultPriority = isOwner ? 50 : Math.min((myPriority ?? 0) + 5, 98);
+
     const permsHTML = ALL_PERMS.map(p => `
         <label class="perm-checkbox-row">
             <input type="checkbox" name="${p}" ${role?.permissions?.[p] ? 'checked' : ''} />
@@ -246,6 +283,12 @@ function _renderRoleForm(role) {
             <div class="settings-label" style="margin-top:12px;">${role ? 'Edit Role' : 'New Role'}</div>
             <input class="modal-name-input" id="roleNameInput" type="text" placeholder="Role name (e.g. Scorer)"
                    value="${role ? esc(role.name) : ''}" style="margin-bottom:8px;width:100%;" />
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <label style="font-size:0.8rem;color:var(--text-muted);flex-shrink:0;">Priority (lower = more authority):</label>
+                <input class="modal-name-input" id="rolePriorityInput" type="number" min="${myPriority + 1}" max="98"
+                       value="${role ? (role.priority ?? 99) : defaultPriority}"
+                       style="width:70px;" />
+            </div>
             <div class="perm-checkboxes" id="rolePermCheckboxes">${permsHTML}</div>
             <div style="display:flex;gap:8px;margin-top:10px;">
                 <button class="modal-btn-save" style="flex:1;" onclick="saveRoleForm('${role ? esc(role.id) : ''}')">
@@ -261,6 +304,14 @@ async function saveRoleForm(roleId) {
     const name = nameInput?.value.trim();
     if (!name) { alert('Please enter a role name.'); return; }
 
+    const isOwner = currentClub?.owner_id === currentUser?.id;
+    const myPriority = isOwner ? 0 : (currentUserRole?.priority ?? Infinity);
+    const priorityInput = document.getElementById('rolePriorityInput');
+    const priority = parseInt(priorityInput?.value, 10);
+    if (isNaN(priority) || priority <= myPriority) {
+        alert(`Priority must be a number greater than ${myPriority}.`); return;
+    }
+
     const permissions = {};
     ALL_PERMS.forEach(p => {
         const cb = document.querySelector(`#rolePermCheckboxes input[name="${p}"]`);
@@ -269,9 +320,9 @@ async function saveRoleForm(roleId) {
 
     try {
         if (roleId) {
-            await updateRole(roleId, name, permissions);
+            await updateRole(roleId, name, permissions, priority);
         } else {
-            await createRole(name, permissions);
+            await createRole(name, permissions, priority);
         }
         _renderRolesPanel();
     } catch (e) {
