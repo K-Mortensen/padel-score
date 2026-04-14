@@ -141,10 +141,10 @@ async function deleteClub() {
 
 // ─── DEFAULT ROLES ────────────────────────────────────────────────────────────
 const DEFAULT_ROLES = [
-    { name: 'Admin',     permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true,  manage_roles: true,  kick_members: true  } },
-    { name: 'Moderator', permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false, manage_roles: false, kick_members: true  } },
-    { name: 'Member',    permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false, manage_roles: false, kick_members: false } },
-    { name: 'Newcomer',  permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false, manage_roles: false, kick_members: false } },
+    { name: 'Admin',     permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: true,  manage_roles: true,  kick_members: true,  approve_requests: true  } },
+    { name: 'Moderator', permissions: { add_matches: true,  modify_matches: true,  delete_matches: true,  view_scores: true,  rename_club: false, manage_roles: false, kick_members: true,  approve_requests: true  } },
+    { name: 'Member',    permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: true,  rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
+    { name: 'Newcomer',  permissions: { add_matches: true,  modify_matches: false, delete_matches: false, view_scores: false, rename_club: false, manage_roles: false, kick_members: false, approve_requests: false } },
 ];
 
 async function createDefaultRoles(clubId) {
@@ -319,6 +319,7 @@ async function switchClubModalTab(tab) {
         if (manageTitle) manageTitle.textContent = currentClub?.name || '';
         const dangerEl = document.getElementById('clubManageDanger');
         if (dangerEl) dangerEl.style.display = currentUser?.id === currentClub?.owner_id ? '' : 'none';
+        await _initManageRequestsTab();
         await switchManageTab('roles');
     }
 }
@@ -346,6 +347,7 @@ function _renderClubModalSwitch() {
 
 // ── Browse tab ───────────────────────────────────────────────────────────────
 let _browseClubsData = [];
+let _browseMyRequests = new Set(); // club_ids where user has a pending request
 
 async function _initClubModalBrowse() {
     const searchInput = document.getElementById('clubModalBrowseSearch');
@@ -353,8 +355,16 @@ async function _initClubModalBrowse() {
     if (searchInput) searchInput.value = '';
     if (listEl) listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px 0;">Loading…</div>';
 
-    const clubs = await loadVisibleClubs();
+    const [clubs, requestsResult] = await Promise.all([
+        loadVisibleClubs(),
+        supabaseClient
+            .from('club_membership_requests')
+            .select('club_id')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'pending'),
+    ]);
     _browseClubsData = clubs;
+    _browseMyRequests = new Set(requestsResult.data?.map(r => r.club_id) || []);
     _renderBrowseClubs('');
 
     if (searchInput) {
@@ -395,6 +405,12 @@ function _renderBrowseClubs(query) {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="switchClub('${esc(c.id)}');closeModal('clubModal')">Switch →</button>`;
         } else if (c.visibility === 'public') {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="_joinClubById('${esc(c.id)}')">Join</button>`;
+        } else if (c.visibility === 'public_invite') {
+            if (_browseMyRequests.has(c.id)) {
+                actionBtn = `<span class="browse-request-pending">Pending…</span>`;
+            } else {
+                actionBtn = `<button class="modal-btn-save browse-club-action" onclick="_requestMembership('${esc(c.id)}')">Request membership</button>`;
+            }
         } else {
             actionBtn = `<button class="modal-btn-save browse-club-action" onclick="_joinClubByCode('${esc(c.id)}','${esc(c.invite_code)}')">Join with code</button>`;
         }
@@ -439,9 +455,19 @@ async function _joinClubByCode(clubId, expectedCode) {
     await _joinClubById(clubId);
 }
 
+// Send a membership request for a public_invite club
+async function _requestMembership(clubId) {
+    const { error } = await supabaseClient
+        .from('club_membership_requests')
+        .insert({ club_id: clubId, user_id: currentUser.id });
+    if (error) { alert('Error sending request: ' + error.message); return; }
+    _browseMyRequests.add(clubId);
+    _renderBrowseClubs(document.getElementById('clubModalBrowseSearch')?.value?.trim()?.toLowerCase() || '');
+}
+
 // ── Manage tab ───────────────────────────────────────────────────────────────
 async function switchManageTab(tab) {
-    ['roles', 'members'].forEach(t => {
+    ['roles', 'members', 'requests'].forEach(t => {
         const btn = document.getElementById(`cmManageTab-${t}`);
         if (btn) btn.classList.toggle('active', t === tab);
     });
@@ -456,10 +482,121 @@ async function switchManageTab(tab) {
     if (tab === 'roles') {
         await loadClubRoles();
         _renderRolesPanel();
+    } else if (tab === 'requests') {
+        await _renderRequestsPanel();
     } else {
         await Promise.all([loadClubRoles(), _loadRolesPanelMembers()]);
         _renderMembersPanel();
     }
+}
+
+// Show/hide the Requests tab and badge based on user permissions + pending count
+async function _initManageRequestsTab() {
+    const canApprove = currentClub && (
+        currentClub.owner_id === currentUser?.id ||
+        hasPermission('approve_requests')
+    );
+    const tabBtn = document.getElementById('cmManageTab-requests');
+    if (!tabBtn) return;
+    if (!canApprove) { tabBtn.style.display = 'none'; return; }
+    tabBtn.style.display = '';
+
+    const { count } = await supabaseClient
+        .from('club_membership_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('club_id', currentClub.id)
+        .eq('status', 'pending');
+
+    const badge = document.getElementById('cmRequestsBadge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = '';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// Render the pending membership requests panel
+async function _renderRequestsPanel() {
+    const content = document.getElementById(_panelTarget);
+    if (!content) return;
+
+    const { data: requests, error } = await supabaseClient
+        .from('club_membership_requests')
+        .select('id, user_id, created_at')
+        .eq('club_id', currentClub.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        content.innerHTML = `<div style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">Error loading requests.</div>`;
+        return;
+    }
+
+    if (!requests?.length) {
+        content.innerHTML = `<div class="roles-panel"><div style="color:var(--text-faint);font-size:0.85rem;padding:8px 0;">No pending membership requests.</div></div>`;
+        return;
+    }
+
+    // Fetch profiles separately (profiles table has restrictive RLS)
+    const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, username, display_name')
+        .in('id', requests.map(r => r.user_id));
+    const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+
+    const itemsHTML = requests.map(r => {
+        const profile = profileMap[r.user_id];
+        const rawName = profile?.username || profile?.display_name || r.user_id;
+        const name = esc(rawName);
+        const date = new Date(r.created_at).toLocaleDateString();
+        return `<div class="member-item request-item">
+            <div>
+                <span class="member-name">${name}</span>
+                <span style="font-size:0.75rem;color:var(--text-faint);margin-left:6px;">${date}</span>
+            </div>
+            <div class="request-actions">
+                <button class="role-action-btn" onclick="_approveRequest('${esc(r.id)}','${esc(r.user_id)}')">Approve</button>
+                <button class="role-action-btn role-action-delete" onclick="_declineRequest('${esc(r.id)}')">Decline</button>
+            </div>
+        </div>`;
+    }).join('');
+
+    content.innerHTML = `<div class="roles-panel">
+        <div class="settings-label" style="margin-top:12px;">Membership Requests</div>
+        <div class="members-list">${itemsHTML}</div>
+    </div>`;
+}
+
+// Approve a membership request — adds the user to the club
+async function _approveRequest(requestId, userId) {
+    const { error: memberError } = await supabaseClient
+        .from('club_members')
+        .insert({ club_id: currentClub.id, user_id: userId, role_id: currentClub.default_role_id || null });
+    if (memberError && memberError.code !== '23505') { // ignore duplicate
+        alert('Error approving request: ' + memberError.message);
+        return;
+    }
+    const { error } = await supabaseClient
+        .from('club_membership_requests')
+        .update({ status: 'approved' })
+        .eq('id', requestId);
+    if (error) { alert('Error updating request: ' + error.message); return; }
+    await _initManageRequestsTab();
+    await _renderRequestsPanel();
+}
+
+// Decline a membership request
+async function _declineRequest(requestId) {
+    const { error } = await supabaseClient
+        .from('club_membership_requests')
+        .update({ status: 'rejected' })
+        .eq('id', requestId);
+    if (error) { alert('Error declining request: ' + error.message); return; }
+    await _initManageRequestsTab();
+    await _renderRequestsPanel();
 }
 
 function toggleClubAddSection() {
