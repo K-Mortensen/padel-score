@@ -235,7 +235,6 @@ function _renderMembersPanel() {
         }).join('')
         : '<div style="color:var(--text-faint);font-size:0.8rem;padding:8px 0;">No members found.</div>';
 
-    const isOwner = currentUser?.id === currentClub?.owner_id;
     const defaultRoleOptionsHTML = `<option value="">— No default role —</option>` +
         clubRoles.map(r => `<option value="${esc(r.id)}" ${currentClub?.default_role_id === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
 
