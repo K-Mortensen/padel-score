@@ -103,13 +103,14 @@ async function assignMemberRole(userId, roleId) {
 
 // ─── ROLES PANEL (rendered inside settings modal or club modal) ───────────
 const PERM_LABELS = {
-    add_matches:    'Add matches',
-    modify_matches: 'Modify matches',
-    delete_matches: 'Delete matches',
-    view_scores:    'View scores',
-    rename_club:    'Rename club',
-    manage_roles:   'Manage roles & members',
-    kick_members:   'Kick members',
+    add_matches:      'Add matches',
+    modify_matches:   'Modify matches',
+    delete_matches:   'Delete matches',
+    view_scores:      'View scores',
+    rename_club:      'Rename club',
+    manage_roles:     'Manage roles & members',
+    kick_members:     'Kick members',
+    approve_requests: 'Approve membership requests',
 };
 const ALL_PERMS = Object.keys(PERM_LABELS);
 

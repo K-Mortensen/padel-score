@@ -511,6 +511,30 @@
         .browse-vis-private { background: rgba(180,180,180,0.12); color: var(--text-muted); border: 1px solid var(--border); }
         .browse-club-count  { font-size: 0.72rem; color: var(--text-muted); }
         .browse-club-action { white-space: nowrap; padding: 5px 12px; font-size: 0.8rem; }
+        .browse-request-pending {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Requests badge on manage tab ── */
+        .requests-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 10px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 0 5px;
+            margin-left: 3px;
+            vertical-align: middle;
+            line-height: 1.6;
+        }
+
+        /* ── Request items in manage panel ── */
+        .request-item { flex-wrap: wrap; gap: 8px; }
+        .request-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
         /* ── Switch Club modal ── */
         .switch-club-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
@@ -1068,6 +1092,7 @@
                     <div class="club-manage-tabs">
                         <button class="club-manage-tab" id="cmManageTab-roles" onclick="switchManageTab('roles')">Roles</button>
                         <button class="club-manage-tab" id="cmManageTab-members" onclick="switchManageTab('members')">Members</button>
+                        <button class="club-manage-tab" id="cmManageTab-requests" onclick="switchManageTab('requests')" style="display:none;">Requests <span id="cmRequestsBadge" class="requests-badge" style="display:none;"></span></button>
                     </div>
                     <div id="clubManageContent"></div>
                     <div id="clubManageDanger" style="display:none;margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
