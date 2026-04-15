@@ -115,24 +115,60 @@ async function transferOwnership(newOwnerId) {
 }
 
 // ─── DELETE CLUB ──────────────────────────────────────────────────────────────
-async function deleteClub() {
+function deleteClub() {
     if (!currentClub || !currentUser) return;
     if (currentClub.owner_id !== currentUser.id) {
         alert('Only the club owner can delete the club.');
         return;
     }
-    if (!confirm(`Delete "${currentClub.name}"? This permanently removes all matches and members.`)) return;
+
+    const hintEl = document.getElementById('deleteClubNameHint');
+    const input  = document.getElementById('deleteClubConfirmInput');
+    const btn    = document.getElementById('deleteClubConfirmBtn');
+
+    if (hintEl) hintEl.textContent = currentClub.name;
+    if (input)  { input.value = ''; }
+    if (btn)    btn.disabled = true;
+
+    const modal = document.getElementById('deleteClubModal');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function onDeleteClubInputChange() {
+    const input = document.getElementById('deleteClubConfirmInput');
+    const btn   = document.getElementById('deleteClubConfirmBtn');
+    if (!input || !btn || !currentClub) return;
+    // .modal-name-input applies text-transform:uppercase visually but input.value
+    // holds raw casing — compare both sides uppercased to match what the user sees.
+    btn.disabled = input.value.toUpperCase() !== currentClub.name.toUpperCase();
+}
+
+async function confirmDeleteClub() {
+    if (!currentClub || !currentUser) return;
+    const input = document.getElementById('deleteClubConfirmInput');
+    if (!input || input.value.toUpperCase() !== currentClub.name.toUpperCase()) return;
+
+    const btn = document.getElementById('deleteClubConfirmBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Deleting…'; }
 
     const { error } = await supabaseClient
         .from('clubs')
         .delete()
         .eq('id', currentClub.id);
 
-    if (error) { alert('Error deleting club: ' + error.message); return; }
+    if (error) {
+        alert('Error deleting club: ' + error.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Delete Club'; }
+        return;
+    }
 
     const deletedId = currentClub.id;
     userClubs = userClubs.filter(m => m.club_id !== deletedId);
     resetClubState();
+
+    closeModal('deleteClubModal');
 
     if (userClubs.length) {
         await switchClub(userClubs[0].club_id);

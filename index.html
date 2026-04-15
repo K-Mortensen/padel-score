@@ -1131,6 +1131,36 @@
             </div>
         </div>
 
+        <!-- DELETE CLUB CONFIRMATION MODAL -->
+        <div id="deleteClubModal" class="modal-overlay" style="display:none;" onclick="handleModalOverlayClick(event,'deleteClubModal')">
+            <div class="modal" style="max-width:380px;width:100%;">
+                <div class="modal-title" style="color:#eb5757;">Delete Club</div>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:4px;">
+                    This permanently removes all matches and members. This action cannot be undone.
+                </p>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">
+                    Type <strong id="deleteClubNameHint" style="color:var(--text);"></strong> to confirm.
+                </p>
+                <input
+                    class="modal-name-input"
+                    id="deleteClubConfirmInput"
+                    type="text"
+                    placeholder="Club name"
+                    style="width:100%;margin-bottom:0;"
+                    oninput="onDeleteClubInputChange()"
+                />
+                <div class="modal-buttons" style="margin-top:14px;">
+                    <button class="modal-btn-cancel" onclick="closeModal('deleteClubModal')">Cancel</button>
+                    <button
+                        class="modal-btn-save settings-danger-btn"
+                        id="deleteClubConfirmBtn"
+                        disabled
+                        onclick="confirmDeleteClub()"
+                    >Delete Club</button>
+                </div>
+            </div>
+        </div>
+
     </div><!-- end mainApp -->
 
     <!-- SCRIPTS -->
