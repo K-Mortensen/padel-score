@@ -1,13 +1,34 @@
 let _clubMembersForPicker = [];
 
 // ─── TABS ─────────────────────────────────────────────────────────────────
+let activeClubSubTab = 'members';
+
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
-    if (tab === 'history') renderHistory();
-    if (tab === 'elo') renderEloTab();
-    if (tab === 'club') renderClubTab();
+    if (tab === 'club') switchClubSubTab(activeClubSubTab);
+}
+
+function switchClubSubTab(sub) {
+    activeClubSubTab = sub;
+    document.querySelectorAll('.club-subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.subtab === sub));
+    document.querySelectorAll('.club-subtab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('club-sub-' + sub);
+    if (panel) panel.classList.add('active');
+
+    const subtitleMap = {
+        members: 'Members & Rankings',
+        stats:   'Player Stats',
+        history: 'Match History',
+        elo:     'Power Rankings'
+    };
+    const subEl = document.getElementById('clubTabSub');
+    if (subEl) subEl.textContent = subtitleMap[sub] || '';
+
+    if (sub === 'members') renderClubMembersTab();
+    else if (sub === 'stats' || sub === 'history') renderHistory();
+    else if (sub === 'elo') renderEloTab();
 }
 
 // ─── MATCH FORMAT (1v1 vs 2v2) ────────────────────────────────────────────
