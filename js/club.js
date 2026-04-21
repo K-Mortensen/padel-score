@@ -687,7 +687,11 @@ async function confirmTransferTo(newOwnerId, name) {
 }
 
 // ─── CLUB TAB ─────────────────────────────────────────────────────────────────
-async function renderClubTab() {
+function renderClubTab() {
+    switchClubSubTab(typeof activeClubSubTab !== 'undefined' ? activeClubSubTab : 'members');
+}
+
+async function renderClubMembersTab() {
     const container = document.getElementById('clubMembersList');
     if (!container) return;
     if (!currentClub) {

@@ -766,8 +766,6 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-tab="play" onclick="switchTab('play')">⚡ Play</button>
-            <button class="tab-btn" data-tab="history" onclick="switchTab('history')">📊 Stats</button>
-            <button class="tab-btn" data-tab="elo" onclick="switchTab('elo')">🏆 Elo</button>
             <button class="tab-btn" data-tab="club" id="clubTabBtn" onclick="switchTab('club')" style="display:none;">👥 Club</button>
         </div>
 
@@ -914,52 +912,62 @@
             </div>
         </div>
 
-        <!-- HISTORY TAB -->
-        <div class="tab-content" id="tab-history">
-            <div class="history-controls">
-                <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
-            </div>
-            <div class="stats-grid" id="statsGrid">
-                <div class="no-history" style="grid-column:1/-1">Loading…</div>
-            </div>
-            <div class="date-filter-bar">
-                <span class="date-filter-label">🗓 Filter:</span>
-                <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
-                <span class="date-filter-sep">→</span>
-                <input class="date-input" type="date" id="filterTo" onchange="renderHistory()" />
-                <button class="btn-clear-filter" onclick="clearDateFilter()">✕ Clear</button>
-            </div>
-            <div class="section-label">Match History</div>
-            <div class="match-list" id="matchList">
-                <div class="no-history">Loading…</div>
-            </div>
-        </div>
-
-        <!-- ELO TAB -->
-        <div class="tab-content" id="tab-elo">
-            <div class="elo-tab-content">
-                <div class="elo-header">
-                    <div class="elo-header-title">⚡ Elo Power Rankings</div>
-                    <div class="elo-header-desc" id="eloHeaderDesc">Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status</div>
-                </div>
-                <div class="elo-view-toggle">
-                    <button class="elo-view-btn active" id="eloView2v2" onclick="setEloTabView('2v2')">👥 2v2</button>
-                    <button class="elo-view-btn" id="eloView1v1" onclick="setEloTabView('1v1')">🧍 1v1</button>
-                </div>
-                <div class="elo-leaderboard" id="eloLeaderboard">
-                    <div class="no-history">Loading…</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CLUB TAB -->
+        <!-- CLUB TAB (with sub-tabs: Members / Stats / History / Elo) -->
         <div class="tab-content" id="tab-club">
             <div class="club-tab-inner">
                 <div class="club-tab-header">
                     <div class="club-tab-title" id="clubTabName">—</div>
-                    <div class="club-tab-sub">Members &amp; Rankings</div>
+                    <div class="club-tab-sub" id="clubTabSub">Members &amp; Rankings</div>
                 </div>
-                <div id="clubMembersList"><div class="no-history">Loading…</div></div>
+
+                <div class="club-subtabs" role="tablist">
+                    <button class="club-subtab-btn active" data-subtab="members" onclick="switchClubSubTab('members')">👥 Members</button>
+                    <button class="club-subtab-btn"        data-subtab="stats"   onclick="switchClubSubTab('stats')">📊 Stats</button>
+                    <button class="club-subtab-btn"        data-subtab="history" onclick="switchClubSubTab('history')">📜 History</button>
+                    <button class="club-subtab-btn"        data-subtab="elo"     onclick="switchClubSubTab('elo')">🏆 Elo</button>
+                </div>
+
+                <div class="club-subtab-panel active" id="club-sub-members">
+                    <div id="clubMembersList"><div class="no-history">Loading…</div></div>
+                </div>
+
+                <div class="club-subtab-panel" id="club-sub-stats">
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="no-history" style="grid-column:1/-1">Loading…</div>
+                    </div>
+                </div>
+
+                <div class="club-subtab-panel" id="club-sub-history">
+                    <div class="history-controls">
+                        <button class="btn-export" onclick="exportData()">⬇ Export JSON</button>
+                    </div>
+                    <div class="date-filter-bar">
+                        <span class="date-filter-label">🗓 Filter:</span>
+                        <input class="date-input" type="date" id="filterFrom" onchange="renderHistory()" />
+                        <span class="date-filter-sep">→</span>
+                        <input class="date-input" type="date" id="filterTo" onchange="renderHistory()" />
+                        <button class="btn-clear-filter" onclick="clearDateFilter()">✕ Clear</button>
+                    </div>
+                    <div class="match-list" id="matchList">
+                        <div class="no-history">Loading…</div>
+                    </div>
+                </div>
+
+                <div class="club-subtab-panel" id="club-sub-elo">
+                    <div class="elo-tab-content">
+                        <div class="elo-header">
+                            <div class="elo-header-title">⚡ Elo Power Rankings</div>
+                            <div class="elo-header-desc" id="eloHeaderDesc">Team 2v2 rankings · Starting Elo 1200 · K-factor 32 · Min 3 games for ranked status</div>
+                        </div>
+                        <div class="elo-view-toggle">
+                            <button class="elo-view-btn active" id="eloView2v2" onclick="setEloTabView('2v2')">👥 2v2</button>
+                            <button class="elo-view-btn" id="eloView1v1" onclick="setEloTabView('1v1')">🧍 1v1</button>
+                        </div>
+                        <div class="elo-leaderboard" id="eloLeaderboard">
+                            <div class="no-history">Loading…</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
