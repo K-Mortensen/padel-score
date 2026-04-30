@@ -1,0 +1,273 @@
+/*
+ * Padel Firematch — Design Tokens
+ * Source: K-Mortensen/padel-score (css/styles.css)
+ *
+ * Usage: Import this file before your component CSS.
+ * Google Fonts required:
+ *   https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap');
+
+/* ─────────────────────────────────────────────
+   BASE COLOR TOKENS — Dark theme (default)
+   ───────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+
+  /* Brand palette */
+  --color-clay:         #c8773d;   /* primary brand — clay court orange */
+  --color-court:        #d4895a;   /* padel court surface */
+  --color-green:        #4a8c5c;   /* wins / success */
+  --color-green-light:  #5fa872;   /* win hover / bright success */
+  --color-accent:       #f2c94c;   /* gold — CTAs, scores, ELO numbers */
+  --color-bg:           #1a1208;   /* page background — warm near-black */
+  --color-text:         #f5ede2;   /* primary text — warm off-white */
+  --color-error:        #e07070;   /* loss / error — muted warm red */
+
+  /* ELO medal tiers */
+  --color-elo-gold:     #f2c94c;
+  --color-elo-silver:   #b0bec5;
+  --color-elo-bronze:   #cd7f32;
+
+  /* Semantic surface tokens */
+  --bg:                 var(--color-bg);
+  --bg-card:            rgba(255,255,255,0.04);
+  --bg-card-hover:      rgba(255,255,255,0.07);
+  --bg-input:           rgba(255,255,255,0.06);
+  --bg-input-focus:     rgba(255,255,255,0.10);
+  --bg-tabs:            rgba(255,255,255,0.05);
+  --bg-modal:           #221a0e;
+  --bg-player-modal:    #1e160a;
+
+  /* Semantic border tokens */
+  --border:             rgba(200,119,61,0.25);
+  --border-input:       rgba(200,119,61,0.35);
+  --border-mode:        rgba(200,119,61,0.40);
+
+  /* Semantic text tokens */
+  --text:               var(--color-text);
+  --text-muted:         rgba(245,237,226,0.35);
+  --text-dim:           rgba(245,237,226,0.40);
+  --text-faint:         rgba(245,237,226,0.20);
+  --text-mid:           rgba(245,237,226,0.50);
+  --text-mid2:          rgba(245,237,226,0.60);
+  --text-placeholder:   rgba(245,237,226,0.30);
+
+  /* Gradients */
+  --gradient-radial:    radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.18) 0%, transparent 70%);
+
+  /* Shadows */
+  --shadow-btn:         0 4px 20px rgba(242,201,76,0.30);
+  --shadow-btn-hover:   0 8px 30px rgba(242,201,76,0.40);
+  --shadow-court:       0 20px 60px rgba(0,0,0,0.50), inset 0 0 80px rgba(0,0,0,0.15);
+  --shadow-modal-overlay: rgba(0,0,0,0.75);
+
+  /* Component-specific */
+  --clay:               var(--color-clay);
+  --court:              var(--color-court);
+  --green:              var(--color-green);
+  --green-light:        var(--color-green-light);
+  --accent:             var(--color-accent);
+  --dark:               var(--color-bg);
+}
+
+/* ─────────────────────────────────────────────
+   BASE COLOR TOKENS — Light theme
+   ───────────────────────────────────────────── */
+[data-theme="light"] {
+  --color-clay:         #b5601a;
+  --color-court:        #c97b42;
+  --color-green:        #2e7d4f;
+  --color-green-light:  #3a9960;
+  --color-accent:       #c8860a;
+  --color-bg:           #fff8f0;
+  --color-text:         #2c1a0a;
+  --color-error:        #e07070;
+
+  --color-elo-gold:     #c8860a;
+  --color-elo-silver:   #607d8b;
+  --color-elo-bronze:   #8b5e2a;
+
+  --bg:                 var(--color-bg);
+  --bg-card:            rgba(0,0,0,0.04);
+  --bg-card-hover:      rgba(0,0,0,0.07);
+  --bg-input:           rgba(0,0,0,0.05);
+  --bg-input-focus:     rgba(0,0,0,0.08);
+  --bg-tabs:            rgba(0,0,0,0.06);
+  --bg-modal:           #fff3e6;
+  --bg-player-modal:    #fff8f0;
+
+  --border:             rgba(160,90,30,0.22);
+  --border-input:       rgba(160,90,30,0.35);
+  --border-mode:        rgba(160,90,30,0.40);
+
+  --text:               var(--color-text);
+  --text-muted:         rgba(44,26,10,0.50);
+  --text-dim:           rgba(44,26,10,0.50);
+  --text-faint:         rgba(44,26,10,0.20);
+  --text-mid:           rgba(44,26,10,0.55);
+  --text-mid2:          rgba(44,26,10,0.65);
+  --text-placeholder:   rgba(44,26,10,0.30);
+
+  --gradient-radial:    radial-gradient(ellipse at 50% 0%, rgba(200,119,61,0.12) 0%, transparent 70%);
+  --shadow-btn:         0 4px 20px rgba(200,134,10,0.25);
+  --shadow-btn-hover:   0 8px 30px rgba(200,134,10,0.35);
+  --shadow-court:       0 20px 60px rgba(0,0,0,0.18), inset 0 0 80px rgba(0,0,0,0.06);
+  --shadow-modal-overlay: rgba(60,30,0,0.50);
+
+  --clay:               var(--color-clay);
+  --court:              var(--color-court);
+  --green:              var(--color-green);
+  --green-light:        var(--color-green-light);
+  --accent:             var(--color-accent);
+  --dark:               var(--color-bg);
+}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY TOKENS
+   ───────────────────────────────────────────── */
+:root {
+  /* Font families */
+  --font-display:   'Bebas Neue', sans-serif;  /* All display, headings, labels, buttons */
+  --font-body:      'DM Sans', sans-serif;     /* Body copy, inputs, metadata */
+
+  /* Font sizes */
+  --text-hero:      clamp(3rem, 8vw, 6rem);   /* App title h1 */
+  --text-3xl:       2rem;                      /* Player name in modal */
+  --text-2xl:       1.6rem;                    /* Club tab title */
+  --text-xl:        1.4rem;                    /* Primary button, score input */
+  --text-lg:        1.2rem;                    /* Match score display */
+  --text-md:        1rem;                      /* Body, inputs */
+  --text-sm:        0.9rem;                    /* Profile name, sync label */
+  --text-xs:        0.82rem;                   /* Small labels, badges */
+  --text-xxs:       0.75rem;                   /* Descriptions, hints */
+  --text-micro:     0.65rem;                   /* Micro-labels on chips */
+  --text-nano:      0.6rem;                    /* Smallest labels (stat-lbl) */
+
+  /* Letter spacing (Bebas Neue) */
+  --tracking-tight:    0.05em;
+  --tracking-normal:   0.08em;
+  --tracking-wide:     0.12em;
+  --tracking-wider:    0.15em;
+  --tracking-widest:   0.2em;
+  --tracking-ultra:    0.3em;
+  --tracking-max:      0.4em;
+}
+
+/* ─────────────────────────────────────────────
+   SEMANTIC TYPOGRAPHIC ELEMENTS
+   ───────────────────────────────────────────── */
+
+/* Page hero title */
+.t-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  letter-spacing: var(--tracking-normal);
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: var(--shadow-btn);
+}
+
+/* Section / tab headings */
+.t-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-wide);
+  color: var(--clay);
+}
+
+/* Card title / player name */
+.t-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-normal);
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+/* Score / ELO display number */
+.t-score {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* Button text */
+.t-btn {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-wider);
+}
+
+/* Uppercase tracking label */
+.t-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--clay);
+}
+
+/* Sub-label / metadata */
+.t-sub {
+  font-family: var(--font-body);
+  font-size: var(--text-xxs);
+  letter-spacing: var(--tracking-ultra);
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+/* Body / input text */
+.t-body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--text);
+}
+
+/* Muted hint text */
+.t-hint {
+  font-family: var(--font-body);
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* Micro-chip label */
+.t-chip {
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────
+   SPACING TOKENS
+   ───────────────────────────────────────────── */
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  /* Border radii */
+  --radius-sm:   6px;    /* Small chips, badges */
+  --radius-md:   8px;    /* Small buttons */
+  --radius-lg:   10px;   /* Standard buttons, inputs */
+  --radius-xl:   12px;   /* Cards */
+  --radius-2xl:  14px;   /* ELO rows, large cards */
+  --radius-3xl:  16px;   /* Court, large surfaces */
+  --radius-4xl:  18px;   /* Modals */
+  --radius-5xl:  20px;   /* Auth cards */
+  --radius-full: 9999px; /* Pill chips */
+
+  /* Max widths */
+  --max-w-content:  480px;  /* Main content column */
+  --max-w-wide:     600px;  /* Tabs, club tab */
+  --max-w-modal:    440px;  /* Modals */
+}
