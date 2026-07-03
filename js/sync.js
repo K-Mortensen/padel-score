@@ -1,21 +1,3 @@
-// ─── THEME TOGGLE ─────────────────────────────────────────────────────────
-function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-}
-
-function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    applyTheme(newTheme);
-    try { localStorage.setItem('padel-theme', newTheme); } catch { }
-}
-
-(function () {
-    try { const saved = localStorage.getItem('padel-theme'); if (saved) applyTheme(saved); } catch { }
-})();
-
 // ─── SYNC STATUS ──────────────────────────────────────────────────────────
 function setSyncStatus(state, msg) {
     document.getElementById('syncDot').className = 'sync-dot' + (state ? ' ' + state : '');

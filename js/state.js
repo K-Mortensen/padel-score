@@ -28,6 +28,11 @@ function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// ─── PLAYER INPUT IDS FOR CURRENT FORMAT ──────────────────────────────────
+function playerInputIds() {
+    return matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
+}
+
 // ─── DATE FORMAT HELPER ───────────────────────────────────────────────────
 function formatDate(isoString, includeTime = false) {
     const opts = { day: 'numeric', month: 'short', year: 'numeric' };

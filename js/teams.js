@@ -88,7 +88,7 @@ function onPlayerInput() {
 function updatePlayerEloBadges() {
     const fmt = matchFormat || '2v2';
     const ratings = getEloRatings(fmt);
-    ['p1', 'p2', 'p3', 'p4'].forEach(id => {
+    ['p1', 'p2', 'p3', 'p4'].forEach(id => {   // all four: badges stay in sync even when hidden
         const input = document.getElementById(id);
         const badge = document.getElementById('elo-' + id);
         if (!input || !badge) return;
@@ -104,8 +104,7 @@ function updatePlayerEloBadges() {
 }
 
 function getPlayerNames() {
-    const ids = matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
-    return ids.map(id => document.getElementById(id).value.trim().toUpperCase()).filter(Boolean);
+    return playerInputIds().map(id => document.getElementById(id).value.trim().toUpperCase()).filter(Boolean);
 }
 
 // ─── MANUAL TEAM PICKERS ──────────────────────────────────────────────────
@@ -155,8 +154,7 @@ function removePick(team, name) {
 // ─── GENERATE & SHUFFLE ───────────────────────────────────────────────────
 function generateTeams() {
     const is1v1 = matchFormat === '1v1';
-    const ids = is1v1 ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
-    const inputs = ids.map(id => document.getElementById(id).value.trim().toUpperCase());
+    const inputs = playerInputIds().map(id => document.getElementById(id).value.trim().toUpperCase());
     const err = document.getElementById('error');
 
     if (inputs.some(v => !v)) {
@@ -270,9 +268,9 @@ function updateEloPreview() {
 
     const fmtDelta = (d) => (d >= 0 ? '+' : '') + d + ' pts';
     document.getElementById('previewADelta').textContent = fmtDelta(dA) + (is1v1 ? '' : ' each');
-    document.getElementById('previewADelta').style.color = dA >= 0 ? 'var(--green-light)' : '#e07070';
+    document.getElementById('previewADelta').style.color = dA >= 0 ? 'var(--green-light)' : 'var(--error)';
     document.getElementById('previewBDelta').textContent = fmtDelta(dB) + (is1v1 ? '' : ' each');
-    document.getElementById('previewBDelta').style.color = dB >= 0 ? 'var(--green-light)' : '#e07070';
+    document.getElementById('previewBDelta').style.color = dB >= 0 ? 'var(--green-light)' : 'var(--error)';
 }
 
 // ─── SAVE MATCH ───────────────────────────────────────────────────────────
@@ -280,9 +278,9 @@ async function saveMatch() {
     if (isSaving) return;
     const sA = parseInt(document.getElementById('scoreA').value, 10);
     const sB = parseInt(document.getElementById('scoreB').value, 10);
-    if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', '#e07070'); return; }
-    if (sA < 0 || sB < 0 || sA > 99 || sB > 99) { showSaveMsg('Scores must be between 0 and 99.', '#e07070'); return; }
-    if (!currentTeamA.length) { showSaveMsg('Generate teams first!', '#e07070'); return; }
+    if (isNaN(sA) || isNaN(sB)) { showSaveMsg('Please enter scores for both teams.', 'var(--error)'); return; }
+    if (sA < 0 || sB < 0 || sA > 99 || sB > 99) { showSaveMsg('Scores must be between 0 and 99.', 'var(--error)'); return; }
+    if (!currentTeamA.length) { showSaveMsg('Generate teams first!', 'var(--error)'); return; }
 
     isSaving = true;
     const btn = document.getElementById('saveBtn');
@@ -304,9 +302,9 @@ async function saveMatch() {
         await saveToServer();
         renderEloTab();
         updatePlayerEloBadges();
-        showSaveMsg('✔ Match saved & synced!', '#5fa872');
+        showSaveMsg('✔ Match saved & synced!', 'var(--green-light)');
     } catch {
-        showSaveMsg('⚠ Saved — sync failed. Try refreshing.', '#e07070');
+        showSaveMsg('⚠ Saved — sync failed. Try refreshing.', 'var(--error)');
     }
 
     btn.disabled = false;
@@ -336,8 +334,7 @@ function renderMemberPicker() {
     const list = document.getElementById('memberPickerList');
     if (!list) return;
     const search = (document.getElementById('memberPickerSearch')?.value || '').trim().toUpperCase();
-    const ids = matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
-    const currentNames = ids.map(id => document.getElementById(id)?.value.trim().toUpperCase()).filter(Boolean);
+    const currentNames = playerInputIds().map(id => document.getElementById(id)?.value.trim().toUpperCase()).filter(Boolean);
 
     const chips = _clubMembersForPicker
         .map(m => (m.profiles?.username || m.profiles?.display_name || '').toUpperCase())
@@ -352,8 +349,7 @@ function renderMemberPicker() {
 function filterMemberPicker() { renderMemberPicker(); }
 
 function selectMemberForInput(name) {
-    const ids = matchFormat === '1v1' ? ['p1', 'p2'] : ['p1', 'p2', 'p3', 'p4'];
-    for (const id of ids) {
+    for (const id of playerInputIds()) {
         const input = document.getElementById(id);
         if (input && !input.value.trim()) {
             input.value = name;
