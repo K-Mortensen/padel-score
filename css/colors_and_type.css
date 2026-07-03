@@ -1,13 +1,22 @@
 /*
  * Padel Firematch — Design Tokens
- * Source: K-Mortensen/padel-score (css/styles.css)
+ * Single source of truth for all colors, typography and spacing.
  *
  * Usage: Import this file before your component CSS.
- * Google Fonts required:
+ * Google Fonts loaded via <link> in index.html:
  *   https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&display=swap');
+/* ─────────────────────────────────────────────
+   TEAM COLORS — set at runtime by js/theme.js
+   (user-selectable: light, dark & padel court colors)
+   ───────────────────────────────────────────── */
+:root {
+  --team-a:            #f2c94c;   /* Team A base color (default: gold) */
+  --team-a-contrast:   #1a1208;   /* readable text on top of --team-a */
+  --team-b:            #5b9bd5;   /* Team B base color (default: ocean) */
+  --team-b-contrast:   #0f2233;   /* readable text on top of --team-b */
+}
 
 /* ─────────────────────────────────────────────
    BASE COLOR TOKENS — Dark theme (default)
@@ -69,6 +78,33 @@
   --green-light:        var(--color-green-light);
   --accent:             var(--color-accent);
   --dark:               var(--color-bg);
+  --error:              var(--color-error);
+  --elo-gold:           var(--color-elo-gold);
+  --elo-silver:         var(--color-elo-silver);
+  --elo-bronze:         var(--color-elo-bronze);
+  --player-card-bg:     rgba(0,0,0,0.35);
+  --net-post:           #aaa;
+  --vs-badge:           rgba(245,237,226,0.3);
+  --score-vs:           rgba(245,237,226,0.2);
+  --match-border:       rgba(200,119,61,0.15);
+  --stat-border-accent: rgba(200,119,61,0.2);
+  --spinner-track:      rgba(255,255,255,0.3);
+  --no-history:         rgba(245,237,226,0.25);
+  --pstat-bg:           rgba(255,255,255,0.05);
+  --pstat-border:       rgba(200,119,61,0.2);
+  --winrate-bg:         rgba(255,255,255,0.1);
+  --pm-match-bg:        rgba(255,255,255,0.04);
+  --pm-match-border:    rgba(200,119,61,0.12);
+  --close-btn-bg:       rgba(255,255,255,0.06);
+  --date-filter-sep:    rgba(245,237,226,0.3);
+  --clear-filter-border: rgba(200,119,61,0.3);
+  --clear-filter-color: rgba(200,119,61,0.6);
+  --modal-overlay:      var(--shadow-modal-overlay);
+  --h1-shadow:          0 4px 30px rgba(242,201,76,0.3);
+  --toggle-bg:          rgba(255,255,255,0.06);
+  --toggle-border:      rgba(200,119,61,0.4);
+  --toggle-color:       var(--clay);
+  --bg-hover:           rgba(255,255,255,0.06);
 }
 
 /* ─────────────────────────────────────────────
@@ -121,6 +157,34 @@
   --green-light:        var(--color-green-light);
   --accent:             var(--color-accent);
   --dark:               var(--color-bg);
+  --error:              var(--color-error);
+  --elo-gold:           var(--color-elo-gold);
+  --elo-silver:         var(--color-elo-silver);
+  --elo-bronze:         var(--color-elo-bronze);
+  /* Court cards keep a dark surface in light theme so white player names stay readable */
+  --player-card-bg:     rgba(45,25,10,0.4);
+  --net-post:           #888;
+  --vs-badge:           rgba(44,26,10,0.3);
+  --score-vs:           rgba(44,26,10,0.2);
+  --match-border:       rgba(160,90,30,0.15);
+  --stat-border-accent: rgba(160,90,30,0.2);
+  --spinner-track:      rgba(0,0,0,0.15);
+  --no-history:         rgba(44,26,10,0.3);
+  --pstat-bg:           rgba(0,0,0,0.04);
+  --pstat-border:       rgba(160,90,30,0.2);
+  --winrate-bg:         rgba(0,0,0,0.08);
+  --pm-match-bg:        rgba(0,0,0,0.03);
+  --pm-match-border:    rgba(160,90,30,0.12);
+  --close-btn-bg:       rgba(0,0,0,0.05);
+  --date-filter-sep:    rgba(44,26,10,0.3);
+  --clear-filter-border: rgba(160,90,30,0.3);
+  --clear-filter-color: rgba(160,90,30,0.7);
+  --modal-overlay:      var(--shadow-modal-overlay);
+  --h1-shadow:          0 4px 30px rgba(200,134,10,0.2);
+  --toggle-bg:          rgba(0,0,0,0.05);
+  --toggle-border:      rgba(160,90,30,0.4);
+  --toggle-color:       var(--clay);
+  --bg-hover:           rgba(0,0,0,0.05);
 }
 
 /* ─────────────────────────────────────────────

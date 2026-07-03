@@ -165,7 +165,7 @@ function openPlayerModal(playerName, preferredFmt) {
                 ? `<div class="pm-elo-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta} ELO</div>`
                 : '';
 
-            const fmtBadge = is1v1 ? '<span style="font-size:0.6rem;background:rgba(242,201,76,0.15);color:var(--accent);border:1px solid rgba(242,201,76,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;">1v1</span>' : '';
+            const fmtBadge = is1v1 ? '<span class="fmt-badge">1v1</span>' : '';
 
             return `<div class="player-match-item">
         <div class="pm-team">

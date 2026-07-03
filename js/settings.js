@@ -22,6 +22,7 @@ function openSettingsModal() {
     const usernameInput = document.getElementById('settingsUsernameInput');
     if (usernameInput) usernameInput.value = currentUser?.username || '';
 
+    renderTeamColorPickers();
     _renderSettingsClub();
 
     document.getElementById('settingsModal').style.display = 'flex';

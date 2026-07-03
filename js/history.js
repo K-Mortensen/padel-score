@@ -87,7 +87,7 @@ function renderMatches(matches) {
         const wonB = m.scoreB > m.scoreA;
         const is1v1 = (m.format || '2v2') === '1v1';
         const date = formatDate(m.date, true);
-        const badge = is1v1 ? '<span style="font-size:0.6rem;background:rgba(242,201,76,0.15);color:var(--accent);border:1px solid rgba(242,201,76,0.3);border-radius:4px;padding:1px 6px;letter-spacing:0.1em;">1v1</span>' : '';
+        const badge = is1v1 ? '<span class="fmt-badge">1v1</span>' : '';
         const matchIdEsc = esc(String(m.id));
         return `<div class="match-item">
       <div class="match-team">
